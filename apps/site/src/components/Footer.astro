@@ -1,0 +1,25 @@
+---
+import { SENSE_SIGHT_DOMAIN } from "@sense-sight/core";
+---
+
+<footer class="ss-footer">
+  <div class="ss-container ss-footer__inner">
+    <a class="ss-wordmark" href="/" aria-label="SenseSight home">
+      <span class="ss-mark" aria-hidden="true"></span>
+      <span>SenseSight</span>
+    </a>
+    <p class="ss-footer__line">
+      Open-source robot world generation for the reverse singularity.
+    </p>
+    <nav aria-label="Footer">
+      <ul class="ss-footer__links">
+        <li><a href="#world">World Model</a></li>
+        <li><a href="#loop">Realtime Loop</a></li>
+        <li><a href="#stack">Stack</a></li>
+        <li>
+          <a href={`https://${SENSE_SIGHT_DOMAIN}`}>{SENSE_SIGHT_DOMAIN}</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</footer>

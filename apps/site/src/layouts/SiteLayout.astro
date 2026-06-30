@@ -1,0 +1,42 @@
+---
+import Footer from "../components/Footer.astro";
+import Nav from "../components/Nav.astro";
+import "../styles/site.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "SenseSight - realtime robot world generation",
+  description = "SenseSight turns live robot sensor streams into explorable 3D world models so people can see what the robot sees in real time.",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://sensesight.live" />
+    <meta property="og:image" content="https://sensesight.live/visuals/sensesight-world-generation-hero.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <a class="ss-skip-link" href="#main">Skip to content</a>
+    <Nav />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

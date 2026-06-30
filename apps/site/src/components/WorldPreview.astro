@@ -1,0 +1,34 @@
+---
+const telemetry = [
+  { label: "RGB", value: "60 fps" },
+  { label: "Depth", value: "aligned" },
+  { label: "Pose", value: "tracking" },
+  { label: "World", value: "streaming" },
+];
+---
+
+<figure class="ss-world-preview" aria-label="Realtime robot world generation preview">
+  <div class="ss-world-preview__viewport">
+    <img
+      src="/visuals/robot-world-generation.png"
+      alt="Robot sensor streams becoming a live 3D world model with path and semantic overlays."
+      loading="lazy"
+      decoding="async"
+    />
+    <div class="ss-world-preview__scan" aria-hidden="true"></div>
+    <div class="ss-world-preview__hud ss-world-preview__hud--top">
+      <span><i class="ss-dot"></i> Live capture</span>
+      <span>Clark Center Atrium</span>
+    </div>
+    <div class="ss-world-preview__hud ss-world-preview__hud--bottom">
+      {
+        telemetry.map((item) => (
+          <span>
+            <strong>{item.label}</strong>
+            {item.value}
+          </span>
+        ))
+      }
+    </div>
+  </div>
+</figure>

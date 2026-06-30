@@ -1,0 +1,23 @@
+{
+  "name": "@sense-sight/site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "astro build",
+    "check": "astro check",
+    "check:fast": "astro check",
+    "deploy": "pnpm run build && wrangler pages deploy dist --project-name=sense-sight --branch=main",
+    "dev": "astro dev",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@sense-sight/core": "workspace:*",
+    "astro": "catalog:"
+  },
+  "devDependencies": {
+    "@astrojs/check": "catalog:",
+    "typescript": "catalog:",
+    "wrangler": "^4.92.0"
+  }
+}

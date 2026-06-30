@@ -1,0 +1,42 @@
+---
+interface Props {
+  id?: string;
+  eyebrow?: string;
+  title?: string;
+  lede?: string;
+  center?: boolean;
+  flush?: boolean;
+  label?: string;
+}
+
+const {
+  id,
+  eyebrow,
+  title,
+  lede,
+  center = false,
+  flush = false,
+  label,
+} = Astro.props;
+
+const ariaLabel = label ?? title;
+---
+
+<section
+  class:list={["ss-section", { "ss-section--flush": flush }]}
+  id={id}
+  aria-label={ariaLabel}
+>
+  <div class="ss-container">
+    {
+      (eyebrow || title || lede) && (
+        <div class:list={["ss-section__head", { "ss-section__head--center": center }]}>
+          {eyebrow && <p class="ss-eyebrow">{eyebrow}</p>}
+          {title && <h2 class="ss-section__title">{title}</h2>}
+          {lede && <p class="ss-section__lede">{lede}</p>}
+        </div>
+      )
+    }
+    <slot />
+  </div>
+</section>

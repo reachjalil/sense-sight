@@ -1,0 +1,43 @@
+:root {
+  --ss-bg: #05070a;
+  --ss-surface: #0a0f13;
+  --ss-panel: #101820;
+  --ss-panel-strong: #16212a;
+  --ss-line: rgba(126, 160, 172, 0.15);
+  --ss-line-strong: rgba(126, 160, 172, 0.31);
+
+  --ss-text: #edf6f7;
+  --ss-text-muted: #9caeb6;
+  --ss-text-faint: #60737d;
+
+  --ss-machine: #33f0d1;
+  --ss-machine-dim: #1da998;
+  --ss-human: #ffb24d;
+  --ss-violet: #8b9bff;
+  --ss-field: #8fffb3;
+
+  --ss-font-sans:
+    Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ss-font-mono:
+    ui-monospace, "SF Mono", "JetBrains Mono", "Roboto Mono", monospace;
+
+  --ss-space-1: 0.25rem;
+  --ss-space-2: 0.5rem;
+  --ss-space-3: 0.75rem;
+  --ss-space-4: 1rem;
+  --ss-space-5: 1.5rem;
+  --ss-space-6: 2rem;
+  --ss-space-7: 3rem;
+  --ss-space-8: 4rem;
+  --ss-space-9: 6rem;
+
+  --ss-maxw: 1220px;
+  --ss-nav-h: 64px;
+
+  --ss-shadow-card:
+    0 1px 0 rgba(255, 255, 255, 0.03), 0 18px 42px -26px rgba(0, 0, 0, 0.86);
+  --ss-shadow-lift:
+    0 1px 0 rgba(255, 255, 255, 0.04), 0 30px 70px -34px rgba(0, 0, 0, 0.94);
+  --ss-glow-machine:
+    0 0 0 1px rgba(51, 240, 209, 0.3), 0 0 18px rgba(51, 240, 209, 0.4);
+}

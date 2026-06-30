@@ -1,0 +1,18 @@
+---
+interface Props {
+  title: string;
+  body: string;
+  tag?: string;
+  index?: string;
+  tone?: "machine" | "human" | "field";
+}
+
+const { title, body, tag, index, tone = "machine" } = Astro.props;
+---
+
+<article class:list={["ss-card", `ss-card--${tone}`]}>
+  {index && <p class="ss-card__index">{index}</p>}
+  {tag && <span class="ss-tag">{tag}</span>}
+  <h3 class="ss-card__title">{title}</h3>
+  <p class="ss-card__body">{body}</p>
+</article>

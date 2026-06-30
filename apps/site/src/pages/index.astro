@@ -1,0 +1,252 @@
+---
+import {
+  SENSE_SIGHT_DOMAIN,
+  SENSE_SIGHT_NARRATIVE,
+} from "@sense-sight/core";
+import Card from "../components/Card.astro";
+import Section from "../components/Section.astro";
+import WorldPreview from "../components/WorldPreview.astro";
+import SiteLayout from "../layouts/SiteLayout.astro";
+
+const metrics = [
+  { value: "LIVE", label: "sensor-to-world loop" },
+  { value: "3DGS", label: "splat-ready architecture" },
+  { value: "HITL", label: "reverse singularity review" },
+  { value: "OSS", label: "open by default" },
+];
+
+const worldGeneration = [
+  {
+    title: "Ingest the robot's reality",
+    body: "RGB, depth, LiDAR, pose, IMU, odometry, and robot-state streams enter one timestamped spatial pipeline.",
+  },
+  {
+    title: "Generate a living world",
+    body: "Frames become explorable geometry, trajectories, risk surfaces, semantic anchors, and splat-ready artifacts.",
+  },
+  {
+    title: "Keep the human in the loop",
+    body: "A person can inspect exactly what the robot sees before the system treats the world model as operational truth.",
+  },
+];
+
+const loop = [
+  {
+    tag: "01",
+    title: "Robot streams",
+    body: "The robot publishes synchronized perception, pose, and health signals while it moves through the physical site.",
+  },
+  {
+    tag: "02",
+    title: "World builds",
+    body: "SenseSight fuses each packet into a continuously updating 3D scene that can be replayed, queried, and audited.",
+  },
+  {
+    tag: "03",
+    title: "Person sees",
+    body: "The operator sees the machine's evidence in spatial context instead of guessing from isolated camera frames.",
+  },
+  {
+    tag: "04",
+    title: "System learns",
+    body: "Approved corrections, labels, and route judgments become durable memory for the next mission pass.",
+  },
+];
+
+const stack = [
+  {
+    title: "Astro front end",
+    body: "Fast static marketing surface today, ready for richer product routes as the demo matures.",
+  },
+  {
+    title: "Typed spatial core",
+    body: "Shared TypeScript contracts keep observations, risks, decisions, and mission events consistent across apps.",
+  },
+  {
+    title: "Cloudflare edge",
+    body: "Pages deployment, preview branches, and room to add Workers, R2, D1, and realtime APIs behind the same domain.",
+  },
+  {
+    title: "Gaussian-splat path",
+    body: "Designed around point-cloud previews now and higher-fidelity splat assets as real robot reconstructions land.",
+  },
+  {
+    title: "Robot data adapters",
+    body: "Clear boundaries for OpenLORIS, live robot feeds, simulator missions, and future customer capture formats.",
+  },
+  {
+    title: "Human review trail",
+    body: "Reverse singularity is an architecture requirement: human judgment improves the world model instead of disappearing.",
+  },
+];
+---
+
+<SiteLayout>
+  <section class="ss-hero" aria-label="SenseSight introduction">
+    <picture class="ss-hero__media" aria-hidden="true">
+      <img
+        src="/visuals/sensesight-world-generation-hero.png"
+        alt=""
+        loading="eager"
+        decoding="async"
+      />
+    </picture>
+    <div class="ss-hero__shade" aria-hidden="true"></div>
+    <div class="ss-container ss-hero__inner">
+      <div class="ss-hero__copy">
+        <p class="ss-eyebrow">Robot world generation</p>
+        <h1 class="ss-hero__title">SenseSight</h1>
+        <p class="ss-hero__lead">
+          Live 3D world models from the robot's own sensor stream.
+        </p>
+        <p class="ss-hero__sub">
+          {SENSE_SIGHT_NARRATIVE} SenseSight pivots the Human Sense thesis
+          toward the world-generation layer: real-time spatial memory that a
+          person can inspect before the robot acts on it.
+        </p>
+        <div class="ss-hero__actions">
+          <a class="ss-btn" href="#world">See the world model</a>
+          <a class="ss-btn ss-btn--ghost" href={`https://${SENSE_SIGHT_DOMAIN}`}>
+            {SENSE_SIGHT_DOMAIN}
+          </a>
+        </div>
+      </div>
+
+      <dl class="ss-hero__metrics" aria-label="Product signals">
+        {
+          metrics.map((metric) => (
+            <div>
+              <dt>{metric.value}</dt>
+              <dd>{metric.label}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <Section
+    id="world"
+    flush
+    eyebrow="The product"
+    title="The world model is the interface"
+    lede="SenseSight turns raw robot streams into a spatial scene a person can enter: not a dashboard of disconnected telemetry, but the robot's working model of the place."
+  >
+    <div class="ss-story-grid">
+      <WorldPreview />
+      <div class="ss-story-grid__copy">
+        {
+          worldGeneration.map((item, index) => (
+            <Card
+              index={`0${index + 1}`}
+              title={item.title}
+              body={item.body}
+              tone={index === 2 ? "human" : "machine"}
+            />
+          ))
+        }
+      </div>
+    </div>
+  </Section>
+
+  <Section
+    id="loop"
+    eyebrow="Realtime loop"
+    title="See what the robot sees while the world is still changing"
+    lede="The promise is not a polished reconstruction after the mission. It is a live loop where a person can watch the model form, catch uncertainty, and make the machine better in the moment."
+  >
+    <ol class="ss-loop" aria-label="Realtime SenseSight loop">
+      {
+        loop.map((item) => (
+          <li>
+            <span>{item.tag}</span>
+            <h3>{item.title}</h3>
+            <p>{item.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </Section>
+
+  <section class="ss-image-band" aria-label="Robot corridor reconstruction">
+    <img
+      src="/visuals/live-robot-corridor.jpg"
+      alt="Robot corridor capture used as a spatial reconstruction source."
+      loading="lazy"
+      decoding="async"
+    />
+    <div class="ss-image-band__copy">
+      <p class="ss-eyebrow">From pixels to place</p>
+      <h2>RGB-D capture becomes navigable spatial memory.</h2>
+      <p>
+        SenseSight is built for the moment raw perception crosses into usable
+        world state: point previews, splat refinement, semantic labels, and
+        human corrections flowing back into the map.
+      </p>
+    </div>
+  </section>
+
+  <Section
+    id="stack"
+    eyebrow="Architecture"
+    title="Open foundations for a serious robot-world platform"
+    lede="The baseline repo stays small, typed, and deployable. The package boundaries leave room for live viewers, robot adapters, storage, splat assets, and operator review without turning the site into the app."
+  >
+    <div class="ss-grid ss-grid--3">
+      {
+        stack.map((item, index) => (
+          <Card
+            title={item.title}
+            body={item.body}
+            tone={index === 5 ? "human" : index === 3 ? "field" : "machine"}
+          />
+        ))
+      }
+    </div>
+  </Section>
+
+  <Section
+    id="open-source"
+    eyebrow="Open source"
+    title="A public repo with production habits from the first commit"
+    lede="SenseSight starts as an open-source monorepo with CI, typed contracts, preview-friendly Cloudflare deployment, and a roadmap that can absorb real robotics data without a rewrite."
+    center
+  >
+    <div class="ss-oss-panel">
+      <img
+        src="/visuals/operator-world-console.png"
+        alt="Dark robot-world console preview with spatial overlays and operator context."
+        loading="lazy"
+        decoding="async"
+      />
+      <div>
+        <span class="ss-tag">Reverse singularity</span>
+        <h3>Robots generate worlds. People keep them honest.</h3>
+        <p>
+          SenseSight is the infrastructure layer for a human to inspect,
+          correct, and trust a robot's evolving model of reality. The repo is
+          structured so marketing, contracts, adapters, and future realtime
+          surfaces can grow independently.
+        </p>
+        <a class="ss-btn ss-btn--ghost" href="https://github.com/reachjalil/sense-sight">
+          View the repository
+        </a>
+      </div>
+    </div>
+  </Section>
+
+  <Section flush label="Call to action">
+    <div class="ss-cta">
+      <p class="ss-eyebrow">SenseSight.live</p>
+      <h2>Build the robot's world before asking it to act.</h2>
+      <p>
+        A real-time world-generation layer for robotics teams who believe the
+        future is neither blind autonomy nor manual teleop. It is machine
+        perception sharpened by human judgment.
+      </p>
+      <a class="ss-btn" href={`https://${SENSE_SIGHT_DOMAIN}`}>
+        Open {SENSE_SIGHT_DOMAIN}
+      </a>
+    </div>
+  </Section>
+</SiteLayout>
