@@ -1,0 +1,33 @@
+{
+  "name": "@sense-sight/dataset-tools",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "check": "tsc -p tsconfig.json --noEmit",
+    "check:fast": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "dataset:verify": "PYTHONPATH=../robot-world/src:../splat-io/src python3 -m robot_world.cli.main validate-dataset \"${SENSESIGHT_DATA_ROOT:-../../data/openloris-gaussian-splat}\" --json",
+    "dataset:inspect": "PYTHONPATH=../robot-world/src:../splat-io/src python3 -m robot_world.cli.main validate-dataset \"${SENSESIGHT_DATA_ROOT:-../../data/openloris-gaussian-splat}\" --sequence corridor1-2 --json",
+    "dataset:prepare": "PYTHONPATH=../robot-world/src:../splat-io/src python3 -m robot_world.cli.main build-colmap-bundle \"${SENSESIGHT_DATA_ROOT:-../../data/openloris-gaussian-splat}\" --sequence corridor1-2 --frame-start 480 --frame-count 360 --max-keyframes 72 --output-dir \"${SENSESIGHT_DATA_ROOT:-../../data/openloris-gaussian-splat}/processed/colmap_bundle\" --json"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}
