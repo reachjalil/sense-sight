@@ -17,6 +17,11 @@ coverage/
 .DS_Store
 *.log
 
+# Datasets are never committed here. data/<dataset> is a local symlink (or
+# SENSESIGHT_DATA_ROOT-configured path) to a dataset prepared once and shared
+# across local checkouts -- see docs/data.md.
+data/
+
 # deployment and package artifacts
 *.tsbuildinfo
 *.tgz
