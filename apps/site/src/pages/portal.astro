@@ -1,0 +1,136 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+import { getPortalSession } from "../lib/portal-session";
+
+export const prerender = false;
+
+const user = await getPortalSession(Astro.request, Astro.url.origin);
+---
+
+<SiteLayout
+  title="SenseSight Portal"
+  description="Temporary SenseSight demo portal for attendees."
+>
+  <section class="ss-portal" aria-label="SenseSight portal">
+    <div class="ss-container ss-portal__inner">
+      {
+        user ? (
+          <div class="ss-portal__panel ss-portal__panel--wide">
+            <div class="ss-portal__status">
+              <span class="ss-tag">Demo access</span>
+              <form method="post" action="/api/portal/logout">
+                <button class="ss-btn ss-btn--ghost ss-btn--small" type="submit">
+                  Log out
+                </button>
+              </form>
+            </div>
+
+            <div class="ss-portal__copy">
+              <p class="ss-eyebrow">SenseSight portal</p>
+              <h1>Welcome, {user.name || user.email}</h1>
+              <p>
+                Your session is active. The demo workspace is ready.
+              </p>
+            </div>
+
+            <div class="ss-portal__console" aria-label="Portal session details">
+              <div>
+                <span>Signed in as</span>
+                <strong>{user.email}</strong>
+              </div>
+              <div>
+                <span>Access mode</span>
+                <strong>Temporary attendee demo</strong>
+              </div>
+              <div>
+                <span>World stream</span>
+                <strong>Ready</strong>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div class="ss-portal__panel">
+            <div class="ss-portal__copy">
+              <p class="ss-eyebrow">SenseSight portal</p>
+              <h1>Attendee access</h1>
+              <p>
+                Enter your email and the demo password to open the portal.
+              </p>
+            </div>
+
+            <form class="ss-login-form" data-portal-login>
+              <label>
+                <span>Email</span>
+                <input
+                  autocomplete="email"
+                  inputmode="email"
+                  name="email"
+                  placeholder="you@example.com"
+                  required
+                  type="email"
+                />
+              </label>
+
+              <label>
+                <span>Password</span>
+                <input
+                  autocomplete="current-password"
+                  name="password"
+                  required
+                  type="password"
+                />
+              </label>
+
+              <p class="ss-login-form__message" data-login-message aria-live="polite">
+              </p>
+
+              <button class="ss-btn" type="submit">Log in</button>
+            </form>
+          </div>
+        )
+      }
+    </div>
+  </section>
+
+  <script>
+    const form = document.querySelector("[data-portal-login]");
+    const message = document.querySelector("[data-login-message]");
+
+    form?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      if (!(form instanceof HTMLFormElement)) {
+        return;
+      }
+
+      const submit = form.querySelector("button[type='submit']");
+      if (submit instanceof HTMLButtonElement) {
+        submit.disabled = true;
+      }
+
+      if (message) {
+        message.textContent = "";
+      }
+
+      const response = await fetch("/api/portal/login", {
+        method: "POST",
+        body: new FormData(form),
+      });
+      const result = await response.json();
+
+      if (result.ok && result.redirectTo) {
+        window.location.assign(result.redirectTo);
+        return;
+      }
+
+      if (message) {
+        message.textContent =
+          result.message || "The portal could not start a session.";
+      }
+
+      if (submit instanceof HTMLButtonElement) {
+        submit.disabled = false;
+      }
+    });
+  </script>
+</SiteLayout>

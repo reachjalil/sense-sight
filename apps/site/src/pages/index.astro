@@ -83,14 +83,38 @@ const stack = [
 
 <SiteLayout>
   <section class="ss-hero" aria-label="SenseSight introduction">
-    <picture class="ss-hero__media" aria-hidden="true">
+    <div class="ss-hero__media" aria-hidden="true">
       <img
-        src="/visuals/sensesight-world-generation-hero.png"
+        class="ss-hero__layer ss-hero__layer--base"
+        src="/visuals/hero-render/sensesight-hero-base.webp"
+        alt=""
+        fetchpriority="high"
+        loading="eager"
+        decoding="async"
+      />
+      <img
+        class="ss-hero__layer ss-hero__layer--structure"
+        src="/visuals/hero-render/sensesight-hero-structure.webp"
         alt=""
         loading="eager"
         decoding="async"
       />
-    </picture>
+      <img
+        class="ss-hero__layer ss-hero__layer--glow"
+        src="/visuals/hero-render/sensesight-hero-glow.webp"
+        alt=""
+        loading="eager"
+        decoding="async"
+      />
+      <img
+        class="ss-hero__layer ss-hero__layer--paths"
+        src="/visuals/hero-render/sensesight-hero-paths.webp"
+        alt=""
+        loading="eager"
+        decoding="async"
+      />
+      <span class="ss-hero__render-scan"></span>
+    </div>
     <div class="ss-hero__shade" aria-hidden="true"></div>
     <div class="ss-container ss-hero__inner">
       <div class="ss-hero__copy">

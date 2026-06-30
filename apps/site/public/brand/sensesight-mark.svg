@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="senseSightLens" x1="8" y1="18" x2="56" y2="46" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8fffe8"/>
+      <stop offset="0.52" stop-color="#33f0d1"/>
+      <stop offset="1" stop-color="#159f92"/>
+    </linearGradient>
+    <linearGradient id="senseSightPath" x1="17" y1="19" x2="49" y2="44" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#33f0d1"/>
+      <stop offset="0.62" stop-color="#72f6ff"/>
+      <stop offset="1" stop-color="#ffb24d"/>
+    </linearGradient>
+  </defs>
+  <path
+    d="M7.5 32C13.8 20.5 22.2 15.2 32 15.2S50.2 20.5 56.5 32C50.2 43.5 41.8 48.8 32 48.8S13.8 43.5 7.5 32Z"
+    fill="#071114"
+    fill-opacity="0.82"
+    stroke="url(#senseSightLens)"
+    stroke-width="3.6"
+    stroke-linejoin="round"
+  />
+  <path
+    d="M20 39.4c5.1 4.7 15.9 5.8 22.2 1.8 5.4-3.4 4.7-8.5-2.1-10.2-2.3-.6-5.2-.7-8.8-.7-6.8 0-10.6-2.3-9.1-6.1 1.9-4.8 12.9-6.4 22.1-.4"
+    stroke="url(#senseSightPath)"
+    stroke-width="4.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <circle cx="32" cy="32" r="6.9" fill="#071114" stroke="#8fffe8" stroke-width="2.8"/>
+  <circle cx="32" cy="32" r="2.7" fill="#33f0d1"/>
+  <circle cx="46.8" cy="22.7" r="4.6" fill="#ffb24d" stroke="#ffe083" stroke-width="2"/>
+  <path
+    d="M14.8 32h7.4M41.8 32h7.4M32 20v5.4M32 38.6V44"
+    stroke="#8fffe8"
+    stroke-opacity="0.72"
+    stroke-width="2.2"
+    stroke-linecap="round"
+  />
+</svg>

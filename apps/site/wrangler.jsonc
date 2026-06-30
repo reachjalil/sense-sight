@@ -2,5 +2,14 @@
   "$schema": "../../node_modules/wrangler/config-schema.json",
   "name": "sense-sight",
   "compatibility_date": "2026-06-30",
-  "pages_build_output_dir": "./dist"
+  "compatibility_flags": ["nodejs_compat"],
+  "pages_build_output_dir": "./dist",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "sense-sight-auth",
+      "database_id": "4442cc50-fa53-42b3-b20c-f47206a3fe7b",
+      "migrations_dir": "./migrations"
+    }
+  ]
 }

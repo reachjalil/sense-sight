@@ -1,0 +1,5 @@
+{
+  "source": "generated-console-demo",
+  "gaussians": 5885,
+  "renderer": "spark-compatible-splat"
+}

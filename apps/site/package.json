@@ -7,16 +7,22 @@
     "build": "astro build",
     "check": "astro check",
     "check:fast": "astro check",
+    "db:migrate:local": "wrangler d1 migrations apply sense-sight-auth --local",
+    "db:migrate:remote": "wrangler d1 migrations apply sense-sight-auth --remote",
     "deploy": "pnpm run build && wrangler pages deploy dist --project-name=sense-sight --branch=main",
     "dev": "astro dev",
     "preview": "astro preview"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^13.7.0",
     "@sense-sight/core": "workspace:*",
-    "astro": "catalog:"
+    "astro": "catalog:",
+    "better-auth": "^1.6.23",
+    "three": "^0.185.0"
   },
   "devDependencies": {
     "@astrojs/check": "catalog:",
+    "@types/three": "^0.185.0",
     "typescript": "catalog:",
     "wrangler": "^4.92.0"
   }

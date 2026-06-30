@@ -357,6 +357,9 @@ export function StreamedTrainedSplatCloud({
 export function TrainedSplatCloud({
   url,
   visible,
+  position,
+  rotation,
+  scale,
   size = 1,
   minAlpha = 32,
   minScale = 0.00025,
@@ -368,6 +371,9 @@ export function TrainedSplatCloud({
 }: {
   url: string;
   visible: boolean;
+  position?: [number, number, number];
+  rotation?: [number, number, number];
+  scale?: number | [number, number, number];
   size?: number;
   minAlpha?: number;
   minScale?: number;
@@ -490,6 +496,9 @@ export function TrainedSplatCloud({
     <points
       geometry={geometry}
       material={material}
+      position={position}
+      rotation={rotation}
+      scale={scale}
       visible={visible}
       frustumCulled={false}
     />

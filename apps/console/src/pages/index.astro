@@ -1,0 +1,51 @@
+---
+import ConsoleLayout from "../layouts/ConsoleLayout.astro";
+import { Console } from "../console/Console";
+---
+
+<ConsoleLayout>
+  <div class="cn-page">
+    <header class="cn-header">
+      <div class="cn-brand">
+        <svg width="22" height="22" viewBox="0 0 26 26" aria-hidden="true">
+          <circle
+            cx="13"
+            cy="13"
+            r="10"
+            fill="none"
+            stroke="#33f0d1"
+            stroke-width="1.4"
+          ></circle>
+          <circle cx="13" cy="13" r="3.4" fill="#33f0d1"></circle>
+        </svg>
+        <div>
+          SenseSight
+          <small>Console</small>
+        </div>
+      </div>
+      <div class="cn-spacer"></div>
+      <span class="chip">
+        <span class="status-dot offline"></span>
+        No reconstruction job attached
+      </span>
+    </header>
+
+    <section class="cn-hero">
+      <p class="eyebrow mono">Realtime world generation</p>
+      <h1>Watch the world <span>rebuild itself</span>.</h1>
+      <p>
+        The console renders a live, progressive Gaussian-splat
+        reconstruction — a seed point cloud growing into a trained splat as
+        the model forms, rendered with native 3D Gaussian splatting as soon
+        as a reconstruction job streams frames in.
+      </p>
+      <div class="cn-hero-meta">
+        <span class="chip">Progressive reconstruction</span>
+        <span class="chip">Seed cloud → trained splat</span>
+        <span class="chip">Spark-rendered splats</span>
+      </div>
+    </section>
+
+    <Console client:only="react" />
+  </div>
+</ConsoleLayout>
