@@ -10,7 +10,9 @@
       "!**/.astro",
       "!**/.turbo",
       "!**/.vite",
-      "!**/coverage"
+      "!**/.wrangler",
+      "!**/coverage",
+      "!data"
     ]
   },
   "formatter": {
