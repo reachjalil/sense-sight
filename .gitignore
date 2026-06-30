@@ -1,0 +1,22 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# build outputs
+dist/
+build/
+.astro/
+.turbo/
+.vite/
+coverage/
+
+# local env and editor state
+.env
+.env.*
+!.env.example
+.DS_Store
+*.log
+
+# deployment and package artifacts
+*.tsbuildinfo
+*.tgz

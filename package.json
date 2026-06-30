@@ -1,0 +1,40 @@
+{
+  "name": "sense-sight",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@10.30.2",
+  "engines": {
+    "node": ">=22.12.0",
+    "pnpm": ">=10.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reachjalil/sense-sight.git"
+  },
+  "bugs": {
+    "url": "https://github.com/reachjalil/sense-sight/issues"
+  },
+  "homepage": "https://sensesight.live",
+  "scripts": {
+    "build": "turbo run build",
+    "check": "turbo run check",
+    "check:fast": "turbo run check:fast",
+    "dev": "pnpm --filter @sense-sight/site dev",
+    "dev:site": "pnpm --filter @sense-sight/site dev",
+    "format": "pnpm biome:format",
+    "lint": "pnpm biome:check",
+    "lint:fix": "pnpm biome:fix",
+    "test": "turbo run test",
+    "types": "pnpm -r --if-present run types",
+    "biome:check": "biome check --assist-enabled=false .",
+    "biome:fix": "biome format --write . && biome lint --write .",
+    "biome:format": "biome format --write ."
+  },
+  "devDependencies": {
+    "@biomejs/biome": "catalog:",
+    "turbo": "catalog:",
+    "typescript": "catalog:"
+  }
+}
