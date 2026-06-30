@@ -30,6 +30,9 @@ Required GitHub secrets:
 - `CLOUDFLARE_API_TOKEN`
 - `CLOUDFLARE_ACCOUNT_ID`
 
+If those secrets are absent, the workflow still builds the site and records a
+skipped-deploy notice instead of failing the main branch.
+
 Local deployment:
 
 ```bash
