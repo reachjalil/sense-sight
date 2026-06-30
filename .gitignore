@@ -9,6 +9,9 @@ build/
 .turbo/
 .vite/
 coverage/
+__pycache__/
+*.py[cod]
+.pytest_cache/
 
 # local env and editor state
 .env
