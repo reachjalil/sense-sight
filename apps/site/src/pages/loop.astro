@@ -1,0 +1,104 @@
+---
+import Card from "../components/Card.astro";
+import Section from "../components/Section.astro";
+import { loopStages, operatorCapabilities } from "../content/product";
+import SiteLayout from "../layouts/SiteLayout.astro";
+---
+
+<SiteLayout
+  title="Human Loop - SenseSight"
+  description="SenseSight keeps human judgment inside realtime robot world generation with operator review, correction, approval, and audit trails."
+>
+  <section class="ss-page-hero" aria-label="Human loop">
+    <div class="ss-container ss-page-hero__inner">
+      <div class="ss-page-hero__copy">
+        <p class="ss-eyebrow">Human in the loop</p>
+        <h1>Reverse singularity is a product requirement.</h1>
+        <p>
+          SenseSight is built around a simple operating rule: the robot can
+          generate a world, but a person must be able to inspect the evidence,
+          understand the model, and decide what should become operational truth.
+        </p>
+        <div class="ss-page-hero__actions">
+          <a class="ss-btn" href="/world">Review the world model</a>
+          <a class="ss-btn ss-btn--ghost" href="/stack">See the stack</a>
+        </div>
+      </div>
+
+      <div class="ss-page-signal" aria-label="Decision loop summary">
+        <span>Realtime mission loop</span>
+        <strong>observe -> reconstruct -> inspect -> decide -> remember</strong>
+        <p>
+          Human approval, denial, correction, and rationale are captured beside
+          the world model, not separated into an after-action report.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <Section
+    flush
+    eyebrow="Operating loop"
+    title="The operator sees the same world the robot is using"
+    lede="A person should not be asked to approve robot behavior from a tiny camera tile or a disconnected alert. SenseSight presents robot intent, sensor evidence, uncertainty, and action controls in spatial context."
+  >
+    <ol class="ss-product-steps ss-product-steps--compact" aria-label="Realtime human loop">
+      {
+        loopStages.map((stage) => (
+          <li>
+            <span class="ss-product-step__tag">{stage.tag}</span>
+            <h3>{stage.title}</h3>
+            <p>{stage.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </Section>
+
+  <Section
+    eyebrow="Operator workspace"
+    title="Decision tooling belongs inside the generated world"
+    lede="The product direction is a full review workspace: spatial viewer, pending robot requests, route edits, annotations, replay, and audit log as one workflow."
+  >
+    <div class="ss-detail-grid">
+      <div class="ss-product-copy">
+        <span class="ss-tag">Human evidence</span>
+        <h3>Every approval should explain itself later.</h3>
+        <p>
+          SenseSight records the robot request, the world state shown to the
+          operator, the decision made, and the rationale attached to it. That
+          trail is essential for trust, debugging, safety review, and model
+          improvement.
+        </p>
+        <p>
+          The long-term interface is not teleoperation pretending to be
+          autonomy. It is a shared spatial memory where the robot proposes,
+          the person judges, and the system keeps learning from that judgment.
+        </p>
+      </div>
+      <div class="ss-grid ss-grid--1">
+        {
+          operatorCapabilities.map((item, index) => (
+            <Card
+              title={item.title}
+              body={item.body}
+              tone={index === 1 ? "human" : index === 2 ? "field" : "machine"}
+            />
+          ))
+        }
+      </div>
+    </div>
+  </Section>
+
+  <Section flush label="Loop call to action">
+    <div class="ss-route-cta">
+      <p class="ss-eyebrow">Operational truth</p>
+      <h2>Robots generate the world. People decide what it means.</h2>
+      <p>
+        This is the core SenseSight stance: augment the robot with human
+        judgment instead of hiding the human from the system design.
+      </p>
+      <a class="ss-btn" href="/portal">Open the private workspace</a>
+    </div>
+  </Section>
+</SiteLayout>

@@ -1,0 +1,101 @@
+---
+import Section from "../components/Section.astro";
+import { stackLayers } from "../content/product";
+import SiteLayout from "../layouts/SiteLayout.astro";
+---
+
+<SiteLayout
+  title="Architecture - SenseSight"
+  description="SenseSight is an open-source monorepo architecture for robot world generation, operator review, Cloudflare deployment, and typed spatial contracts."
+>
+  <section class="ss-page-hero" aria-label="SenseSight architecture">
+    <div class="ss-container ss-page-hero__inner">
+      <div class="ss-page-hero__copy">
+        <p class="ss-eyebrow">Architecture</p>
+        <h1>A product stack for realtime robot world generation.</h1>
+        <p>
+          The repo is structured so public marketing, private operator
+          workspaces, typed robotics contracts, world viewers, cloud services,
+          and future robot adapters can grow without collapsing into one app.
+        </p>
+        <div class="ss-page-hero__actions">
+          <a class="ss-btn" href="/open-source">Open-source posture</a>
+          <a class="ss-btn ss-btn--ghost" href="https://github.com/reachjalil/sense-sight">
+            GitHub
+          </a>
+        </div>
+      </div>
+
+      <div class="ss-page-signal" aria-label="Stack summary">
+        <span>Baseline boundary</span>
+        <strong>site + portal + contracts + viewer + edge deployment</strong>
+        <p>
+          The current baseline is intentionally small, but it is shaped around
+          the product surfaces required for real missions and generated worlds.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <Section
+    flush
+    eyebrow="System layers"
+    title="Each layer has a clear job"
+    lede="SenseSight needs credible product architecture from the start: robot inputs at the edge, spatial contracts in shared packages, world generation assets, private review surfaces, and deployment infrastructure."
+  >
+    <div class="ss-architecture" aria-label="SenseSight architecture layers">
+      {
+        stackLayers.map((layer) => (
+          <article>
+            <span>{layer.label}</span>
+            <h3>{layer.title}</h3>
+            <p>{layer.body}</p>
+          </article>
+        ))
+      }
+    </div>
+  </Section>
+
+  <Section
+    eyebrow="Cloud product path"
+    title="Built for the domain, not just a local screen"
+    lede="SenseSight.live should be a real product surface: public pages, private workspace, auth, audit events, generated world assets, and deployable preview environments."
+  >
+    <div class="ss-detail-grid">
+      <div class="ss-product-copy">
+        <span class="ss-tag">Cloudflare edge</span>
+        <h3>Pages first, Workers and storage next.</h3>
+        <p>
+          The Astro site can ship through Cloudflare Pages today. The same
+          deployment posture leaves room for Workers APIs, D1-backed auth and
+          audit tables, R2 world assets, and branch previews without changing
+          the product domain.
+        </p>
+        <p>
+          The goal is practical: make the website credible now, then let the
+          operator workspace and robot-world services land behind the same
+          architecture as the platform becomes more real.
+        </p>
+      </div>
+      <ul class="ss-check-list" aria-label="Architecture readiness">
+        <li>Astro site routes for product, architecture, and open source.</li>
+        <li>Private portal route ready for workspace auth and audit events.</li>
+        <li>Shared typed contracts for observations, risks, and decisions.</li>
+        <li>Three.js preview boundary for point-cloud and splat-like views.</li>
+        <li>Cloudflare config path for Pages, D1, and future Workers services.</li>
+      </ul>
+    </div>
+  </Section>
+
+  <Section flush label="Architecture call to action">
+    <div class="ss-route-cta">
+      <p class="ss-eyebrow">End-to-end product</p>
+      <h2>Keep the site, workspace, contracts, and world assets connected.</h2>
+      <p>
+        SenseSight should feel like one product from the first public page to
+        the private operator review surface.
+      </p>
+      <a class="ss-btn" href="/world">Back to world generation</a>
+    </div>
+  </Section>
+</SiteLayout>

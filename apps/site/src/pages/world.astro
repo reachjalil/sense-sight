@@ -1,0 +1,130 @@
+---
+import { SENSE_SIGHT_DOMAIN } from "@sense-sight/core";
+import Card from "../components/Card.astro";
+import Section from "../components/Section.astro";
+import WorldPreview from "../components/WorldPreview.astro";
+import {
+  pageMetrics,
+  worldOutputs,
+  worldPipeline,
+} from "../content/product";
+import SiteLayout from "../layouts/SiteLayout.astro";
+---
+
+<SiteLayout
+  title="World Generation - SenseSight"
+  description="SenseSight turns robot RGB-D, LiDAR, pose, and state streams into realtime world models that operators can inspect and trust."
+>
+  <section class="ss-page-hero" aria-label="World generation">
+    <div class="ss-container ss-page-hero__inner">
+      <div class="ss-page-hero__copy">
+        <p class="ss-eyebrow">World generation</p>
+        <h1>Generate the robot's working model of reality.</h1>
+        <p>
+          SenseSight is the layer between raw robot perception and operational
+          decisions. It transforms live sensor streams into an explorable 3D
+          world, keeps evidence attached to the model, and gives a person the
+          same spatial context the robot is using.
+        </p>
+        <div class="ss-page-hero__actions">
+          <a class="ss-btn" href="/portal">Open workspace</a>
+          <a class="ss-btn ss-btn--ghost" href={`https://${SENSE_SIGHT_DOMAIN}`}>
+            {SENSE_SIGHT_DOMAIN}
+          </a>
+        </div>
+      </div>
+
+      <dl class="ss-page-metrics" aria-label="World generation signals">
+        {
+          pageMetrics.map((metric) => (
+            <div>
+              <dt>{metric.value}</dt>
+              <dd>{metric.label}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <Section
+    flush
+    eyebrow="Live spatial product"
+    title="A world model operators can enter, inspect, and improve"
+    lede="The product is not a camera wall or a pile of robot telemetry. It is a live scene graph of what the robot has seen, where it has moved, what the system believes, and where human judgment changed the result."
+  >
+    <div class="ss-detail-grid ss-detail-grid--viewer">
+      <WorldPreview />
+      <div class="ss-product-copy">
+        <span class="ss-tag">Realtime review</span>
+        <h3>Raw packets become operational context.</h3>
+        <p>
+          Every observation should answer three questions: what did the robot
+          see, where was it when it saw it, and what should a person trust
+          before the system acts. SenseSight keeps those answers in one spatial
+          interface.
+        </p>
+        <p>
+          The current baseline uses point-cloud style previews and typed
+          mission events. The product boundary is designed for higher fidelity
+          Gaussian splat assets, persistent world storage, robot adapters, and
+          operator workflows as the platform grows.
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  <Section
+    eyebrow="Pipeline"
+    title="From robot signal to human-verifiable world state"
+    lede="SenseSight treats world generation as an end-to-end product workflow: capture, reconstruction, operator review, and durable memory."
+  >
+    <ol class="ss-product-steps" aria-label="World generation pipeline">
+      {
+        worldPipeline.map((stage) => (
+          <li>
+            <span class="ss-product-step__tag">{stage.tag}</span>
+            <h3>{stage.title}</h3>
+            <p>{stage.body}</p>
+            <ul>
+              {stage.points.map((point) => (
+                <li>{point}</li>
+              ))}
+            </ul>
+          </li>
+        ))
+      }
+    </ol>
+  </Section>
+
+  <Section
+    eyebrow="Outputs"
+    title="What the platform produces"
+    lede="The useful product output is not a pretty reconstruction alone. It is a set of world artifacts, mission evidence, and adapter contracts that make robot decisions inspectable."
+  >
+    <div class="ss-grid ss-grid--4">
+      {
+        worldOutputs.map((item, index) => (
+          <Card
+            title={item.title}
+            body={item.body}
+            tone={index === 2 ? "human" : index === 3 ? "field" : "machine"}
+          />
+        ))
+      }
+    </div>
+  </Section>
+
+  <Section flush label="World generation call to action">
+    <div class="ss-route-cta">
+      <p class="ss-eyebrow">Product direction</p>
+      <h2>See the world before the robot turns it into action.</h2>
+      <p>
+        SenseSight exists for teams who need robots to operate in physical
+        spaces without hiding uncertainty from the people responsible for the
+        result.
+      </p>
+      <a class="ss-btn" href="/loop">Explore the human loop</a>
+    </div>
+  </Section>
+</SiteLayout>

@@ -171,18 +171,33 @@ def train(args) -> dict:
     dev = "cuda"
     data = Path(args.data)
     cams, images, init_xyz, init_rgb = load_colmap(data)
-    if args.image_shard_count < 1:
-        raise ValueError("--image-shard-count must be >= 1")
-    if not 0 <= args.image_shard_index < args.image_shard_count:
-        raise ValueError("--image-shard-index must be in [0, image_shard_count)")
-    if args.image_shard_count > 1:
-        images = [
-            im
-            for i, im in enumerate(images)
-            if i % args.image_shard_count == args.image_shard_index
-        ]
-        if not images:
-            raise ValueError("image shard selected no images")
+    keyframe_start = getattr(args, "keyframe_start", None)
+    keyframe_end = getattr(args, "keyframe_end", None)
+    if keyframe_start is not None or keyframe_end is not None:
+        if keyframe_start is None or keyframe_end is None:
+            raise ValueError(
+                "--keyframe-start and --keyframe-end must be provided together"
+            )
+        if not 0 <= args.keyframe_start < args.keyframe_end <= len(images):
+            raise ValueError(
+                "--keyframe-start/--keyframe-end must form a non-empty range inside the image sequence"
+            )
+        images = images[args.keyframe_start : args.keyframe_end]
+    else:
+        if args.image_shard_count < 1:
+            raise ValueError("--image-shard-count must be >= 1")
+        if not 0 <= args.image_shard_index < args.image_shard_count:
+            raise ValueError("--image-shard-index must be in [0, image_shard_count)")
+        if args.image_shard_count > 1:
+            images = [
+                im
+                for i, im in enumerate(images)
+                if i % args.image_shard_count == args.image_shard_index
+            ]
+            if not images:
+                raise ValueError("image shard selected no images")
+    if not images:
+        raise ValueError("keyframe range selected no images")
     print(f"[data] {len(images)} images, {len(init_xyz)} init points", flush=True)
 
     sh_degree = int(getattr(args, "sh_degree", 0) or 0)
@@ -372,6 +387,8 @@ def main():
     ap.add_argument("--checkpoint-every", type=int, default=0)
     ap.add_argument("--image-shard-index", type=int, default=0)
     ap.add_argument("--image-shard-count", type=int, default=1)
+    ap.add_argument("--keyframe-start", type=int, default=None)
+    ap.add_argument("--keyframe-end", type=int, default=None)
     ap.add_argument(
         "--sh-degree",
         type=int,

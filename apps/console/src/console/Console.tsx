@@ -67,14 +67,11 @@ export function Console() {
 
   useEffect(() => {
     const controller = new AbortController();
+    const splatFileName = trainedSplatFilename(TRAINED_ITERATIONS, "viewer");
     setLoadStatus("loading");
     setLoadError(null);
 
-    fetchPresetAssets(
-      DEMO_PRESET.base,
-      trainedSplatFilename(TRAINED_ITERATIONS, "viewer"),
-      controller.signal
-    )
+    fetchPresetAssets(DEMO_PRESET.base, splatFileName, controller.signal)
       .then((assets) => {
         if (controller.signal.aborted) return;
         setWorldBounds(assets.world.bounds);
@@ -98,6 +95,8 @@ export function Console() {
           );
           setTrainedSplat({
             url: blobUrl,
+            fileBytes: assets.trainedSplat,
+            fileName: splatFileName,
             sourceBounds: assets.world.bounds,
             coordinateFrame: DEMO_PRESET.coordinateFrame,
           });

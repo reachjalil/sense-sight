@@ -1,0 +1,106 @@
+---
+import Card from "../components/Card.astro";
+import Section from "../components/Section.astro";
+import { openSourceCommitments, roadmap } from "../content/product";
+import SiteLayout from "../layouts/SiteLayout.astro";
+---
+
+<SiteLayout
+  title="Open Source - SenseSight"
+  description="SenseSight is an open-source robot world-generation platform with typed contracts, CI/CD discipline, and a clear path for contributors."
+>
+  <section class="ss-page-hero" aria-label="Open source">
+    <div class="ss-container ss-page-hero__inner">
+      <div class="ss-page-hero__copy">
+        <p class="ss-eyebrow">Open source</p>
+        <h1>An open robot-world platform with production habits.</h1>
+        <p>
+          SenseSight is built in public so robotics engineers, spatial AI
+          builders, and operator-product designers can inspect the architecture,
+          improve the contracts, and extend the world-generation workflow.
+        </p>
+        <div class="ss-page-hero__actions">
+          <a class="ss-btn" href="https://github.com/reachjalil/sense-sight">
+            View GitHub
+          </a>
+          <a class="ss-btn ss-btn--ghost" href="/stack">Review architecture</a>
+        </div>
+      </div>
+
+      <div class="ss-page-signal" aria-label="Open source summary">
+        <span>Repo intent</span>
+        <strong>clear boundaries, typed contracts, visible checks</strong>
+        <p>
+          Open source only works if the product is understandable. SenseSight
+          keeps contribution lanes close to the actual architecture.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <Section
+    flush
+    eyebrow="Project standards"
+    title="The repo should explain how the product works"
+    lede="The goal is not a pile of showcase code. SenseSight should be a durable baseline for a real product: public web, operator workspace, spatial contracts, adapters, world viewers, and cloud deployment."
+  >
+    <div class="ss-grid ss-grid--4">
+      {
+        openSourceCommitments.map((item, index) => (
+          <Card
+            title={item.title}
+            body={item.body}
+            tone={index === 3 ? "human" : index === 2 ? "field" : "machine"}
+          />
+        ))
+      }
+    </div>
+  </Section>
+
+  <Section
+    eyebrow="Contribution lanes"
+    title="Where contributors can add real product value"
+    lede="The project should make the next useful change obvious, whether someone is improving the site, adding robotics data support, hardening CI/CD, or building the operator console."
+  >
+    <div class="ss-detail-grid">
+      <div class="ss-product-copy">
+        <span class="ss-tag">Apache-2.0</span>
+        <h3>Open foundations, serious scope control.</h3>
+        <p>
+          The repo starts with a deployable Astro site and shared TypeScript
+          contracts. Future work should extend the platform through clear app
+          and package boundaries instead of burying robot-specific logic in the
+          marketing page.
+        </p>
+        <p>
+          The most valuable contributions are ones that make the world model
+          more inspectable: better sensor adapters, clearer mission events,
+          stronger viewer primitives, richer replay, and better audit trails.
+        </p>
+      </div>
+
+      <ul class="ss-check-list" aria-label="SenseSight roadmap">
+        {
+          roadmap.map((item) => (
+            <li>{item}</li>
+          ))
+        }
+      </ul>
+    </div>
+  </Section>
+
+  <Section flush label="Open source call to action">
+    <div class="ss-route-cta">
+      <p class="ss-eyebrow">Public by default</p>
+      <h2>Make robot world generation understandable enough to improve.</h2>
+      <p>
+        The open-source promise is not just code access. It is a product and
+        architecture that a contributor can reason about, run, validate, and
+        extend.
+      </p>
+      <a class="ss-btn" href="https://github.com/reachjalil/sense-sight">
+        Go to the repository
+      </a>
+    </div>
+  </Section>
+</SiteLayout>

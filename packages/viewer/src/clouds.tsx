@@ -507,6 +507,8 @@ export function TrainedSplatCloud({
 
 export interface SparkTrainedSplatCloudProps {
   readonly url: string;
+  readonly fileBytes?: ArrayBuffer | Uint8Array;
+  readonly fileName?: string;
   readonly visible: boolean;
   readonly position?: [number, number, number];
   readonly rotation?: [number, number, number];
@@ -547,6 +549,8 @@ function applyObjectTransform(
  */
 export function SparkTrainedSplatCloud({
   url,
+  fileBytes,
+  fileName,
   visible,
   position,
   rotation,
@@ -599,11 +603,14 @@ export function SparkTrainedSplatCloud({
   );
 
   const mesh = useMemo(() => {
-    const next = new SplatMesh({ url });
+    const fileMetadata = fileName ? { fileName } : {};
+    const next = new SplatMesh(
+      fileBytes ? { fileBytes, ...fileMetadata } : { url, ...fileMetadata }
+    );
     applyObjectTransform(next, { position, rotation, scale });
     next.visible = false;
     return next;
-  }, [url]);
+  }, [fileBytes, fileName, url]);
 
   useEffect(() => {
     let cancelled = false;

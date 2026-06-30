@@ -508,6 +508,10 @@ function ViewerCameraController({
 export interface TrainedSplatAsset {
   /** Object URL (or any fetchable URL) for the `.splat` bytes. */
   url: string;
+  /** Original artifact bytes, used by Spark when object URLs hide the file type. */
+  fileBytes?: ArrayBuffer | Uint8Array;
+  /** Original artifact filename, used by Spark loaders for format-specific paths. */
+  fileName?: string;
   /** Bounds of the splat's own coordinate space, used by the `normalized` fit. */
   sourceBounds: Bounds;
   coordinateFrame: CoordinateFrame;
@@ -683,6 +687,8 @@ export function Viewer({
         !sparkFailed && (
           <SparkTrainedSplatCloud
             url={trainedSplat.url}
+            fileBytes={trainedSplat.fileBytes}
+            fileName={trainedSplat.fileName}
             visible
             position={trainedTransform.position}
             rotation={trainedTransform.rotation}

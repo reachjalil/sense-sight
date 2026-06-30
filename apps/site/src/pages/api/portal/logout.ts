@@ -19,7 +19,7 @@ export const POST: APIRoute = async ({ request, redirect, url }) => {
       method: "POST",
       headers,
       body: JSON.stringify({}),
-    }),
+    })
   );
 
   const response = redirect("/portal", 303);

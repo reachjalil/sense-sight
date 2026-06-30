@@ -1,11 +1,17 @@
 ---
 const links = [
-  { href: "#world", label: "World" },
-  { href: "#loop", label: "Loop" },
-  { href: "#stack", label: "Stack" },
-  { href: "#open-source", label: "Open Source" },
+  { href: "/world", label: "World" },
+  { href: "/loop", label: "Loop" },
+  { href: "/stack", label: "Stack" },
+  { href: "/open-source", label: "Open Source" },
   { href: "/portal", label: "Portal" },
 ];
+
+const currentPath = Astro.url.pathname.replace(/\/$/, "") || "/";
+
+function isActivePath(href: string) {
+  return currentPath === href;
+}
 ---
 
 <header class="ss-nav">
@@ -24,11 +30,21 @@ const links = [
 
     <ul class="ss-nav__links">
       {
-        links.map((link) => (
+        links.map((link) => {
+          const isActive = isActivePath(link.href);
+
+          return (
           <li>
-            <a href={link.href}>{link.label}</a>
+            <a
+              class:list={{ "is-active": isActive }}
+              href={link.href}
+              aria-current={isActive ? "page" : undefined}
+            >
+              {link.label}
+            </a>
           </li>
-        ))
+          );
+        })
       }
     </ul>
 

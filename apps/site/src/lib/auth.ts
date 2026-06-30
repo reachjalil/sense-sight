@@ -1,10 +1,9 @@
 import { betterAuth } from "better-auth";
 import { env } from "cloudflare:workers";
 
-export const DEMO_PORTAL_PASSWORD = "iwanttypescript";
+export const PORTAL_WORKSPACE_PASSWORD = "iwanttypescript";
 
-const DEMO_AUTH_SECRET =
-  "sense-sight-demo-auth-secret-change-before-production";
+const DEV_AUTH_SECRET = "sense-sight-dev-auth-secret-change-before-production";
 
 const allowedHosts = [
   "sensesight.live",
@@ -22,7 +21,7 @@ export function getAuth() {
       fallback: "https://sensesight.live",
     },
     database: env.DB,
-    secret: env.BETTER_AUTH_SECRET || DEMO_AUTH_SECRET,
+    secret: env.BETTER_AUTH_SECRET || DEV_AUTH_SECRET,
     trustedOrigins: [
       "https://sensesight.live",
       "https://*.pages.dev",
@@ -42,7 +41,7 @@ export function normalizeEmail(value: string) {
 }
 
 export function getDisplayNameFromEmail(email: string) {
-  const localPart = email.split("@")[0] || "SenseSight attendee";
+  const localPart = email.split("@")[0] || "SenseSight operator";
   return localPart
     .split(/[._-]+/)
     .filter(Boolean)

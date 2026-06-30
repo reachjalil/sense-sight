@@ -32,7 +32,7 @@ export async function recordLoginAttempt({
       ip_address,
       user_agent,
       created_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    ) VALUES (?, ?, ?, ?, ?, ?, ?)`
   )
     .bind(
       email,
@@ -41,7 +41,7 @@ export async function recordLoginAttempt({
       reason,
       ipAddress,
       userAgent,
-      new Date().toISOString(),
+      new Date().toISOString()
     )
     .run();
 }

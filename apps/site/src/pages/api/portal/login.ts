@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 import {
-  DEMO_PORTAL_PASSWORD,
+  PORTAL_WORKSPACE_PASSWORD,
   getDisplayNameFromEmail,
   getAuth,
   normalizeEmail,
@@ -18,7 +18,7 @@ interface LoginBody {
 function jsonResponse(
   body: Record<string, unknown>,
   init?: ResponseInit,
-  authResponse?: Response,
+  authResponse?: Response
 ) {
   const headers = new Headers(init?.headers);
   headers.set("content-type", "application/json");
@@ -37,7 +37,7 @@ async function callAuthEndpoint(
   request: Request,
   origin: string,
   path: "sign-in/email" | "sign-up/email",
-  body: Record<string, unknown>,
+  body: Record<string, unknown>
 ) {
   const headers = new Headers();
   headers.set("content-type", "application/json");
@@ -66,7 +66,7 @@ async function callAuthEndpoint(
       method: "POST",
       headers,
       body: JSON.stringify(body),
-    }),
+    })
   );
 }
 
@@ -90,7 +90,7 @@ export const POST: APIRoute = async ({ request, url }) => {
   const password = typeof body.password === "string" ? body.password : "";
   const normalizedEmail = normalizeEmail(email);
 
-  if (!normalizedEmail || !normalizedEmail.includes("@")) {
+  if (!normalizedEmail?.includes("@")) {
     await recordLoginAttempt({
       email,
       normalizedEmail,
@@ -100,34 +100,34 @@ export const POST: APIRoute = async ({ request, url }) => {
     });
     return jsonResponse(
       { ok: false, message: "Enter a valid email address." },
-      { status: 400 },
+      { status: 400 }
     );
   }
 
-  if (password !== DEMO_PORTAL_PASSWORD) {
+  if (password !== PORTAL_WORKSPACE_PASSWORD) {
     await recordLoginAttempt({
       email,
       normalizedEmail,
       outcome: "denied",
-      reason: "invalid_demo_password",
+      reason: "invalid_workspace_password",
       request,
     });
     return jsonResponse(
       { ok: false, message: "The portal password is not valid." },
-      { status: 401 },
+      { status: 401 }
     );
   }
 
   const authBody = {
     email: normalizedEmail,
-    password: DEMO_PORTAL_PASSWORD,
+    password: PORTAL_WORKSPACE_PASSWORD,
     rememberMe: true,
   };
   const signInResponse = await callAuthEndpoint(
     request,
     url.origin,
     "sign-in/email",
-    authBody,
+    authBody
   );
 
   if (signInResponse.ok) {
@@ -141,7 +141,7 @@ export const POST: APIRoute = async ({ request, url }) => {
     return jsonResponse(
       { ok: true, redirectTo: "/portal" },
       { status: 200 },
-      signInResponse,
+      signInResponse
     );
   }
 
@@ -152,7 +152,7 @@ export const POST: APIRoute = async ({ request, url }) => {
     {
       ...authBody,
       name: getDisplayNameFromEmail(normalizedEmail),
-    },
+    }
   );
 
   if (signUpResponse.ok) {
@@ -166,7 +166,7 @@ export const POST: APIRoute = async ({ request, url }) => {
     return jsonResponse(
       { ok: true, redirectTo: "/portal" },
       { status: 200 },
-      signUpResponse,
+      signUpResponse
     );
   }
 
@@ -178,7 +178,10 @@ export const POST: APIRoute = async ({ request, url }) => {
     request,
   });
   return jsonResponse(
-    { ok: false, message: "The portal could not create your demo session." },
-    { status: 500 },
+    {
+      ok: false,
+      message: "The portal could not create your workspace session.",
+    },
+    { status: 500 }
   );
 };

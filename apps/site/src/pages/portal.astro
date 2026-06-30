@@ -9,7 +9,7 @@ const user = await getPortalSession(Astro.request, Astro.url.origin);
 
 <SiteLayout
   title="SenseSight Portal"
-  description="Temporary SenseSight demo portal for attendees."
+  description="Private SenseSight operator workspace for reviewing robot-generated world models."
 >
   <section class="ss-portal" aria-label="SenseSight portal">
     <div class="ss-container ss-portal__inner">
@@ -17,7 +17,7 @@ const user = await getPortalSession(Astro.request, Astro.url.origin);
         user ? (
           <div class="ss-portal__panel ss-portal__panel--wide">
             <div class="ss-portal__status">
-              <span class="ss-tag">Demo access</span>
+              <span class="ss-tag">Workspace access</span>
               <form method="post" action="/api/portal/logout">
                 <button class="ss-btn ss-btn--ghost ss-btn--small" type="submit">
                   Log out
@@ -29,7 +29,7 @@ const user = await getPortalSession(Astro.request, Astro.url.origin);
               <p class="ss-eyebrow">SenseSight portal</p>
               <h1>Welcome, {user.name || user.email}</h1>
               <p>
-                Your session is active. The demo workspace is ready.
+                Your session is active. The operator workspace is ready.
               </p>
             </div>
 
@@ -40,7 +40,7 @@ const user = await getPortalSession(Astro.request, Astro.url.origin);
               </div>
               <div>
                 <span>Access mode</span>
-                <strong>Temporary attendee demo</strong>
+                <strong>Private operator workspace</strong>
               </div>
               <div>
                 <span>World stream</span>
@@ -52,9 +52,9 @@ const user = await getPortalSession(Astro.request, Astro.url.origin);
           <div class="ss-portal__panel">
             <div class="ss-portal__copy">
               <p class="ss-eyebrow">SenseSight portal</p>
-              <h1>Attendee access</h1>
+              <h1>Operator access</h1>
               <p>
-                Enter your email and the demo password to open the portal.
+                Enter your email and workspace password to open the portal.
               </p>
             </div>
 
