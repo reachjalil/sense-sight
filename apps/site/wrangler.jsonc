@@ -3,7 +3,13 @@
   "name": "sense-sight",
   "compatibility_date": "2026-06-30",
   "compatibility_flags": ["nodejs_compat"],
-  "pages_build_output_dir": "./dist",
+  "workers_dev": true,
+  "routes": [
+    {
+      "pattern": "sensesight.live",
+      "custom_domain": true
+    }
+  ],
   "d1_databases": [
     {
       "binding": "DB",

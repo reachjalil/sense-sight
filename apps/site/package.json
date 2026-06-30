@@ -9,7 +9,7 @@
     "check:fast": "astro check",
     "db:migrate:local": "wrangler d1 migrations apply sense-sight-auth --local",
     "db:migrate:remote": "wrangler d1 migrations apply sense-sight-auth --remote",
-    "deploy": "pnpm run build && wrangler pages deploy dist --project-name=sense-sight --branch=main",
+    "deploy": "pnpm run build && wrangler deploy --config dist/server/wrangler.json",
     "dev": "astro dev",
     "preview": "astro preview"
   },
