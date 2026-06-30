@@ -26,6 +26,7 @@
     "format": "pnpm biome:format",
     "lint": "pnpm biome:check",
     "lint:fix": "pnpm biome:fix",
+    "site:deploy": "pnpm --filter @sense-sight/site run deploy",
     "test": "turbo run test",
     "types": "pnpm -r --if-present run types",
     "biome:check": "biome check --assist-enabled=false .",

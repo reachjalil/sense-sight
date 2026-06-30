@@ -36,5 +36,5 @@ skipped-deploy notice instead of failing the main branch.
 Local deployment:
 
 ```bash
-pnpm --filter @sense-sight/site deploy
+pnpm site:deploy
 ```

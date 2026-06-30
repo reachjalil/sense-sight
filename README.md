@@ -35,7 +35,7 @@ pnpm build
 ## Deployment
 
 ```bash
-pnpm --filter @sense-sight/site deploy
+pnpm site:deploy
 ```
 
 The GitHub Actions deployment workflow expects `CLOUDFLARE_API_TOKEN` and
