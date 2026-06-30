@@ -7,11 +7,13 @@
 }
 
 html {
+  overflow-x: clip;
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
 }
 
 body {
+  overflow-x: clip;
   min-height: 100vh;
   margin: 0;
   background:
