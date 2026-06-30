@@ -547,11 +547,8 @@ export function Console() {
               </div>
 
               {isLive && (
-                <div
-                  className="cn-camera-pip"
-                  role="group"
-                  aria-label="Robot camera feed"
-                >
+                <fieldset className="cn-camera-pip">
+                  <legend className="sr-only">Robot camera feed</legend>
                   <div className="cn-camera-pip__head">
                     <span className="cn-live-badge">● LIVE</span>
                     <span className="cn-camera-pip__seq">{sequenceLabel}</span>
@@ -567,7 +564,7 @@ export function Console() {
                       Awaiting first frame…
                     </div>
                   )}
-                </div>
+                </fieldset>
               )}
 
               {phase === "selected" && !isLive && (

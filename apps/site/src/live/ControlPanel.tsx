@@ -114,7 +114,8 @@ export function ControlPanel({
               />
             </label>
 
-            <div className="cn-transport-speed" role="group" aria-label="Speed">
+            <fieldset className="cn-transport-speed">
+              <legend className="sr-only">Speed</legend>
               {SPEED_OPTIONS.map((option) => (
                 <button
                   key={option}
@@ -126,7 +127,7 @@ export function ControlPanel({
                   {option}×
                 </button>
               ))}
-            </div>
+            </fieldset>
           </div>
         </section>
       )}
