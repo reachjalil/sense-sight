@@ -4,7 +4,7 @@
 [![Cloudflare Pages](https://github.com/reachjalil/sense-sight/actions/workflows/deploy-cloudflare-pages.yml/badge.svg)](https://github.com/reachjalil/sense-sight/actions/workflows/deploy-cloudflare-pages.yml)
 [![RunPod worker image](https://github.com/reachjalil/sense-sight/actions/workflows/runpod-worker-image.yml/badge.svg)](https://github.com/reachjalil/sense-sight/actions/workflows/runpod-worker-image.yml)
 [![license: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
-[![Node.js >=22.12](https://img.shields.io/badge/node-%3E%3D22.12-339933.svg)](package.json)
+[![Node.js >=24](https://img.shields.io/badge/node-%3E%3D24-339933.svg)](package.json)
 [![pnpm >=10](https://img.shields.io/badge/pnpm-%3E%3D10-F69220.svg)](package.json)
 [![flashpod](https://img.shields.io/badge/RunPod%20Flash-flashpod-00AEEF.svg)](https://github.com/reachjalil/flashpod)
 
@@ -77,7 +77,7 @@ human operator a way to inspect what the robot currently knows.
 
 Prerequisites:
 
-- Node.js 22.12 or newer
+- Node.js 24 or newer
 - pnpm 10 or newer
 - Python 3.10 or newer for dataset/reconstruction tooling
 
