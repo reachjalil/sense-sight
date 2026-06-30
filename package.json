@@ -23,7 +23,6 @@
     "check:fast": "turbo run check:fast",
     "dev": "pnpm --filter @sense-sight/site dev",
     "dev:site": "pnpm --filter @sense-sight/site dev",
-    "dev:console": "pnpm --filter @sense-sight/console dev",
     "format": "pnpm biome:format",
     "lint": "pnpm biome:check",
     "lint:fix": "pnpm biome:fix",

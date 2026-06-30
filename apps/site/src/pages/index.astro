@@ -30,6 +30,21 @@ const worldGeneration = [
   },
 ];
 
+const visualProof = [
+  {
+    src: "/visuals/robot-world-generation.png",
+    tag: "Robot-to-world pipeline",
+    title: "The robot stream becomes a spatial product artifact.",
+    body: "RGB-D frames, point previews, pose traces, semantic anchors, risk zones, and splat-ready blocks are presented as one continuous generation workflow.",
+  },
+  {
+    src: "/visuals/operator-world-console.png",
+    tag: "Operator workspace",
+    title: "The console is where generated reality becomes a decision.",
+    body: "Operators inspect the reconstruction, compare camera evidence, follow trajectories, and keep human review attached to the world model.",
+  },
+];
+
 const loop = [
   {
     tag: "01",
@@ -157,7 +172,12 @@ const stack = [
     lede="SenseSight turns raw robot streams into a spatial scene a person can enter: not a dashboard of disconnected telemetry, but the robot's working model of the place."
   >
     <div class="ss-story-grid">
-      <WorldPreview />
+      <WorldPreview
+        image="/visuals/robot-world-generation.png"
+        kicker="End-to-end generation"
+        title="Robot stream to verified world model"
+        caption="Robot observations become a verified world model with evidence, trajectory, risk, and operator decisions kept in one product loop."
+      />
       <div class="ss-story-grid__copy">
         {
           worldGeneration.map((item, index) => (
@@ -170,6 +190,27 @@ const stack = [
           ))
         }
       </div>
+    </div>
+  </Section>
+
+  <Section
+    eyebrow="Product experience"
+    title="An end-to-end product story for generated worlds"
+    lede="SenseSight presents the complete workflow with realistic abstract product imagery: capture, reconstruction, console inspection, and human verification."
+  >
+    <div class="ss-visual-duo">
+      {
+        visualProof.map((item) => (
+          <article class="ss-visual-card">
+            <img src={item.src} alt={item.title} loading="lazy" decoding="async" />
+            <div>
+              <span class="ss-tag">{item.tag}</span>
+              <h3>{item.title}</h3>
+              <p>{item.body}</p>
+            </div>
+          </article>
+        ))
+      }
     </div>
   </Section>
 

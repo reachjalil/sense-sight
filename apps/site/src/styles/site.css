@@ -548,14 +548,49 @@ svg {
   gap: 1rem;
 }
 
+.ss-visual-duo {
+  display: grid;
+  gap: var(--ss-space-5);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ss-visual-card {
+  overflow: hidden;
+  border: 1px solid var(--ss-line-strong);
+  border-radius: 8px;
+  background: rgba(13, 19, 24, 0.9);
+  box-shadow: var(--ss-shadow-lift);
+}
+
+.ss-visual-card img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  filter: saturate(1.06) contrast(1.06) brightness(0.92);
+}
+
+.ss-visual-card > div {
+  padding: var(--ss-space-5);
+}
+
+.ss-visual-card h3 {
+  margin-top: var(--ss-space-4);
+  font-size: 1.65rem;
+  font-weight: 460;
+}
+
+.ss-visual-card p {
+  margin-top: var(--ss-space-3);
+  color: var(--ss-text-muted);
+  font-size: 0.96rem;
+}
+
 .ss-world-preview {
   margin: 0;
 }
 
 .ss-world-preview__viewport {
   position: relative;
-  display: grid;
-  min-height: 100%;
   overflow: hidden;
   border: 1px solid var(--ss-line-strong);
   border-radius: 8px;
@@ -563,45 +598,26 @@ svg {
     linear-gradient(180deg, rgba(16, 24, 32, 0.94), rgba(5, 7, 10, 0.96)),
     var(--ss-panel);
   box-shadow: var(--ss-shadow-lift);
-  grid-template-rows: minmax(0, 1fr) auto;
-}
-
-.ss-world-preview__stage {
-  position: relative;
-  min-height: 468px;
-  overflow: hidden;
-  background:
-    radial-gradient(
-      circle at 72% 20%,
-      rgba(139, 155, 255, 0.12),
-      transparent 34%
-    ),
-    linear-gradient(180deg, rgba(51, 240, 209, 0.08), transparent 44%), #05070a;
   isolation: isolate;
 }
 
-.ss-world-preview__stage::after {
+.ss-world-preview__viewport img {
+  width: 100%;
+  min-height: 468px;
+  object-fit: cover;
+  object-position: center;
+  filter: saturate(1.08) contrast(1.08) brightness(0.94);
+}
+
+.ss-world-preview__viewport::after {
   position: absolute;
   inset: 0;
   z-index: 1;
   background:
-    linear-gradient(180deg, rgba(5, 7, 10, 0.02), rgba(5, 7, 10, 0.54)),
-    linear-gradient(90deg, rgba(51, 240, 209, 0.1), transparent 44%);
+    linear-gradient(180deg, rgba(5, 7, 10, 0.02), rgba(5, 7, 10, 0.62)),
+    linear-gradient(90deg, rgba(51, 240, 209, 0.12), transparent 42%);
   content: "";
   pointer-events: none;
-}
-
-.ss-world-preview__canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  cursor: grab;
-  touch-action: none;
-}
-
-.ss-world-preview__canvas:active {
-  cursor: grabbing;
 }
 
 .ss-world-preview__hud {
@@ -627,6 +643,7 @@ svg {
 }
 
 .ss-world-preview__hud--top {
+  z-index: 3;
   left: var(--ss-space-4);
   right: var(--ss-space-4);
   top: var(--ss-space-4);
@@ -634,6 +651,7 @@ svg {
 }
 
 .ss-world-preview__hud--bottom {
+  z-index: 3;
   right: var(--ss-space-4);
   bottom: var(--ss-space-4);
   flex-wrap: wrap;
@@ -646,94 +664,29 @@ svg {
   font-weight: 700;
 }
 
-.ss-world-preview__status {
+.ss-world-preview__scan {
   position: absolute;
-  left: var(--ss-space-4);
-  bottom: var(--ss-space-4);
-  z-index: 3;
-  max-width: min(320px, calc(100% - 2 * var(--ss-space-4)));
-  overflow: hidden;
-  border: 1px solid var(--ss-line-strong);
-  border-radius: 999px;
-  background: rgba(5, 7, 10, 0.72);
-  color: var(--ss-text);
-  font-family: var(--ss-font-mono);
-  font-size: 0.66rem;
-  padding: 0.38rem 0.6rem;
-  text-overflow: ellipsis;
-  text-transform: uppercase;
-  white-space: nowrap;
+  inset: -12% -24%;
+  z-index: 2;
+  background: linear-gradient(
+    106deg,
+    transparent 0 38%,
+    rgba(51, 240, 209, 0.08) 42%,
+    rgba(143, 255, 179, 0.26) 46%,
+    rgba(255, 178, 77, 0.12) 49%,
+    transparent 56% 100%
+  );
+  mix-blend-mode: screen;
+  opacity: 0.88;
+  pointer-events: none;
+  transform: translateX(-72%);
+  animation: ss-hero-render-scan 6.8s cubic-bezier(0.55, 0, 0.2, 1) infinite;
 }
 
-.ss-world-preview__controls {
-  position: relative;
-  z-index: 4;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--ss-space-3);
-  border-top: 1px solid var(--ss-line);
-  background: rgba(7, 12, 16, 0.94);
-  padding: 0.65rem;
-}
-
-.ss-world-preview__view-tabs,
-.ss-world-preview__actions {
-  display: flex;
-  align-items: center;
-  gap: var(--ss-space-2);
-}
-
-.ss-world-preview__view-tabs {
-  overflow: hidden;
-  border: 1px solid var(--ss-line);
-  border-radius: 7px;
-  background: rgba(255, 255, 255, 0.035);
-  padding: 0.22rem;
-}
-
-.ss-world-preview__view-button,
-.ss-world-preview__icon-button {
-  min-height: 32px;
-  border: 1px solid transparent;
-  border-radius: 5px;
-  background: transparent;
-  color: var(--ss-text-muted);
-  cursor: pointer;
-  font: inherit;
-  font-family: var(--ss-font-mono);
-  font-size: 0.66rem;
-  font-weight: 520;
-  letter-spacing: 0;
-  line-height: 1;
-  padding: 0.52rem 0.62rem;
-  text-transform: uppercase;
-  transition:
-    background-color 0.16s ease,
-    border-color 0.16s ease,
-    color 0.16s ease,
-    transform 0.16s ease;
-  white-space: nowrap;
-}
-
-.ss-world-preview__icon-button {
-  border-color: var(--ss-line);
-  background: rgba(255, 255, 255, 0.03);
-}
-
-.ss-world-preview__view-button:hover,
-.ss-world-preview__icon-button:hover,
-.ss-world-preview__view-button.is-active,
-.ss-world-preview__icon-button.is-active {
-  border-color: rgba(51, 240, 209, 0.38);
-  background: rgba(51, 240, 209, 0.12);
-  color: var(--ss-text);
-  text-decoration: none;
-}
-
-.ss-world-preview__view-button:hover,
-.ss-world-preview__icon-button:hover {
-  transform: translateY(-1px);
+.ss-world-preview__caption {
+  margin-top: var(--ss-space-3);
+  color: var(--ss-text-faint);
+  font-size: 0.84rem;
 }
 
 .ss-dot {
@@ -1433,6 +1386,7 @@ svg {
 
   .ss-hero__inner,
   .ss-story-grid,
+  .ss-visual-duo,
   .ss-oss-panel,
   .ss-page-hero__inner,
   .ss-detail-grid {
@@ -1448,7 +1402,7 @@ svg {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .ss-world-preview__stage {
+  .ss-world-preview__viewport img {
     min-height: 430px;
   }
 
@@ -1546,7 +1500,7 @@ svg {
     font-size: 2rem;
   }
 
-  .ss-world-preview__stage {
+  .ss-world-preview__viewport img {
     min-height: 340px;
   }
 
@@ -1558,28 +1512,6 @@ svg {
 
   .ss-world-preview__hud--bottom {
     display: none;
-  }
-
-  .ss-world-preview__controls {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .ss-world-preview__view-tabs {
-    display: grid;
-    width: 100%;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .ss-world-preview__actions {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .ss-world-preview__view-button,
-  .ss-world-preview__icon-button {
-    justify-content: center;
-    width: 100%;
   }
 
   .ss-oss-panel > div {

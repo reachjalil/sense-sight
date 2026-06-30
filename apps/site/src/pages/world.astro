@@ -54,7 +54,17 @@ import SiteLayout from "../layouts/SiteLayout.astro";
     lede="The product is not a camera wall or a pile of robot telemetry. It is a live scene graph of what the robot has seen, where it has moved, what the system believes, and where human judgment changed the result."
   >
     <div class="ss-detail-grid ss-detail-grid--viewer">
-      <WorldPreview />
+      <WorldPreview
+        image="/visuals/operator-world-console.png"
+        kicker="Console review workspace"
+        title="Generated worlds become operator context"
+        caption="A console workflow view where reconstruction evidence, camera frames, route context, and review decisions stay attached to the same world model."
+        badges={[
+          { label: "View", value: "Spark console" },
+          { label: "Evidence", value: "Frames + poses" },
+          { label: "Decision", value: "Audit trail" },
+        ]}
+      />
       <div class="ss-product-copy">
         <span class="ss-tag">Realtime review</span>
         <h3>Raw packets become operational context.</h3>

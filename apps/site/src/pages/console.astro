@@ -1,0 +1,28 @@
+---
+import ConsoleLayout from "../layouts/ConsoleLayout.astro";
+import { Console } from "../console/Console";
+import { getPortalSession } from "../lib/portal-session";
+
+export const prerender = false;
+
+// Production keeps the portal gate; local dev opens straight to the live
+// console (no D1 binding required) so the demo can run/record without login.
+// getPortalSession touches the Cloudflare D1 binding, which isn't present
+// under `astro dev`, so guard it and treat any failure as "no session".
+let user: Awaited<ReturnType<typeof getPortalSession>> | null = null;
+try {
+  user = await getPortalSession(Astro.request, Astro.url.origin);
+} catch {
+  user = null;
+}
+
+if (!user && !import.meta.env.DEV) {
+  return Astro.redirect("/portal");
+}
+---
+
+<ConsoleLayout>
+  <div class="cn-page">
+    <Console client:only="react" />
+  </div>
+</ConsoleLayout>

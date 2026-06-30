@@ -15,14 +15,28 @@
   },
   "dependencies": {
     "@astrojs/cloudflare": "^13.7.0",
+    "@astrojs/react": "^5.0.7",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
     "@sense-sight/core": "workspace:*",
+    "@sense-sight/render-contracts": "workspace:*",
+    "@sense-sight/replay-protocol": "workspace:*",
+    "@sense-sight/splat-codec": "workspace:*",
+    "@sense-sight/stream-buffers": "workspace:*",
+    "@sense-sight/viewer": "workspace:*",
+    "@sense-sight/world-schema": "workspace:*",
+    "@sparkjsdev/spark": "2.1.0",
     "astro": "catalog:",
     "better-auth": "^1.6.23",
-    "three": "^0.185.0"
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "three": "^0.184.0"
   },
   "devDependencies": {
     "@astrojs/check": "catalog:",
-    "@types/three": "^0.185.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@types/three": "^0.184.0",
     "typescript": "catalog:",
     "wrangler": "^4.92.0"
   }

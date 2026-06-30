@@ -1,0 +1,37 @@
+{
+  "schema_version": "0.1.0",
+  "created_at": "2026-06-27T02:04:40+00:00",
+  "producer": "robot_world",
+  "sequence": "corridor1-2",
+  "source_dataset": "OpenLORIS-Scene",
+  "config_hash": "88966d13fce372a1",
+  "keyframeCount": 180,
+  "pointTotal": 518373,
+  "bounds": {
+    "min": {
+      "x": -16.924102783203125,
+      "y": 0.0,
+      "z": -29.747066497802734
+    },
+    "max": {
+      "x": 7.579425811767578,
+      "y": 3.712787628173828,
+      "z": 16.059539794921875
+    }
+  },
+  "intrinsics": {
+    "fx": 611.4509887695312,
+    "fy": 611.4857177734375,
+    "cx": 433.2039794921875,
+    "cy": 249.4730224609375,
+    "width": 848,
+    "height": 480
+  },
+  "splat": {
+    "file": "scene.splat",
+    "gaussianCount": 518373,
+    "scaleMeters": 0.05,
+    "init": "point",
+    "note": "3DGS point initialization rendered as isotropic Gaussians; photometric optimization is the GPU step (gsplat backend)."
+  }
+}

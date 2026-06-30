@@ -525,6 +525,19 @@ export interface SparkTrainedSplatCloudProps {
   readonly onError?: (error: unknown) => void;
 }
 
+type SparkSplatObject = SplatMesh &
+  THREE.Object3D & {
+    visible: boolean;
+    opacity: number;
+    needsUpdate: boolean;
+  };
+
+function asSparkSplatObject(mesh: SplatMesh): SparkSplatObject {
+  // Spark's runtime SplatMesh extends THREE.Object3D, but its packaged d.ts can
+  // lose inherited Three members under bundler resolution from this workspace.
+  return mesh as SparkSplatObject;
+}
+
 function applyObjectTransform(
   object: THREE.Object3D,
   {
@@ -604,8 +617,10 @@ export function SparkTrainedSplatCloud({
 
   const mesh = useMemo(() => {
     const fileMetadata = fileName ? { fileName } : {};
-    const next = new SplatMesh(
-      fileBytes ? { fileBytes, ...fileMetadata } : { url, ...fileMetadata }
+    const next = asSparkSplatObject(
+      new SplatMesh(
+        fileBytes ? { fileBytes, ...fileMetadata } : { url, ...fileMetadata }
+      )
     );
     applyObjectTransform(next, { position, rotation, scale });
     next.visible = false;

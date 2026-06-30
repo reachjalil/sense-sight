@@ -18,6 +18,7 @@ __pycache__/
 .env
 .env.*
 !.env.example
+.claude/
 .DS_Store
 *.log
 
