@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sense-sight-robot-world"
+version = "0.1.0"
+description = "Robot sensor stream reconstruction pipeline: RGB-D backprojection into a colored point/Gaussian-seed world, chunked append-only storage, and a COLMAP bundle builder for 3D Gaussian Splatting training."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+authors = [{ name = "SenseSight" }]
+keywords = ["robotics", "gaussian-splatting", "point-cloud", "3dgs", "colmap", "rgbd"]
+dependencies = [
+    "numpy>=2.0",
+    "pillow>=11.0",
+]
+
+[project.optional-dependencies]
+# sense-sight-splat-io is an in-repo sibling package (packages/splat-io), not
+# published to an index. Install it explicitly (`pip install -e
+# packages/splat-io`) or run via PYTHONPATH -- see README.md.
+test = ["pytest>=7.0"]
+
+[project.scripts]
+robot-world = "robot_world.cli.main:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+robot_world = ["py.typed"]
