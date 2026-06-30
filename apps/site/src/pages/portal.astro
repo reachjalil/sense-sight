@@ -1,49 +1,43 @@
 ---
 import SiteLayout from "../layouts/SiteLayout.astro";
-import { getPortalSession } from "../lib/portal-session";
+import { verifySession } from "../lib/demo-session";
 
 export const prerender = false;
 
-const user = await getPortalSession(Astro.request, Astro.url.origin);
+const session = await verifySession(Astro.cookies.get("ss_portal")?.value);
 ---
 
 <SiteLayout
   title="SenseSight Portal"
-  description="Private SenseSight operator workspace for reviewing robot-generated world models."
+  description="Open the live SenseSight world-reconstruction console."
 >
   <section class="ss-portal" aria-label="SenseSight portal">
     <div class="ss-container ss-portal__inner">
       {
-        user ? (
+        session ? (
           <div class="ss-portal__panel ss-portal__panel--wide">
             <div class="ss-portal__status">
-              <span class="ss-tag">Workspace access</span>
+              <span class="ss-tag">Access granted</span>
               <form method="post" action="/api/portal/logout">
                 <button class="ss-btn ss-btn--ghost ss-btn--small" type="submit">
-                  Log out
+                  Sign out
                 </button>
               </form>
             </div>
 
             <div class="ss-portal__copy">
-              <p class="ss-eyebrow">SenseSight portal</p>
-              <h1>Welcome, {user.name || user.email}</h1>
-              <p>
-                Your session is active. The operator workspace is ready.
-              </p>
+              <p class="ss-eyebrow">SenseSight</p>
+              <h1>You're in, {session.email}</h1>
+              <p>The live world-reconstruction console is ready.</p>
             </div>
 
             <div class="ss-portal__console" aria-label="Portal session details">
               <div>
                 <span>Signed in as</span>
-                <strong>{user.email}</strong>
+                <strong>{session.email}</strong>
               </div>
               <div>
-                <span>Access mode</span>
-                <strong>Private operator workspace</strong>
-              </div>
-              <div>
-                <span>World stream</span>
+                <span>Live console</span>
                 <a class="ss-btn ss-btn--small" href="/console">
                   Open live console
                 </a>
@@ -53,11 +47,9 @@ const user = await getPortalSession(Astro.request, Astro.url.origin);
         ) : (
           <div class="ss-portal__panel">
             <div class="ss-portal__copy">
-              <p class="ss-eyebrow">SenseSight portal</p>
-              <h1>Operator access</h1>
-              <p>
-                Enter your email and workspace password to open the portal.
-              </p>
+              <p class="ss-eyebrow">SenseSight</p>
+              <h1>Enter the live console</h1>
+              <p>Just your email — no password needed for the demo.</p>
             </div>
 
             <form class="ss-login-form" data-portal-login>
@@ -73,20 +65,10 @@ const user = await getPortalSession(Astro.request, Astro.url.origin);
                 />
               </label>
 
-              <label>
-                <span>Password</span>
-                <input
-                  autocomplete="current-password"
-                  name="password"
-                  required
-                  type="password"
-                />
-              </label>
-
               <p class="ss-login-form__message" data-login-message aria-live="polite">
               </p>
 
-              <button class="ss-btn" type="submit">Log in</button>
+              <button class="ss-btn" type="submit">Enter</button>
             </form>
           </div>
         )
@@ -127,7 +109,7 @@ const user = await getPortalSession(Astro.request, Astro.url.origin);
 
       if (message) {
         message.textContent =
-          result.message || "The portal could not start a session.";
+          result.message || "Could not open the console. Try again.";
       }
 
       if (submit instanceof HTMLButtonElement) {

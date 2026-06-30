@@ -21,6 +21,7 @@
     "@sense-sight/core": "workspace:*",
     "@sense-sight/render-contracts": "workspace:*",
     "@sense-sight/replay-protocol": "workspace:*",
+    "@sense-sight/runpod-orchestrator": "workspace:*",
     "@sense-sight/splat-codec": "workspace:*",
     "@sense-sight/stream-buffers": "workspace:*",
     "@sense-sight/viewer": "workspace:*",

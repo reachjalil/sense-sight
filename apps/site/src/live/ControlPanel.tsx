@@ -6,6 +6,25 @@ import type {
 
 export type LoadStatus = "idle" | "loading" | "ready" | "failed";
 
+export interface SensorStreamSummary {
+  readonly sensorId: string;
+  readonly modality: string;
+  readonly rateHz?: number;
+  readonly usedByMapper?: boolean;
+}
+
+export interface SensorEvidenceSummary {
+  readonly sensorCount?: number;
+  readonly mappedSensorCount?: number;
+  readonly streamCount?: number;
+  readonly poseCoverage?: number;
+  readonly depthValidMean?: number;
+  readonly pathLengthM?: number;
+  readonly imuRateHz?: number;
+  readonly odomStepErrorM?: number;
+  readonly streams?: readonly SensorStreamSummary[];
+}
+
 const LAYER_LABELS: Record<keyof RenderLayers, string> = {
   pointcloud: "Seed point cloud",
   trajectory: "Trajectory",
@@ -47,6 +66,8 @@ export interface ControlPanelProps {
   /** Receives a 0..1 fraction to seek to. */
   onSeek?: (fraction: number) => void;
   onLoop?: (loop: boolean) => void;
+  sensorEvidence?: SensorEvidenceSummary | null;
+  runPodStatus?: string | null;
 }
 
 export function ControlPanel({
@@ -66,6 +87,8 @@ export function ControlPanel({
   onSpeed,
   onSeek,
   onLoop,
+  sensorEvidence,
+  runPodStatus,
 }: ControlPanelProps) {
   return (
     <aside className="cn-panel" aria-label="Console controls">
@@ -151,8 +174,92 @@ export function ControlPanel({
             />
             {LOAD_STATUS_LABEL[loadStatus]}
           </span>
+          {runPodStatus && (
+            <div className="metric">
+              <span className="k">RunPod GPU</span>
+              <span className="v">{runPodStatus}</span>
+            </div>
+          )}
         </div>
       </section>
+
+      {sensorEvidence && (
+        <section className="panel-section">
+          <div className="panel-section-head">
+            <span className="tick" />
+            Sensor evidence
+          </div>
+          <div className="panel-section-body">
+            <div className="metric">
+              <span className="k">Mapped sensors</span>
+              <span className="v">
+                {sensorEvidence.mappedSensorCount ?? "—"}/
+                {sensorEvidence.sensorCount ?? "—"}
+              </span>
+            </div>
+            <div className="metric">
+              <span className="k">Streams</span>
+              <span className="v">{sensorEvidence.streamCount ?? "—"}</span>
+            </div>
+            <div className="metric">
+              <span className="k">Pose coverage</span>
+              <span className="v">
+                {sensorEvidence.poseCoverage === undefined
+                  ? "—"
+                  : `${Math.round(sensorEvidence.poseCoverage * 100)}%`}
+              </span>
+            </div>
+            <div className="metric">
+              <span className="k">Depth valid</span>
+              <span className="v">
+                {sensorEvidence.depthValidMean === undefined
+                  ? "—"
+                  : `${Math.round(sensorEvidence.depthValidMean * 100)}%`}
+              </span>
+            </div>
+            <div className="metric">
+              <span className="k">Path length</span>
+              <span className="v">
+                {sensorEvidence.pathLengthM === undefined
+                  ? "—"
+                  : `${sensorEvidence.pathLengthM.toFixed(1)} m`}
+              </span>
+            </div>
+            {sensorEvidence.imuRateHz !== undefined && (
+              <div className="metric">
+                <span className="k">IMU</span>
+                <span className="v">
+                  {Math.round(sensorEvidence.imuRateHz)} Hz
+                </span>
+              </div>
+            )}
+            {sensorEvidence.odomStepErrorM !== undefined && (
+              <div className="metric">
+                <span className="k">Odom Δ</span>
+                <span className="v">
+                  {(sensorEvidence.odomStepErrorM * 100).toFixed(1)} cm
+                </span>
+              </div>
+            )}
+            {sensorEvidence.streams && sensorEvidence.streams.length > 0 && (
+              <div className="cn-sensor-streams">
+                {sensorEvidence.streams.slice(0, 6).map((stream) => (
+                  <div className="cn-sensor-stream" key={stream.sensorId}>
+                    <span>{stream.modality}</span>
+                    <strong>{stream.sensorId}</strong>
+                    <em>
+                      {stream.rateHz === undefined
+                        ? "audit"
+                        : `${stream.rateHz.toFixed(1)} Hz`}
+                      {stream.usedByMapper ? " · mapped" : ""}
+                    </em>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       <section className="panel-section">
         <div className="panel-section-head">

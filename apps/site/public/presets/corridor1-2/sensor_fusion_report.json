@@ -1,0 +1,443 @@
+{
+  "schema_version": "0.1.0",
+  "created_at": "2026-06-27T02:04:40+00:00",
+  "producer": "robot_world",
+  "config_hash": "88966d13fce372a1",
+  "artifact": "sensor_fusion_report",
+  "sequence": "corridor1-2",
+  "dataset": "OpenLORIS-Scene",
+  "sensorInventory": {
+    "modalities": {
+      "color": true,
+      "aligned_depth": true,
+      "depth": true,
+      "fisheye": true,
+      "imu": true,
+      "odometry": true,
+      "groundtruth": true,
+      "lidar": false,
+      "manifest": true,
+      "intrinsics": true
+    },
+    "sensors": [
+      {
+        "sensorId": "d435i_color",
+        "modality": "rgb",
+        "frameId": "d400_color_optical_frame",
+        "role": "primary appearance and 3DGS training stream",
+        "usedByMapper": true
+      },
+      {
+        "sensorId": "d435i_aligned_depth",
+        "modality": "depth",
+        "frameId": "d400_color_optical_frame",
+        "role": "metric RGB-D seeding, depth-validity gating, dynamic cues",
+        "usedByMapper": true
+      },
+      {
+        "sensorId": "groundtruth",
+        "modality": "pose",
+        "frameId": "map_to_base_link",
+        "role": "metric pose prior for local Mac experiments",
+        "usedByMapper": true
+      },
+      {
+        "sensorId": "wheel_odom",
+        "modality": "odom",
+        "frameId": "odom/base_link",
+        "role": "motion sanity check and future online fallback",
+        "usedByMapper": false
+      },
+      {
+        "sensorId": "d435i_t265_imu",
+        "modality": "imu",
+        "frameId": "imu",
+        "role": "rate/jitter sanity check and future pose-fusion factor",
+        "usedByMapper": false
+      }
+    ],
+    "fusionLevel": "geometry uses RGB-D + robot pose today; odometry and IMU are audited and retained for the next pose-fusion update"
+  },
+  "frameWindow": {
+    "rawSequenceFrames": 3477,
+    "selectedFrames": 1200,
+    "selectedFraction": 0.3451251078515962,
+    "startIndex": 0,
+    "count": 1200,
+    "firstFrameIndex": 0,
+    "lastFrameIndex": 1199
+  },
+  "unifiedTimeline": {
+    "path": "sensor_timeline.json",
+    "streamCount": 11,
+    "mappedStreamCount": 3,
+    "window": {
+      "startTimestamp": 1560100059.390683,
+      "endTimestamp": 1560100099.385708,
+      "durationSec": 39.99502515792847,
+      "selectedFrames": 1200,
+      "selectedKeyframes": 180,
+      "startIndex": 0,
+      "count": 1200,
+      "firstFrameIndex": 0,
+      "lastFrameIndex": 1199
+    },
+    "eventSummary": {
+      "totalWindowEvents": 45055,
+      "byModality": {
+        "rgb": 1200,
+        "depth": 2398,
+        "fisheye": 2398,
+        "pose": 1598,
+        "odom": 800,
+        "imu": 36661
+      }
+    },
+    "qualityGates": {
+      "rgbCoverageOk": true,
+      "alignedDepthCoverageOk": true,
+      "poseCoverageOk": true,
+      "motionContextOk": true,
+      "primaryClockJitterOk": true,
+      "timelineReady": true,
+      "note": "Timeline gates validate that mapped RGB-D-pose streams and native motion sensors cover the selected reconstruction window."
+    }
+  },
+  "streamTiming": {
+    "color": {
+      "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/color.txt",
+      "count": 3477,
+      "firstTimestamp": 1560100059.390683,
+      "lastTimestamp": 1560100175.360298,
+      "durationSec": 115.96961498260498,
+      "rateHz": 29.97336845967271,
+      "jitterMs": 0.40557214377721035,
+      "sampled": false
+    },
+    "aligned_depth": {
+      "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/aligned_depth.txt",
+      "count": 3477,
+      "firstTimestamp": 1560100059.390676,
+      "lastTimestamp": 1560100175.360291,
+      "durationSec": 115.96961498260498,
+      "rateHz": 29.97336845967271,
+      "jitterMs": 0.4066799539247866,
+      "sampled": false
+    },
+    "depth": {
+      "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/depth.txt",
+      "count": 3477,
+      "firstTimestamp": 1560100059.390676,
+      "lastTimestamp": 1560100175.360291,
+      "durationSec": 115.96961498260498,
+      "rateHz": 29.97336845967271,
+      "jitterMs": 0.4066799539247866,
+      "sampled": false
+    },
+    "fisheye1": {
+      "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/fisheye1.txt",
+      "count": 3479,
+      "firstTimestamp": 1560100059.379718,
+      "lastTimestamp": 1560100175.329242,
+      "durationSec": 115.94952392578125,
+      "rateHz": 29.995810955000138,
+      "jitterMs": 0.5373850630285146,
+      "sampled": false
+    },
+    "fisheye2": {
+      "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/fisheye2.txt",
+      "count": 3479,
+      "firstTimestamp": 1560100059.379718,
+      "lastTimestamp": 1560100175.329242,
+      "durationSec": 115.94952392578125,
+      "rateHz": 29.995810955000138,
+      "jitterMs": 0.5373846884569078,
+      "sampled": false
+    },
+    "odom": {
+      "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/odom.txt",
+      "count": 2320,
+      "firstTimestamp": 1560100059.371215,
+      "lastTimestamp": 1560100175.328215,
+      "durationSec": 115.95699977874756,
+      "rateHz": 19.998792694057123,
+      "jitterMs": 0.16479645744063798,
+      "sampled": false
+    },
+    "groundtruth": {
+      "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/groundtruth.txt",
+      "count": 4632,
+      "firstTimestamp": 1560100059.3686564,
+      "lastTimestamp": 1560100175.3537054,
+      "durationSec": 115.98504900932312,
+      "rateHz": 39.92755997049025,
+      "jitterMs": 0.04751129131821049,
+      "sampled": false
+    },
+    "d400_gyroscope": {
+      "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/d400_gyroscope.txt",
+      "count": 46325,
+      "firstTimestamp": 1560100059.363366,
+      "lastTimestamp": 1560100175.361075,
+      "durationSec": 115.99770903587341,
+      "rateHz": 399.3527146788206,
+      "jitterMs": 0.09693654679929946,
+      "sampled": false
+    },
+    "d400_accelerometer": {
+      "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/d400_accelerometer.txt",
+      "count": 29613,
+      "firstTimestamp": 1560100059.36375,
+      "lastTimestamp": 1560100175.3605878,
+      "durationSec": 115.99683785438538,
+      "rateHz": 255.28282104700915,
+      "jitterMs": 0.14813531949717665,
+      "sampled": false
+    },
+    "t265_gyroscope": {
+      "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/t265_gyroscope.txt",
+      "count": 23144,
+      "firstTimestamp": 1560100059.3643858,
+      "lastTimestamp": 1560100175.358965,
+      "durationSec": 115.99457907676697,
+      "rateHz": 199.51794458156198,
+      "jitterMs": 0.01172699712862709,
+      "sampled": false
+    },
+    "t265_accelerometer": {
+      "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/t265_accelerometer.txt",
+      "count": 7232,
+      "firstTimestamp": 1560100059.366065,
+      "lastTimestamp": 1560100175.3462684,
+      "durationSec": 115.98020339012146,
+      "rateHz": 62.34684703627529,
+      "jitterMs": 0.021272131995258486,
+      "sampled": false
+    }
+  },
+  "keyframes": {
+    "selected": 180,
+    "rawFramesConsidered": 1200,
+    "keyframeFraction": 0.15,
+    "durationSec": 39.99502515792847,
+    "firstKeyframeIndex": 0,
+    "lastKeyframeIndex": 1197,
+    "meanKeyframeSpacingFrames": 6.687150837988827
+  },
+  "pose": {
+    "source": "robot",
+    "note": "using robot ground-truth poses",
+    "posedFrameCount": 1200,
+    "poseCoverage": 1.0,
+    "keyframePoseConfidence": {
+      "count": 180,
+      "min": 1.0,
+      "mean": 1.0,
+      "median": 1.0,
+      "max": 1.0
+    },
+    "pathLengthM": 55.37588263462768,
+    "medianStepM": 0.28518794160537325,
+    "maxStepM": 0.49363628296993406,
+    "odomAgreement": {
+      "available": true,
+      "associatedKeyframes": 180,
+      "translationDeltaM": {
+        "count": 180,
+        "min": 5.35690387968325,
+        "mean": 7.721356783447193,
+        "median": 7.903172736608996,
+        "max": 10.426009317718634
+      },
+      "note": "Raw odometry and ground-truth positions may use different world origins; this unaligned delta is a continuity sanity check, not ATE."
+    },
+    "relativeOdomAgreement": {
+      "available": true,
+      "associatedKeyframes": 180,
+      "meanAssociationMs": 15.407729148864746,
+      "pathLengthM": {
+        "groundTruth": 55.37588263462768,
+        "odometry": 54.46865282687409,
+        "odomToGroundTruthScale": 0.9836168786014748
+      },
+      "translationStepErrorM": {
+        "count": 179,
+        "min": 0.0005050600262590521,
+        "mean": 0.016303911589229145,
+        "median": 0.008027567247292089,
+        "max": 0.28070736281250824
+      },
+      "yawStepErrorRad": {
+        "count": 179,
+        "min": 2.9041951459696236e-5,
+        "mean": 0.001627803623324214,
+        "median": 0.0009640247449649308,
+        "max": 0.012326201071830134
+      },
+      "note": "Relative odometry compares step lengths and yaw deltas, so it is robust to different absolute odom/map origins."
+    }
+  },
+  "poseConfidence": {
+    "source": "robot",
+    "scalarScore": 0.9949799322913057,
+    "validity": "accepted",
+    "components": {
+      "poseCoverage": 1.0,
+      "continuity": 1.0,
+      "relativeOdom": 0.977181510415026,
+      "imuContext": 1.0,
+      "depthSupport": 1.0,
+      "timeline": 1.0
+    },
+    "metrics": {
+      "relativeOdomAgreement": {
+        "available": true,
+        "associatedKeyframes": 180,
+        "meanAssociationMs": 15.407729148864746,
+        "pathLengthM": {
+          "groundTruth": 55.37588263462768,
+          "odometry": 54.46865282687409,
+          "odomToGroundTruthScale": 0.9836168786014748
+        },
+        "translationStepErrorM": {
+          "count": 179,
+          "min": 0.0005050600262590521,
+          "mean": 0.016303911589229145,
+          "median": 0.008027567247292089,
+          "max": 0.28070736281250824
+        },
+        "yawStepErrorRad": {
+          "count": 179,
+          "min": 2.9041951459696236e-5,
+          "mean": 0.001627803623324214,
+          "median": 0.0009640247449649308,
+          "max": 0.012326201071830134
+        },
+        "note": "Relative odometry compares step lengths and yaw deltas, so it is robust to different absolute odom/map origins."
+      },
+      "maxStepM": 0.49363628296993406,
+      "medianStepM": 0.28518794160537325,
+      "depthValidMean": 0.8139520003494061
+    },
+    "flags": [],
+    "policy": "Segment-level pose confidence weights pose coverage, trajectory continuity, relative odometry, IMU availability, depth support, and timeline coverage. It is a QA gate, not a full factor graph."
+  },
+  "depth": {
+    "alignedDepthUsed": true,
+    "validRatio": {
+      "count": 180,
+      "min": 0.4867875393081761,
+      "mean": 0.8139520003494061,
+      "median": 0.8867236635220126,
+      "max": 0.9999140133647799
+    },
+    "keyframesBelow15Percent": 0,
+    "policy": "reject keyframes below configured valid-depth floor"
+  },
+  "motionSensors": {
+    "odometry": {
+      "available": true,
+      "countInWindow": 800,
+      "rateHz": 19.998998847251656,
+      "jitterMs": 0.14148927326807384,
+      "norm": {
+        "count": 800,
+        "min": 35.34838753156954,
+        "mean": 55.24425313170661,
+        "median": 57.46972399100614,
+        "max": 74.4778291255588
+      }
+    },
+    "d400Gyro": {
+      "available": true,
+      "countInWindow": 15976,
+      "rateHz": 399.4376421201338,
+      "jitterMs": 0.0849456020740493,
+      "norm": {
+        "count": 15976,
+        "min": 7.051339680073708e-5,
+        "mean": 0.10526440522050005,
+        "median": 0.057732595538620916,
+        "max": 0.5301338814582159
+      }
+    },
+    "d400Accel": {
+      "available": true,
+      "countInWindow": 10213,
+      "rateHz": 255.3415371729882,
+      "jitterMs": 0.11957492989320659,
+      "norm": {
+        "count": 10213,
+        "min": 5.522013667678048,
+        "mean": 9.809413988949048,
+        "median": 9.803830004220993,
+        "max": 13.528739994573291
+      }
+    },
+    "t265Gyro": {
+      "available": true,
+      "countInWindow": 7979,
+      "rateHz": 199.51089421725382,
+      "jitterMs": 0.010315747396858001,
+      "norm": {
+        "count": 7979,
+        "min": 0.0,
+        "mean": 0.10641462987980409,
+        "median": 0.059140773284229786,
+        "max": 0.5347610166194932
+      }
+    },
+    "t265Accel": {
+      "available": true,
+      "countInWindow": 2493,
+      "rateHz": 62.32953751212024,
+      "jitterMs": 0.018475543409992204,
+      "norm": {
+        "count": 2493,
+        "min": 8.01457694468852,
+        "mean": 9.88755637311075,
+        "median": 9.892804874273759,
+        "max": 11.482845252097697
+      }
+    }
+  },
+  "reconstruction": {
+    "backend": "point_gaussian",
+    "backendNote": "using point backend (RGB-D backprojection)",
+    "mask": {
+      "sequence": "corridor1-2",
+      "frames": 180,
+      "meanDynamicFraction": 0.015073716478860947,
+      "masksDir": "data/openloris-gaussian-splat/processed/masks",
+      "written": 180
+    },
+    "prune": {
+      "enabled": true,
+      "total": 576000,
+      "kept": 518373,
+      "removed": 57627,
+      "voxelSizeM": 0.12,
+      "minNeighbors": 3,
+      "applied": true
+    },
+    "staticMapperPolicy": "RGB-D keyframes seed metric surface evidence; robot poses provide the map frame; optional dynamic masks and voxel density pruning protect the static layer before OpenSplat photometric optimization."
+  },
+  "acceptanceGates": {
+    "poseCoverageOk": true,
+    "poseConfidenceOk": true,
+    "depthCoverageOk": true,
+    "keyframeCountOk": true,
+    "dynamicMaskApplied": true,
+    "floaterPruneApplied": true,
+    "floaterPruneRemovedFraction": 0.100046875,
+    "sensorTimelineOk": true,
+    "whitePaperReady": false,
+    "whitePaperReadyReason": "Requires held-out render metrics, aligned odometry/pose residuals, and a trained Spark-rendered 3DGS artifact for the larger-data run."
+  },
+  "limitations": [
+    "Splats remain an appearance layer; navigation requires a separate conservative geometry map.",
+    "Current pose source is not yet a fused factor graph with calibrated covariance.",
+    "Dynamic masking is heuristic until detector/track evidence is added.",
+    "OpenLORIS package export has no LiDAR; RGB-D depth is the metric geometry source."
+  ]
+}

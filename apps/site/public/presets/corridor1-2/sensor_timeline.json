@@ -1,0 +1,406 @@
+{
+  "schema_version": "0.1.0",
+  "created_at": "2026-06-27T02:04:40+00:00",
+  "producer": "robot_world",
+  "config_hash": "88966d13fce372a1",
+  "artifact": "unified_sensor_timeline",
+  "sequence": "corridor1-2",
+  "dataset": "OpenLORIS-Scene",
+  "clockModel": {
+    "sourceTimestampUnit": "seconds",
+    "correctedTimestampNs": "round(source_timestamp_s * 1e9)",
+    "driftModel": "identity",
+    "offsetModel": "none",
+    "note": "OpenLORIS package streams share one timestamp basis in this local export; no cross-clock offset correction is applied."
+  },
+  "window": {
+    "startTimestamp": 1560100059.390683,
+    "endTimestamp": 1560100099.385708,
+    "durationSec": 39.99502515792847,
+    "selectedFrames": 1200,
+    "selectedKeyframes": 180,
+    "startIndex": 0,
+    "count": 1200,
+    "firstFrameIndex": 0,
+    "lastFrameIndex": 1199
+  },
+  "streams": [
+    {
+      "sensorId": "d435i_color",
+      "modality": "rgb",
+      "stream": "color",
+      "frameId": "d400_color_optical_frame",
+      "sourceClockId": "openloris_package_seconds",
+      "correctedClockModel": "identity_seconds_to_unix_ns",
+      "timestampUnit": "seconds",
+      "usedByMapper": true,
+      "sourcePath": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/color.txt",
+      "full": {
+        "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/color.txt",
+        "count": 3477,
+        "firstTimestamp": 1560100059.390683,
+        "lastTimestamp": 1560100175.360298,
+        "durationSec": 115.96961498260498,
+        "rateHz": 29.97336845967271,
+        "jitterMs": 0.40557214377721035,
+        "sampled": false
+      },
+      "window": {
+        "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/color.txt",
+        "count": 1200,
+        "firstTimestamp": 1560100059.390683,
+        "lastTimestamp": 1560100099.385708,
+        "durationSec": 39.99502515792847,
+        "rateHz": 29.97872848599308,
+        "jitterMs": 0.3319004843402949,
+        "sampled": false
+      },
+      "qualityFlags": []
+    },
+    {
+      "sensorId": "d435i_aligned_depth",
+      "modality": "depth",
+      "stream": "aligned_depth",
+      "frameId": "d400_color_optical_frame",
+      "sourceClockId": "openloris_package_seconds",
+      "correctedClockModel": "identity_seconds_to_unix_ns",
+      "timestampUnit": "seconds",
+      "usedByMapper": true,
+      "sourcePath": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/aligned_depth.txt",
+      "full": {
+        "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/aligned_depth.txt",
+        "count": 3477,
+        "firstTimestamp": 1560100059.390676,
+        "lastTimestamp": 1560100175.360291,
+        "durationSec": 115.96961498260498,
+        "rateHz": 29.97336845967271,
+        "jitterMs": 0.4066799539247866,
+        "sampled": false
+      },
+      "window": {
+        "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/aligned_depth.txt",
+        "count": 1199,
+        "firstTimestamp": 1560100059.424042,
+        "lastTimestamp": 1560100099.3857,
+        "durationSec": 39.961658000946045,
+        "rateHz": 29.978736116795723,
+        "jitterMs": 0.3331726802112139,
+        "sampled": false
+      },
+      "qualityFlags": []
+    },
+    {
+      "sensorId": "d435i_depth",
+      "modality": "depth",
+      "stream": "depth",
+      "frameId": "d400_depth_optical_frame",
+      "sourceClockId": "openloris_package_seconds",
+      "correctedClockModel": "identity_seconds_to_unix_ns",
+      "timestampUnit": "seconds",
+      "usedByMapper": false,
+      "sourcePath": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/depth.txt",
+      "full": {
+        "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/depth.txt",
+        "count": 3477,
+        "firstTimestamp": 1560100059.390676,
+        "lastTimestamp": 1560100175.360291,
+        "durationSec": 115.96961498260498,
+        "rateHz": 29.97336845967271,
+        "jitterMs": 0.4066799539247866,
+        "sampled": false
+      },
+      "window": {
+        "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/depth.txt",
+        "count": 1199,
+        "firstTimestamp": 1560100059.424042,
+        "lastTimestamp": 1560100099.3857,
+        "durationSec": 39.961658000946045,
+        "rateHz": 29.978736116795723,
+        "jitterMs": 0.3331726802112139,
+        "sampled": false
+      },
+      "qualityFlags": []
+    },
+    {
+      "sensorId": "t265_fisheye1",
+      "modality": "fisheye",
+      "stream": "fisheye1",
+      "frameId": "t265_fisheye1_optical_frame",
+      "sourceClockId": "openloris_package_seconds",
+      "correctedClockModel": "identity_seconds_to_unix_ns",
+      "timestampUnit": "seconds",
+      "usedByMapper": false,
+      "sourcePath": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/fisheye1.txt",
+      "full": {
+        "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/fisheye1.txt",
+        "count": 3479,
+        "firstTimestamp": 1560100059.379718,
+        "lastTimestamp": 1560100175.329242,
+        "durationSec": 115.94952392578125,
+        "rateHz": 29.995810955000138,
+        "jitterMs": 0.5373850630285146,
+        "sampled": false
+      },
+      "window": {
+        "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/fisheye1.txt",
+        "count": 1199,
+        "firstTimestamp": 1560100059.413051,
+        "lastTimestamp": 1560100099.353825,
+        "durationSec": 39.9407742023468,
+        "rateHz": 29.994411073023443,
+        "jitterMs": 0.40834928802198317,
+        "sampled": false
+      },
+      "qualityFlags": []
+    },
+    {
+      "sensorId": "t265_fisheye2",
+      "modality": "fisheye",
+      "stream": "fisheye2",
+      "frameId": "t265_fisheye2_optical_frame",
+      "sourceClockId": "openloris_package_seconds",
+      "correctedClockModel": "identity_seconds_to_unix_ns",
+      "timestampUnit": "seconds",
+      "usedByMapper": false,
+      "sourcePath": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/fisheye2.txt",
+      "full": {
+        "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/fisheye2.txt",
+        "count": 3479,
+        "firstTimestamp": 1560100059.379718,
+        "lastTimestamp": 1560100175.329242,
+        "durationSec": 115.94952392578125,
+        "rateHz": 29.995810955000138,
+        "jitterMs": 0.5373846884569078,
+        "sampled": false
+      },
+      "window": {
+        "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/fisheye2.txt",
+        "count": 1199,
+        "firstTimestamp": 1560100059.413051,
+        "lastTimestamp": 1560100099.353825,
+        "durationSec": 39.9407742023468,
+        "rateHz": 29.994411073023443,
+        "jitterMs": 0.40834928802198317,
+        "sampled": false
+      },
+      "qualityFlags": []
+    },
+    {
+      "sensorId": "groundtruth",
+      "modality": "pose",
+      "stream": "groundtruth",
+      "frameId": "map_to_base_link",
+      "sourceClockId": "openloris_package_seconds",
+      "correctedClockModel": "identity_seconds_to_unix_ns",
+      "timestampUnit": "seconds",
+      "usedByMapper": true,
+      "sourcePath": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/groundtruth.txt",
+      "full": {
+        "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/groundtruth.txt",
+        "count": 4632,
+        "firstTimestamp": 1560100059.3686564,
+        "lastTimestamp": 1560100175.3537054,
+        "durationSec": 115.98504900932312,
+        "rateHz": 39.92755997049025,
+        "jitterMs": 0.04751129131821049,
+        "sampled": false
+      },
+      "window": {
+        "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/groundtruth.txt",
+        "count": 1598,
+        "firstTimestamp": 1560100059.3936856,
+        "lastTimestamp": 1560100099.3780904,
+        "durationSec": 39.98440480232239,
+        "rateHz": 39.9405720279033,
+        "jitterMs": 0.04626431167343481,
+        "sampled": false
+      },
+      "qualityFlags": []
+    },
+    {
+      "sensorId": "wheel_odom",
+      "modality": "odom",
+      "stream": "odom",
+      "frameId": "odom/base_link",
+      "sourceClockId": "openloris_package_seconds",
+      "correctedClockModel": "identity_seconds_to_unix_ns",
+      "timestampUnit": "seconds",
+      "usedByMapper": false,
+      "sourcePath": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/odom.txt",
+      "full": {
+        "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/odom.txt",
+        "count": 2320,
+        "firstTimestamp": 1560100059.371215,
+        "lastTimestamp": 1560100175.328215,
+        "durationSec": 115.95699977874756,
+        "rateHz": 19.998792694057123,
+        "jitterMs": 0.16479645744063798,
+        "sampled": false
+      },
+      "window": {
+        "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/odom.txt",
+        "count": 800,
+        "firstTimestamp": 1560100059.421215,
+        "lastTimestamp": 1560100099.373215,
+        "durationSec": 39.95199990272522,
+        "rateHz": 19.998998847251656,
+        "jitterMs": 0.14148927326807384,
+        "sampled": false
+      },
+      "qualityFlags": []
+    },
+    {
+      "sensorId": "d400_gyroscope",
+      "modality": "imu",
+      "stream": "d400_gyroscope",
+      "frameId": "d400_gyro",
+      "sourceClockId": "openloris_package_seconds",
+      "correctedClockModel": "identity_seconds_to_unix_ns",
+      "timestampUnit": "seconds",
+      "usedByMapper": false,
+      "sourcePath": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/d400_gyroscope.txt",
+      "full": {
+        "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/d400_gyroscope.txt",
+        "count": 46325,
+        "firstTimestamp": 1560100059.363366,
+        "lastTimestamp": 1560100175.361075,
+        "durationSec": 115.99770903587341,
+        "rateHz": 399.3527146788206,
+        "jitterMs": 0.09693654679929946,
+        "sampled": false
+      },
+      "window": {
+        "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/d400_gyroscope.txt",
+        "count": 15976,
+        "firstTimestamp": 1560100059.39091,
+        "lastTimestamp": 1560100099.3846369,
+        "durationSec": 39.99372696876526,
+        "rateHz": 399.4376421201338,
+        "jitterMs": 0.0849456020740493,
+        "sampled": false
+      },
+      "qualityFlags": []
+    },
+    {
+      "sensorId": "d400_accelerometer",
+      "modality": "imu",
+      "stream": "d400_accelerometer",
+      "frameId": "d400_accel",
+      "sourceClockId": "openloris_package_seconds",
+      "correctedClockModel": "identity_seconds_to_unix_ns",
+      "timestampUnit": "seconds",
+      "usedByMapper": false,
+      "sourcePath": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/d400_accelerometer.txt",
+      "full": {
+        "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/d400_accelerometer.txt",
+        "count": 29613,
+        "firstTimestamp": 1560100059.36375,
+        "lastTimestamp": 1560100175.3605878,
+        "durationSec": 115.99683785438538,
+        "rateHz": 255.28282104700915,
+        "jitterMs": 0.14813531949717665,
+        "sampled": false
+      },
+      "window": {
+        "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/d400_accelerometer.txt",
+        "count": 10213,
+        "firstTimestamp": 1560100059.391167,
+        "lastTimestamp": 1560100099.38466,
+        "durationSec": 39.99349308013916,
+        "rateHz": 255.3415371729882,
+        "jitterMs": 0.11957492989320659,
+        "sampled": false
+      },
+      "qualityFlags": []
+    },
+    {
+      "sensorId": "t265_gyroscope",
+      "modality": "imu",
+      "stream": "t265_gyroscope",
+      "frameId": "t265_gyro",
+      "sourceClockId": "openloris_package_seconds",
+      "correctedClockModel": "identity_seconds_to_unix_ns",
+      "timestampUnit": "seconds",
+      "usedByMapper": false,
+      "sourcePath": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/t265_gyroscope.txt",
+      "full": {
+        "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/t265_gyroscope.txt",
+        "count": 23144,
+        "firstTimestamp": 1560100059.3643858,
+        "lastTimestamp": 1560100175.358965,
+        "durationSec": 115.99457907676697,
+        "rateHz": 199.51794458156198,
+        "jitterMs": 0.01172699712862709,
+        "sampled": false
+      },
+      "window": {
+        "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/t265_gyroscope.txt",
+        "count": 7979,
+        "firstTimestamp": 1560100059.3945544,
+        "lastTimestamp": 1560100099.3823457,
+        "durationSec": 39.987791299819946,
+        "rateHz": 199.51089421725382,
+        "jitterMs": 0.010315747396858001,
+        "sampled": false
+      },
+      "qualityFlags": []
+    },
+    {
+      "sensorId": "t265_accelerometer",
+      "modality": "imu",
+      "stream": "t265_accelerometer",
+      "frameId": "t265_accel",
+      "sourceClockId": "openloris_package_seconds",
+      "correctedClockModel": "identity_seconds_to_unix_ns",
+      "timestampUnit": "seconds",
+      "usedByMapper": false,
+      "sourcePath": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/t265_accelerometer.txt",
+      "full": {
+        "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/t265_accelerometer.txt",
+        "count": 7232,
+        "firstTimestamp": 1560100059.366065,
+        "lastTimestamp": 1560100175.3462684,
+        "durationSec": 115.98020339012146,
+        "rateHz": 62.34684703627529,
+        "jitterMs": 0.021272131995258486,
+        "sampled": false
+      },
+      "window": {
+        "path": "data/openloris-gaussian-splat/raw/openloris_package/corridor1-2/t265_accelerometer.txt",
+        "count": 2493,
+        "firstTimestamp": 1560100059.3981452,
+        "lastTimestamp": 1560100099.3791895,
+        "durationSec": 39.98104429244995,
+        "rateHz": 62.32953751212024,
+        "jitterMs": 0.018475543409992204,
+        "sampled": false
+      },
+      "qualityFlags": []
+    }
+  ],
+  "eventSummary": {
+    "totalWindowEvents": 45055,
+    "byModality": {
+      "rgb": 1200,
+      "depth": 2398,
+      "fisheye": 2398,
+      "pose": 1598,
+      "odom": 800,
+      "imu": 36661
+    }
+  },
+  "associations": {
+    "rgbDepthPoseFrames": 1200,
+    "keyframesWithPoseDepth": 180,
+    "associationPolicy": "RGB frames use nearest aligned-depth and ground-truth pose from the prepared OpenLORIS manifest; odom and IMU remain native-rate side evidence for pose confidence."
+  },
+  "qualityGates": {
+    "rgbCoverageOk": true,
+    "alignedDepthCoverageOk": true,
+    "poseCoverageOk": true,
+    "motionContextOk": true,
+    "primaryClockJitterOk": true,
+    "timelineReady": true,
+    "note": "Timeline gates validate that mapped RGB-D-pose streams and native motion sensors cover the selected reconstruction window."
+  }
+}

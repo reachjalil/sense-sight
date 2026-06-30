@@ -1,10 +1,16 @@
 ---
 import ConsoleLayout from "../layouts/ConsoleLayout.astro";
 import { Console } from "../console/Console";
+import { verifySession } from "../lib/demo-session";
 
 export const prerender = false;
 
-// Public demo: the live console is open to everyone (no portal/password gate).
+// Demo gate: email-only, no password. Visitors enter an email at /portal, which
+// sets a signed cookie; without it we send them there. Local dev opens directly.
+const session = await verifySession(Astro.cookies.get("ss_portal")?.value);
+if (!session && !import.meta.env.DEV) {
+  return Astro.redirect("/portal");
+}
 ---
 
 <ConsoleLayout>

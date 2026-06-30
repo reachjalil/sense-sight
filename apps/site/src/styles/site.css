@@ -224,6 +224,90 @@ svg {
   font-size: 0.84rem;
 }
 
+.ss-hire-modal {
+  width: min(92vw, 520px);
+  border: 1px solid rgba(51, 240, 209, 0.34);
+  border-radius: 8px;
+  background: rgba(5, 7, 10, 0.94);
+  box-shadow: 0 28px 90px -34px rgba(51, 240, 209, 0.65);
+  color: var(--ss-text);
+  padding: 0;
+}
+
+.ss-hire-modal::backdrop {
+  background: rgba(0, 0, 0, 0.68);
+  backdrop-filter: blur(7px);
+}
+
+.ss-hire-modal__panel {
+  position: relative;
+  padding: clamp(1.35rem, 4vw, 2rem);
+}
+
+.ss-hire-modal__close {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.8rem;
+  display: inline-flex;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--ss-line-strong);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--ss-text);
+  cursor: pointer;
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.ss-hire-modal__close:hover {
+  border-color: rgba(51, 240, 209, 0.46);
+}
+
+.ss-hire-modal h2 {
+  max-width: 420px;
+  font-size: clamp(1.8rem, 5vw, 2.65rem);
+}
+
+.ss-hire-modal p:not(.ss-eyebrow) {
+  margin-top: var(--ss-space-4);
+  color: var(--ss-text-muted);
+}
+
+.ss-hire-modal__contact {
+  display: grid;
+  gap: var(--ss-space-2);
+  margin-top: var(--ss-space-5);
+}
+
+.ss-hire-modal__contact a {
+  display: inline-flex;
+  width: fit-content;
+  color: var(--ss-machine);
+  font-family: var(--ss-font-mono);
+  font-size: 0.94rem;
+}
+
+.ss-hire-cta {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.ss-hire-cta span {
+  position: absolute;
+  bottom: calc(100% + 0.38rem);
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--ss-text-muted);
+  font-family: var(--ss-font-mono);
+  font-size: 0.72rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+
 .ss-hero {
   --ss-hero-path-hue: 0deg;
   --ss-hero-structure-hue: 0deg;
@@ -500,6 +584,21 @@ svg {
 
 .ss-card--field {
   --card-accent: var(--ss-violet);
+}
+
+.ss-card--sponsor {
+  --card-accent: #9ee85f;
+  border-color: color-mix(in srgb, var(--card-accent), transparent 48%);
+  background:
+    radial-gradient(
+      circle at 92% 12%,
+      color-mix(in srgb, var(--card-accent), transparent 82%),
+      transparent 34%
+    ),
+    linear-gradient(180deg, rgba(18, 31, 25, 0.95), rgba(9, 15, 15, 0.96));
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--card-accent), transparent 86%),
+    var(--ss-shadow-card);
 }
 
 .ss-card__index,

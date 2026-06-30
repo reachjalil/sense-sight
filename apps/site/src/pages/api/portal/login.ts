@@ -1,187 +1,64 @@
 import type { APIRoute } from "astro";
-import {
-  PORTAL_WORKSPACE_PASSWORD,
-  getDisplayNameFromEmail,
-  getAuth,
-  normalizeEmail,
-} from "../../../lib/auth";
-import { recordLoginAttempt } from "../../../lib/portal-audit";
-import { appendAuthCookies } from "../../../lib/portal-session";
+import { env } from "cloudflare:workers";
+import { sessionCookie, signSession } from "../../../lib/demo-session";
 
 export const prerender = false;
 
-interface LoginBody {
-  email?: unknown;
-  password?: unknown;
-}
-
-function jsonResponse(
-  body: Record<string, unknown>,
-  init?: ResponseInit,
-  authResponse?: Response
-) {
-  const headers = new Headers(init?.headers);
-  headers.set("content-type", "application/json");
-
-  if (authResponse) {
-    appendAuthCookies(authResponse, headers);
-  }
-
-  return new Response(JSON.stringify(body), {
-    ...init,
-    headers,
-  });
-}
-
-async function callAuthEndpoint(
-  request: Request,
-  origin: string,
-  path: "sign-in/email" | "sign-up/email",
-  body: Record<string, unknown>
-) {
-  const headers = new Headers();
-  headers.set("content-type", "application/json");
-
-  for (const name of [
-    "cookie",
-    "origin",
-    "referer",
-    "user-agent",
-    "sec-fetch-site",
-    "sec-fetch-mode",
-    "sec-fetch-dest",
-  ]) {
-    const value = request.headers.get(name);
-    if (value) {
-      headers.set(name, value);
-    }
-  }
-
-  if (!headers.has("origin")) {
-    headers.set("origin", origin);
-  }
-
-  return getAuth().handler(
-    new Request(`${origin}/api/auth/${path}`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(body),
-    })
-  );
-}
-
-async function parseLoginBody(request: Request): Promise<LoginBody> {
+async function parseEmail(request: Request): Promise<string> {
   const contentType = request.headers.get("content-type") || "";
-
   if (contentType.includes("application/json")) {
-    return (await request.json()) as LoginBody;
+    const body = (await request.json()) as { email?: unknown };
+    return typeof body.email === "string" ? body.email.trim() : "";
   }
-
   const formData = await request.formData();
-  return {
-    email: formData.get("email"),
-    password: formData.get("password"),
-  };
+  const email = formData.get("email");
+  return typeof email === "string" ? email.trim() : "";
 }
 
-export const POST: APIRoute = async ({ request, url }) => {
-  const body = await parseLoginBody(request);
-  const email = typeof body.email === "string" ? body.email.trim() : "";
-  const password = typeof body.password === "string" ? body.password : "";
-  const normalizedEmail = normalizeEmail(email);
+// Best-effort: record who opened the demo. Never block sign-in on a log failure
+// (and the DB binding isn't present under `astro dev`, so guard for it).
+async function recordSignin(
+  email: string,
+  request: Request,
+  db: D1Database | undefined
+): Promise<void> {
+  try {
+    if (!db) return;
+    await db
+      .prepare(
+        "INSERT INTO demo_signin (email, ip_address, user_agent, created_at) VALUES (?, ?, ?, ?)"
+      )
+      .bind(
+        email,
+        request.headers.get("cf-connecting-ip"),
+        request.headers.get("user-agent"),
+        new Date().toISOString()
+      )
+      .run();
+  } catch {
+    // ignore — logging is best-effort
+  }
+}
 
-  if (!normalizedEmail?.includes("@")) {
-    await recordLoginAttempt({
-      email,
-      normalizedEmail,
-      outcome: "denied",
-      reason: "invalid_email",
-      request,
-    });
-    return jsonResponse(
-      { ok: false, message: "Enter a valid email address." },
-      { status: 400 }
+// Email-only demo access: no password. Enter a valid email and you're in.
+export const POST: APIRoute = async ({ request }) => {
+  const email = (await parseEmail(request)).toLowerCase();
+
+  if (!email.includes("@") || email.length < 3) {
+    return new Response(
+      JSON.stringify({ ok: false, message: "Enter a valid email address." }),
+      { status: 400, headers: { "content-type": "application/json" } }
     );
   }
 
-  if (password !== PORTAL_WORKSPACE_PASSWORD) {
-    await recordLoginAttempt({
-      email,
-      normalizedEmail,
-      outcome: "denied",
-      reason: "invalid_workspace_password",
-      request,
-    });
-    return jsonResponse(
-      { ok: false, message: "The portal password is not valid." },
-      { status: 401 }
-    );
-  }
+  await recordSignin(email, request, env.DB);
 
-  const authBody = {
-    email: normalizedEmail,
-    password: PORTAL_WORKSPACE_PASSWORD,
-    rememberMe: true,
-  };
-  const signInResponse = await callAuthEndpoint(
-    request,
-    url.origin,
-    "sign-in/email",
-    authBody
-  );
-
-  if (signInResponse.ok) {
-    await recordLoginAttempt({
-      email,
-      normalizedEmail,
-      outcome: "success",
-      reason: "signed_in",
-      request,
-    });
-    return jsonResponse(
-      { ok: true, redirectTo: "/portal" },
-      { status: 200 },
-      signInResponse
-    );
-  }
-
-  const signUpResponse = await callAuthEndpoint(
-    request,
-    url.origin,
-    "sign-up/email",
-    {
-      ...authBody,
-      name: getDisplayNameFromEmail(normalizedEmail),
-    }
-  );
-
-  if (signUpResponse.ok) {
-    await recordLoginAttempt({
-      email,
-      normalizedEmail,
-      outcome: "success",
-      reason: "signed_up",
-      request,
-    });
-    return jsonResponse(
-      { ok: true, redirectTo: "/portal" },
-      { status: 200 },
-      signUpResponse
-    );
-  }
-
-  await recordLoginAttempt({
-    email,
-    normalizedEmail,
-    outcome: "error",
-    reason: `auth_${signUpResponse.status}`,
-    request,
-  });
-  return jsonResponse(
-    {
-      ok: false,
-      message: "The portal could not create your workspace session.",
+  const token = await signSession(email);
+  return new Response(JSON.stringify({ ok: true, redirectTo: "/console" }), {
+    status: 200,
+    headers: {
+      "content-type": "application/json",
+      "set-cookie": sessionCookie(token),
     },
-    { status: 500 }
-  );
+  });
 };

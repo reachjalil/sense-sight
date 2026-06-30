@@ -1,6 +1,7 @@
 import type { Bounds, Vec3 } from "@sense-sight/world-schema";
 import { Grid, Line } from "@react-three/drei";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
+import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
 /** Reference floor grid for orienting a point cloud / splat scene. */
@@ -117,21 +118,101 @@ export function TrajectoryLine({
   points,
   visible,
   color = "#4fd1ff",
+  floorY,
 }: {
   points: readonly Vec3[];
   visible: boolean;
   color?: string;
+  floorY?: number;
 }) {
   if (!visible || points.length < 2) return null;
   return (
     <Line
       points={points.map(
-        (p) => [p.x, p.y + 0.06, p.z] as [number, number, number]
+        (p) =>
+          [p.x, (floorY === undefined ? p.y : floorY) + 0.06, p.z] as [
+            number,
+            number,
+            number,
+          ]
       )}
       color={color}
       lineWidth={2.4}
       transparent
       opacity={0.92}
     />
+  );
+}
+
+/** Pulsing marker for the robot pose inside a streamed/replayed world. */
+export function RobotMarker({
+  position,
+  headingRad,
+  floorY = 0,
+  color = "#33f0d1",
+  visible = true,
+}: {
+  position: Vec3;
+  headingRad: number;
+  floorY?: number;
+  color?: string;
+  visible?: boolean;
+}) {
+  const ring = useRef<THREE.Mesh>(null);
+
+  useFrame((state) => {
+    if (!ring.current) return;
+    const t = state.clock.elapsedTime;
+    const pulse = Math.sin(t * 2.2);
+    ring.current.scale.setScalar(1 + pulse * 0.18);
+    const material = ring.current.material as THREE.Material;
+    material.opacity = 0.5 - pulse * 0.22;
+  });
+
+  if (!visible) return null;
+
+  return (
+    <group
+      position={[position.x, floorY, position.z]}
+      rotation-y={headingRad}
+      renderOrder={20}
+    >
+      <mesh ref={ring} rotation-x={-Math.PI / 2} position-y={0.02}>
+        <ringGeometry args={[0.45, 0.62, 36]} />
+        <meshBasicMaterial
+          color={color}
+          transparent
+          opacity={0.4}
+          depthTest={false}
+          depthWrite={false}
+        />
+      </mesh>
+      <mesh position-y={0.32}>
+        <cylinderGeometry args={[0.28, 0.32, 0.62, 20]} />
+        <meshStandardMaterial
+          color="#0e1a22"
+          emissive={color}
+          emissiveIntensity={0.18}
+          metalness={0.4}
+          roughness={0.5}
+          depthTest={false}
+          depthWrite={false}
+        />
+      </mesh>
+      <mesh position={[0, 0.32, 0.42]} rotation-x={Math.PI / 2}>
+        <coneGeometry args={[0.16, 0.34, 16]} />
+        <meshStandardMaterial
+          color={color}
+          emissive={color}
+          emissiveIntensity={0.9}
+          depthTest={false}
+          depthWrite={false}
+        />
+      </mesh>
+      <mesh position-y={0.78}>
+        <sphereGeometry args={[0.07, 12, 12]} />
+        <meshBasicMaterial color={color} depthTest={false} depthWrite={false} />
+      </mesh>
+    </group>
   );
 }

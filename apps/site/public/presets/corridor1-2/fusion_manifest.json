@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "0.1.0",
+  "coordinateFrame": "normalized",
+  "items": [
+    {
+      "id": "openloris-corridor1-2-mac-submap-01-240",
+      "base": "submaps/openloris-corridor1-2-mac-submap-01-240",
+      "splatFile": "trained-9000-viewer.splat",
+      "gaussianCount": 206323,
+      "sourceBounds": {
+        "min": {
+          "x": -0.9359663724899292,
+          "y": -1.2283755540847778,
+          "z": -0.3901804983615875
+        },
+        "max": {
+          "x": 1.4228196144104004,
+          "y": 0.33990001678466797,
+          "z": 0.33936402201652527
+        }
+      },
+      "targetBounds": {
+        "min": {
+          "x": -6.825366973876953,
+          "y": 0,
+          "z": -8.787017822265625
+        },
+        "max": {
+          "x": 9.003658294677734,
+          "y": 3.4257426261901855,
+          "z": 1.7680225372314453
+        }
+      }
+    },
+    {
+      "id": "openloris-corridor1-2-mac-submap-02-480",
+      "base": "submaps/openloris-corridor1-2-mac-submap-02-480",
+      "splatFile": "trained-9000-viewer.splat",
+      "gaussianCount": 220671,
+      "sourceBounds": {
+        "min": {
+          "x": -0.16517606377601624,
+          "y": -1.8865503072738647,
+          "z": -0.31305456161499023
+        },
+        "max": {
+          "x": 0.3338269889354706,
+          "y": 0.9995089173316956,
+          "z": 0.2959561347961426
+        }
+      },
+      "targetBounds": {
+        "min": {
+          "x": -1.1534767150878906,
+          "y": 0,
+          "z": -13.477930068969727
+        },
+        "max": {
+          "x": 2.395771026611328,
+          "y": 2.7672688961029053,
+          "z": 7.288658142089844
+        }
+      }
+    },
+    {
+      "id": "openloris-corridor1-2-mac-submap-03-720",
+      "base": "submaps/openloris-corridor1-2-mac-submap-03-720",
+      "splatFile": "trained-9000-viewer.splat",
+      "gaussianCount": 179096,
+      "sourceBounds": {
+        "min": {
+          "x": -0.30544325709342957,
+          "y": -1.786986231803894,
+          "z": -0.3729891777038574
+        },
+        "max": {
+          "x": 0.26962482929229736,
+          "y": 0.8951807022094727,
+          "z": 0.2576042413711548
+        }
+      },
+      "targetBounds": {
+        "min": {
+          "x": -1.8341217041015625,
+          "y": 0,
+          "z": -14.353378295898438
+        },
+        "max": {
+          "x": 1.4020156860351562,
+          "y": 2.9568862915039062,
+          "z": 7.0689849853515625
+        }
+      }
+    }
+  ]
+}

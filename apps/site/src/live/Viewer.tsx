@@ -9,12 +9,14 @@ import {
 import {
   BoundsFrame,
   FloorGrid,
+  RobotMarker,
   SparkTrainedSplatCloud,
   SplatPointCloud,
   StreamedTrainedSplatCloud,
+  TrajectoryLine,
   TrainedSplatCloud,
 } from "@sense-sight/viewer";
-import type { Bounds } from "@sense-sight/world-schema";
+import type { Bounds, Vec3 } from "@sense-sight/world-schema";
 import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import * as THREE from "three";
 import {
@@ -65,6 +67,11 @@ interface CameraPose {
   target: THREE.Vector3;
 }
 
+export interface RobotPose {
+  position: Vec3;
+  headingRad: number;
+}
+
 function centerOf(bounds: Bounds): [number, number, number] {
   return [
     (bounds.min.x + bounds.max.x) / 2,
@@ -84,6 +91,25 @@ function sizeOf(bounds: Bounds): [number, number, number] {
 function spanOf(bounds: Bounds | null): number {
   if (!bounds) return 8;
   return Math.max(...sizeOf(bounds), 3);
+}
+
+function unionBounds(bounds: readonly Bounds[]): Bounds | null {
+  if (bounds.length === 0) return null;
+  return bounds.reduce<Bounds>(
+    (acc, bounds) => ({
+      min: {
+        x: Math.min(acc.min.x, bounds.min.x),
+        y: Math.min(acc.min.y, bounds.min.y),
+        z: Math.min(acc.min.z, bounds.min.z),
+      },
+      max: {
+        x: Math.max(acc.max.x, bounds.max.x),
+        y: Math.max(acc.max.y, bounds.max.y),
+        z: Math.max(acc.max.z, bounds.max.z),
+      },
+    }),
+    bounds[0]
+  );
 }
 
 function cameraTargetOf(bounds: Bounds | null): [number, number, number] {
@@ -146,6 +172,22 @@ function cameraPoseForView(
         target,
       };
   }
+}
+
+function robotTargetOf(
+  robotPose: RobotPose | null | undefined,
+  worldBounds: Bounds | null
+): THREE.Vector3 | null {
+  if (!robotPose) return null;
+  return new THREE.Vector3(
+    robotPose.position.x,
+    (worldBounds?.min.y ?? 0) + 0.5,
+    robotPose.position.z
+  );
+}
+
+function robotForwardOf(headingRad: number): THREE.Vector3 {
+  return new THREE.Vector3(Math.sin(headingRad), 0, Math.cos(headingRad));
 }
 
 function clamp(value: number, min: number, max: number): number {
@@ -216,6 +258,7 @@ function fitBounds(
 function ViewerCameraController({
   autoOrbit,
   cameraView,
+  robotPose,
   worldBounds,
   onAutoOrbitChange,
   onCameraStatusChange,
@@ -223,6 +266,7 @@ function ViewerCameraController({
 }: {
   autoOrbit: boolean;
   cameraView: CameraViewRequest;
+  robotPose?: RobotPose | null;
   worldBounds: Bounds | null;
   onAutoOrbitChange?: (enabled: boolean) => void;
   onCameraStatusChange?: (status: string) => void;
@@ -271,13 +315,16 @@ function ViewerCameraController({
     if (!controls) return;
     controls.autoRotate = false;
     if (autoOrbit) {
-      followTarget.current.fromArray(cameraTargetOf(worldBounds));
+      followTarget.current.copy(
+        robotTargetOf(robotPose, worldBounds) ??
+          new THREE.Vector3(...cameraTargetOf(worldBounds))
+      );
       orbitOffset.current.copy(camera.position).sub(followTarget.current);
       followAngle.current = Math.atan2(
         orbitOffset.current.z,
         orbitOffset.current.x
       );
-      onCameraStatusChange?.("Follow orbit");
+      onCameraStatusChange?.(robotPose ? "Robot follow" : "Follow orbit");
     }
     invalidate();
   }, [
@@ -286,6 +333,7 @@ function ViewerCameraController({
     controls,
     invalidate,
     onCameraStatusChange,
+    robotPose,
     worldBounds,
   ]);
 
@@ -494,20 +542,38 @@ function ViewerCameraController({
     if (autoOrbit && controls && perspectiveCamera && !reducedMotion.current) {
       const span = spanOf(worldBounds);
       const yFloor = worldBounds?.min.y ?? 0;
-      const target = followTarget.current.fromArray(
-        cameraTargetOf(worldBounds)
-      );
+      const robotTarget = robotTargetOf(robotPose, worldBounds);
+      const target = robotTarget
+        ? followTarget.current.copy(robotTarget)
+        : followTarget.current.fromArray(cameraTargetOf(worldBounds));
       const radius = clamp(
         perspectiveCamera.position.distanceTo(controls.target),
-        Math.max(2.4, span * 0.72),
-        Math.max(7, span * 1.55)
+        Math.max(2.4, span * 0.24),
+        Math.max(5.5, span * 0.48)
       );
-      followAngle.current += delta * 0.22;
-      followPosition.current.set(
-        target.x + Math.cos(followAngle.current) * radius,
-        yFloor + span * (0.45 + Math.sin(followAngle.current * 1.35) * 0.045),
-        target.z + Math.sin(followAngle.current) * radius
-      );
+      const currentRobotTarget = robotTarget;
+      if (robotPose && currentRobotTarget) {
+        const forward = robotForwardOf(robotPose.headingRad);
+        const followDistance = clamp(radius * 0.38, 1.2, 3.4);
+        const lookAhead = clamp(span * 0.18, 4.5, 9);
+        const eyeY = yFloor + clamp(span * 0.065, 1.15, 1.65);
+        const targetY = yFloor + clamp(span * 0.06, 1.05, 1.45);
+        target
+          .copy(currentRobotTarget)
+          .addScaledVector(forward, lookAhead)
+          .setY(targetY);
+        followPosition.current
+          .copy(currentRobotTarget)
+          .addScaledVector(forward, -followDistance)
+          .setY(eyeY);
+      } else {
+        followAngle.current += delta * 0.22;
+        followPosition.current.set(
+          target.x + Math.cos(followAngle.current) * radius,
+          yFloor + span * (0.45 + Math.sin(followAngle.current * 1.35) * 0.045),
+          target.z + Math.sin(followAngle.current) * radius
+        );
+      }
       const targetEase = 1 - Math.exp(-delta * 4.2);
       const cameraEase = 1 - Math.exp(-delta * 1.55);
       controls.target.lerp(target, targetEase);
@@ -519,6 +585,7 @@ function ViewerCameraController({
       );
       perspectiveCamera.updateProjectionMatrix();
       controls.update();
+      onCameraStatusChange?.(robotPose ? "Robot follow" : "Follow orbit");
       invalidate();
     }
     const animation = tween.current;
@@ -553,6 +620,7 @@ function ViewerCameraController({
 }
 
 export interface TrainedSplatAsset {
+  id?: string;
   /** Object URL (or any fetchable URL) for the `.splat` bytes. */
   url: string;
   /** Original artifact bytes, used by Spark when object URLs hide the file type. */
@@ -561,7 +629,21 @@ export interface TrainedSplatAsset {
   fileName?: string;
   /** Bounds of the splat's own coordinate space, used by the `normalized` fit. */
   sourceBounds: Bounds;
+  /** Optional world-frame bounds to fit into, used by fused submap layers. */
+  targetBounds?: Bounds;
   coordinateFrame: CoordinateFrame;
+}
+
+interface TrainedSplatTransform {
+  position?: [number, number, number];
+  rotation?: [number, number, number];
+  scale?: number | [number, number, number];
+}
+
+interface TrainedLayerItem {
+  asset: TrainedSplatAsset;
+  key: string;
+  transform: TrainedSplatTransform;
 }
 
 export interface ViewerProps {
@@ -572,7 +654,11 @@ export interface ViewerProps {
   worldBounds: Bounds | null;
   seedPositions: Float32Array | null;
   seedColors: Float32Array | null;
+  trajectoryPoints?: readonly Vec3[];
+  trajectorySegments?: readonly (readonly Vec3[])[];
+  robotPose?: RobotPose | null;
   trainedSplat: TrainedSplatAsset | null;
+  trainedSplats?: readonly TrainedSplatAsset[] | null;
   /** Gate the live StreamedTrainedSplatCloud render path behind an explicit flag. */
   isStreamingLive: boolean;
   onAutoOrbitChange?: (enabled: boolean) => void;
@@ -589,7 +675,11 @@ export function Viewer({
   worldBounds,
   seedPositions,
   seedColors,
+  trajectoryPoints = [],
+  trajectorySegments,
+  robotPose,
   trainedSplat,
+  trainedSplats,
   isStreamingLive,
   onAutoOrbitChange,
   onCameraStatusChange,
@@ -617,18 +707,59 @@ export function Viewer({
     setSparkFailed(false);
   }, [trainedSplat]);
 
-  const fit = useMemo(() => {
-    if (!trainedSplat || !worldBounds) return null;
-    if (trainedSplat.coordinateFrame === "normalized") {
-      const orientedSource = orientNormalizedBounds(trainedSplat.sourceBounds);
-      return fitBounds(orientedSource, worldBounds);
+  const activeTrainedSplats = useMemo(
+    () => trainedSplats ?? (trainedSplat ? [trainedSplat] : []),
+    [trainedSplat, trainedSplats]
+  );
+  const hasTrainedSplats = activeTrainedSplats.length > 0;
+  const trainedLayerItems = useMemo<TrainedLayerItem[]>(() => {
+    const items: TrainedLayerItem[] = [];
+    for (let index = 0; index < activeTrainedSplats.length; index += 1) {
+      const asset = activeTrainedSplats[index];
+      if (!worldBounds) return [];
+      if (asset.coordinateFrame === "training-frame") {
+        items.push({
+          asset,
+          key: asset.id ?? asset.url ?? `trained-${index}`,
+          transform: {
+            scale: [-1, 1, 1],
+          },
+        });
+        continue;
+      }
+      if (asset.coordinateFrame === "normalized") {
+        const orientedSource = orientNormalizedBounds(asset.sourceBounds);
+        const fit = fitBounds(
+          orientedSource,
+          asset.targetBounds ?? worldBounds
+        );
+        items.push({
+          asset,
+          key: asset.id ?? asset.url ?? `trained-${index}`,
+          transform: {
+            position: fit.position,
+            rotation: [Math.PI / 2, 0, 0],
+            scale: fit.scale,
+          },
+        });
+      }
     }
-    return null;
-  }, [trainedSplat, worldBounds]);
+    return items;
+  }, [activeTrainedSplats, worldBounds]);
+  const trainedTargetBounds = useMemo(
+    () =>
+      unionBounds(
+        activeTrainedSplats
+          .map((asset) => asset.targetBounds)
+          .filter((bounds): bounds is Bounds => Boolean(bounds))
+      ),
+    [activeTrainedSplats]
+  );
+  const viewBounds = trainedTargetBounds ?? worldBounds;
 
-  const target = cameraTargetOf(worldBounds);
-  const span = spanOf(worldBounds);
-  const initialPose = cameraPoseForView(cameraView.id, worldBounds);
+  const target = cameraTargetOf(viewBounds);
+  const span = spanOf(viewBounds);
+  const initialPose = cameraPoseForView(cameraView.id, viewBounds);
   const cameraPosition = initialPose.position.toArray() as [
     number,
     number,
@@ -636,44 +767,26 @@ export function Viewer({
   ];
   const gridSize = clamp(span * 1.8, 16, 96);
   const cameraFar = Math.max(200, span * 18);
-  const trainedTransform = trainedSplat
-    ? trainedSplat.coordinateFrame === "training-frame"
-      ? {
-          position: undefined,
-          rotation: undefined,
-          scale: [-1, 1, 1] as [number, number, number],
-        }
-      : fit
-        ? {
-            position: fit.position,
-            rotation: [Math.PI / 2, 0, 0] as [number, number, number],
-            scale: fit.scale,
-          }
-        : null
-    : null;
-
   const cloudBuffers = isStreamingLive ? getCloudBuffers() : null;
   const splatBuffers = isStreamingLive ? getSplatBuffers() : null;
 
   useEffect(() => {
+    if (hasTrainedSplats && layers.splat) {
+      onRenderModeChange?.(sparkFailed ? "fallback" : "spark");
+      return;
+    }
     if (isStreamingLive && layers.splat) {
       onRenderModeChange?.("stream");
       return;
     }
-    if (trainedSplat && layers.splat && sparkFailed) {
-      onRenderModeChange?.("fallback");
-      return;
-    }
-    if (!trainedSplat || !layers.splat) {
-      onRenderModeChange?.(seedPositions ? "seed" : "empty");
-    }
+    onRenderModeChange?.(seedPositions ? "seed" : "empty");
   }, [
     isStreamingLive,
     layers.splat,
     onRenderModeChange,
     seedPositions,
     sparkFailed,
-    trainedSplat,
+    hasTrainedSplats,
   ]);
 
   return (
@@ -681,11 +794,8 @@ export function Viewer({
       dpr={[1, 2]}
       camera={{ position: cameraPosition, fov: 50, near: 0.05, far: cameraFar }}
       gl={{
-        alpha: false,
-        antialias: true,
-        depth: true,
+        antialias: false,
         powerPreference: "high-performance",
-        stencil: false,
       }}
       performance={{ min: 0.5 }}
     >
@@ -727,22 +837,22 @@ export function Viewer({
         />
       )}
 
-      {trainedSplat &&
-        trainedTransform &&
-        layers.splat &&
-        !isStreamingLive &&
-        !sparkFailed && (
+      {layers.splat &&
+        !sparkFailed &&
+        trainedLayerItems.map(({ asset, key, transform }) => (
           <SparkTrainedSplatCloud
-            url={trainedSplat.url}
-            fileBytes={trainedSplat.fileBytes}
-            fileName={trainedSplat.fileName}
+            key={key}
+            url={asset.url}
+            fileBytes={asset.fileBytes}
+            fileName={asset.fileName}
             visible
-            position={trainedTransform.position}
-            rotation={trainedTransform.rotation}
-            scale={trainedTransform.scale}
+            position={transform.position}
+            rotation={transform.rotation}
+            scale={transform.scale}
             opacity={trainedRenderProfile.opacity}
             minAlpha={trainedRenderProfile.minAlpha}
             maxPixelRadius={trainedRenderProfile.maxPixelRadius}
+            minPixelRadius={0}
             maxStdDev={trainedRenderProfile.maxStdDev}
             focalAdjustment={trainedRenderProfile.focalAdjustment}
             falloff={trainedRenderProfile.falloff}
@@ -753,19 +863,18 @@ export function Viewer({
               onRenderModeChange?.("fallback");
             }}
           />
-        )}
+        ))}
 
-      {trainedSplat &&
-        trainedTransform &&
-        layers.splat &&
-        !isStreamingLive &&
-        sparkFailed && (
+      {layers.splat &&
+        sparkFailed &&
+        trainedLayerItems.map(({ asset, key, transform }) => (
           <TrainedSplatCloud
-            url={trainedSplat.url}
+            key={key}
+            url={asset.url}
             visible
-            position={trainedTransform.position}
-            rotation={trainedTransform.rotation}
-            scale={trainedTransform.scale}
+            position={transform.position}
+            rotation={transform.rotation}
+            scale={transform.scale}
             size={trainedRenderProfile.radiusDefault}
             minAlpha={trainedRenderProfile.fallbackMinAlpha * 255}
             maxScreenSize={trainedRenderProfile.fallbackMaxScreenSize}
@@ -773,9 +882,9 @@ export function Viewer({
             colorGain={trainedRenderProfile.fallbackColorGain}
             opacity={trainedRenderProfile.fallbackOpacity}
           />
-        )}
+        ))}
 
-      {isStreamingLive && layers.splat && (
+      {isStreamingLive && layers.splat && !hasTrainedSplats && (
         <StreamedTrainedSplatCloud
           buffers={splatBuffers}
           visible={layers.splat}
@@ -789,10 +898,28 @@ export function Viewer({
         />
       )}
 
+      {(trajectorySegments ?? [trajectoryPoints]).map((points, index) => (
+        <TrajectoryLine
+          key={`trajectory-${index}`}
+          points={points}
+          visible={layers.trajectory}
+          floorY={worldBounds?.min.y ?? 0}
+        />
+      ))}
+      {robotPose && (
+        <RobotMarker
+          position={robotPose.position}
+          headingRad={robotPose.headingRad}
+          floorY={worldBounds?.min.y ?? 0}
+          visible={layers.trajectory}
+        />
+      )}
+
       <ViewerCameraController
         autoOrbit={autoOrbit}
         cameraView={cameraView}
-        worldBounds={worldBounds}
+        robotPose={robotPose}
+        worldBounds={viewBounds}
         onAutoOrbitChange={onAutoOrbitChange}
         onCameraStatusChange={onCameraStatusChange}
         onCameraViewChange={onCameraViewChange}

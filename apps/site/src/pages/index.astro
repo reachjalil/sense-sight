@@ -72,28 +72,35 @@ const stack = [
   {
     title: "Astro front end",
     body: "Fast public product surface today, ready for richer routes, private workspaces, and realtime robot-world services as the platform grows.",
+    tone: "machine",
   },
   {
     title: "Typed spatial core",
     body: "Shared TypeScript contracts keep observations, risks, decisions, and mission events consistent across apps.",
+    tone: "machine",
   },
   {
     title: "Cloudflare edge",
     body: "Pages deployment, preview branches, and room to add Workers, R2, D1, and realtime APIs behind the same domain.",
+    tone: "machine",
   },
   {
-    title: "Gaussian-splat path",
-    body: "Designed around point-cloud previews now and higher-fidelity splat assets as real robot reconstructions land.",
+    title: "Runpod GPU engine",
+    body: "Sponsor-backed Runpod serverless GPUs train and refine Gaussian-splat shards, then hand artifacts back to the typed orchestrator for merge, publish, and review.",
+    tag: "Sponsor",
+    tone: "sponsor",
   },
   {
     title: "Robot data adapters",
     body: "Clear boundaries for OpenLORIS, live robot feeds, simulator missions, and future customer capture formats.",
+    tone: "machine",
   },
   {
     title: "Human review trail",
     body: "Reverse singularity is an architecture requirement: human judgment improves the world model instead of disappearing.",
+    tone: "human",
   },
-];
+] as const;
 ---
 
 <SiteLayout>
@@ -145,9 +152,12 @@ const stack = [
         </p>
         <div class="ss-hero__actions">
           <a class="ss-btn" href="/world">See the world model</a>
-          <a class="ss-btn ss-btn--ghost" href={`https://${SENSE_SIGHT_DOMAIN}`}>
-            {SENSE_SIGHT_DOMAIN}
-          </a>
+          <div class="ss-hire-cta">
+            <span>Hey runpod</span>
+            <button class="ss-btn ss-btn--ghost" type="button" data-hire-open>
+              hire me 😉
+            </button>
+          </div>
         </div>
       </div>
 
@@ -163,6 +173,29 @@ const stack = [
       </dl>
     </div>
   </section>
+
+  <dialog class="ss-hire-modal" data-hire-modal>
+    <div class="ss-hire-modal__panel">
+      <button
+        class="ss-hire-modal__close"
+        type="button"
+        data-hire-close
+        aria-label="Close contact modal"
+      >
+        ×
+      </button>
+      <p class="ss-eyebrow">Available locally</p>
+      <h2>Full stack engineer in San Francisco</h2>
+      <p>
+        Recently moved to San Francisco and want to work on interesting
+        projects. Love making things.
+      </p>
+      <div class="ss-hire-modal__contact" aria-label="Contact information">
+        <a href="mailto:reachjalil@gmail.com">reachjalil@gmail.com</a>
+        <a href="tel:+17034720078">7034720078</a>
+      </div>
+    </div>
+  </dialog>
 
   <Section
     id="world"
@@ -259,11 +292,12 @@ const stack = [
   >
     <div class="ss-grid ss-grid--3">
       {
-        stack.map((item, index) => (
+        stack.map((item) => (
           <Card
             title={item.title}
             body={item.body}
-            tone={index === 5 ? "human" : index === 3 ? "field" : "machine"}
+            tag={"tag" in item ? item.tag : undefined}
+            tone={item.tone}
           />
         ))
       }
@@ -317,4 +351,26 @@ const stack = [
       </a>
     </div>
   </Section>
+
+  <script>
+    const hireModal = document.querySelector("[data-hire-modal]");
+    const hireOpen = document.querySelector("[data-hire-open]");
+    const hireClose = document.querySelector("[data-hire-close]");
+
+    if (hireModal instanceof HTMLDialogElement) {
+      hireOpen?.addEventListener("click", () => {
+        hireModal.showModal();
+      });
+
+      hireClose?.addEventListener("click", () => {
+        hireModal.close();
+      });
+
+      hireModal.addEventListener("click", (event) => {
+        if (event.target === hireModal) {
+          hireModal.close();
+        }
+      });
+    }
+  </script>
 </SiteLayout>

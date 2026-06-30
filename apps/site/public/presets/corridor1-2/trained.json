@@ -1,0 +1,11 @@
+{
+  "splatFile": "trained.splat",
+  "coordinateFrame": "normalized",
+  "gaussianCount": 348098,
+  "iterations": 16000,
+  "note": "bounds are robust (1st-99th pct) bounds of the actual gaussian positions; training.json splat.bounds were floater-inflated.",
+  "bounds": {
+    "min": { "x": -0.705, "y": -1.071, "z": -0.056 },
+    "max": { "x": 0.313, "y": 0.738, "z": 0.07 }
+  }
+}

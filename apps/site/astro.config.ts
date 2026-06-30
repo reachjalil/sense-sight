@@ -9,5 +9,10 @@ export default defineConfig({
   integrations: [react()],
   server: { port: 4323 },
   devToolbar: { enabled: false },
-  vite: { cacheDir: "../../node_modules/.vite/sense-sight-site" },
+  vite: {
+    cacheDir: "../../node_modules/.vite/sense-sight-site",
+    optimizeDeps: {
+      exclude: ["@sparkjsdev/spark"],
+    },
+  },
 });

@@ -1,0 +1,196 @@
+import {
+  planShards,
+  RunPodClient,
+  type QualityPreset,
+  type WorkerInput,
+} from "@sense-sight/runpod-orchestrator";
+import type { APIRoute } from "astro";
+import { env } from "cloudflare:workers";
+import { COOKIE_NAME, verifySession } from "../../../lib/demo-session";
+
+export const prerender = false;
+
+function json(body: unknown, init?: ResponseInit): Response {
+  return new Response(JSON.stringify(body), {
+    ...init,
+    headers: {
+      "content-type": "application/json",
+      ...init?.headers,
+    },
+  });
+}
+
+function parsePositiveInt(value: string | undefined, fallback: number): number {
+  if (!value) return fallback;
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function configuredQualityPreset(value: string | undefined): QualityPreset {
+  return value === "balanced" || value === "research" ? value : "preview";
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max);
+}
+
+export const POST: APIRoute = async ({ cookies, request }) => {
+  const session = await verifySession(cookies.get(COOKIE_NAME)?.value);
+  if (!session && !import.meta.env.DEV) {
+    return json(
+      { ok: false, message: "Portal session required." },
+      { status: 401 }
+    );
+  }
+
+  if (!env.RUNPOD_API_KEY || !env.RUNPOD_ENDPOINT_ID) {
+    return json(
+      {
+        ok: false,
+        message: "RunPod endpoint is not configured.",
+        configured: {
+          runpodApiKey: Boolean(env.RUNPOD_API_KEY),
+          runpodEndpointId: Boolean(env.RUNPOD_ENDPOINT_ID),
+        },
+      },
+      { status: 503 }
+    );
+  }
+  const endpointId = env.RUNPOD_ENDPOINT_ID;
+
+  const hasR2Bundle = Boolean(env.RUNPOD_BUNDLE_URI && env.RUNPOD_BUNDLE_SHA256);
+  const hasVolumeBundle = Boolean(
+    env.RUNPOD_BUNDLE_VOLUME_PATH && env.RUNPOD_BUNDLE_SHA256
+  );
+  if (!hasR2Bundle && !hasVolumeBundle) {
+    return json(
+      {
+        ok: false,
+        message:
+          "RunPod bundle is not configured. Set RUNPOD_BUNDLE_URI or RUNPOD_BUNDLE_VOLUME_PATH plus RUNPOD_BUNDLE_SHA256.",
+      },
+      { status: 503 }
+    );
+  }
+
+  const body = (await request.json().catch(() => ({}))) as {
+    sourceId?: string;
+    sequence?: string;
+    keyframeCount?: number;
+    shardCount?: number;
+    overlapKeyframes?: number;
+  };
+  const sequence = body.sequence || body.sourceId || "corridor1-2";
+  const keyframeCount =
+    typeof body.keyframeCount === "number" && body.keyframeCount > 0
+      ? Math.floor(body.keyframeCount)
+      : 180;
+  const qualityPreset = configuredQualityPreset(env.RUNPOD_QUALITY_PRESET);
+  const trainSteps = parsePositiveInt(
+    env.RUNPOD_TRAIN_STEPS,
+    qualityPreset === "preview" ? 300 : qualityPreset === "balanced" ? 3000 : 9000
+  );
+  const shardCount = clamp(
+    Math.floor(
+      body.shardCount ??
+        parsePositiveInt(env.RUNPOD_PARALLEL_SHARDS, qualityPreset === "preview" ? 3 : 2)
+    ),
+    1,
+    4
+  );
+  const overlapKeyframes = clamp(Math.floor(body.overlapKeyframes ?? 4), 0, 12);
+  const plannedShards = planShards(keyframeCount, shardCount, overlapKeyframes);
+  const now = Date.now();
+
+  const makeInput = (shard: (typeof plannedShards)[number]): WorkerInput => ({
+    jobType: "online_update",
+    schemaVersion: "1.0.0",
+    worldId: sequence,
+    sequence,
+    submapId: `${sequence}-live-${now}-shard-${shard.index + 1}`,
+    bundle: hasR2Bundle
+      ? {
+          mode: "r2",
+          uri: env.RUNPOD_BUNDLE_URI,
+          sha256: env.RUNPOD_BUNDLE_SHA256 as string,
+        }
+      : {
+          mode: "volume",
+          volumePath: env.RUNPOD_BUNDLE_VOLUME_PATH,
+          sha256: env.RUNPOD_BUNDLE_SHA256 as string,
+        },
+    shard: {
+      index: shard.index,
+      count: shardCount,
+      strategy: "contiguous_overlap",
+      keyframeStart: shard.keyframeStart,
+      keyframeEnd: shard.keyframeEnd,
+      overlapKeyframes: shard.overlapKeyframes,
+    },
+    train: {
+      steps: trainSteps,
+      initScale: 0.01,
+      prune: 0.005,
+      qualityPreset,
+      seedPointLimit: 80_000,
+      shDegree: 0,
+      densify: qualityPreset !== "preview",
+      scaleRegQuantile: 0.99,
+    },
+    output: env.RUNPOD_OUTPUT_PREFIX_URI
+      ? { mode: "r2", prefixUri: env.RUNPOD_OUTPUT_PREFIX_URI }
+      : { mode: "return" },
+    provenance: {
+      imageTag: env.RUNPOD_WORKER_IMAGE_TAG || "runpod-worker",
+      poseGraphVersion: sequence,
+      calibrationVersion: "site-console",
+    },
+  });
+
+  try {
+    const client = new RunPodClient({ apiKey: env.RUNPOD_API_KEY });
+    const jobs = await Promise.all(
+      plannedShards.map(async (shard) => {
+        const input = makeInput(shard);
+        const job = await client.runEndpoint(endpointId, input, {
+          policy: { ttl: 900_000, executionTimeout: 1_800_000 },
+        });
+        return {
+          ...job,
+          shard: {
+            index: shard.index,
+            count: shardCount,
+            keyframeStart: shard.keyframeStart,
+            keyframeEnd: shard.keyframeEnd,
+          },
+          submapId: input.submapId,
+        };
+      })
+    );
+    return json({
+      ok: true,
+      endpointId,
+      job: jobs[0],
+      jobs,
+      input: {
+        worldId: sequence,
+        sequence,
+        shardCount,
+        qualityPreset,
+        steps: trainSteps,
+        outputMode: env.RUNPOD_OUTPUT_PREFIX_URI ? "r2" : "return",
+      },
+    });
+  } catch (error) {
+    return json(
+      {
+        ok: false,
+        message:
+          error instanceof Error
+            ? error.message
+            : "RunPod job submission failed.",
+      },
+      { status: 502 }
+    );
+  }
+};

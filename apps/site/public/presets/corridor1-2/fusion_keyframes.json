@@ -1,0 +1,2597 @@
+{
+  "schemaVersion": "0.1.0",
+  "keyframes": [
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 240,
+      "timestamp": "1560100067.396469116",
+      "position": {
+        "x": -7.753164143235445,
+        "y": 0.9069921907710421,
+        "z": 2.205864453824386
+      },
+      "headingRad": -0.7947005876950946,
+      "imageRel": "frames/1560100067.396469.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 246,
+      "timestamp": "1560100067.596837044",
+      "position": {
+        "x": -7.537703957610752,
+        "y": 0.9061711115536026,
+        "z": 2.0235571558694296
+      },
+      "headingRad": -0.7563694945395444,
+      "imageRel": "frames/1560100067.596837.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 249,
+      "timestamp": "1560100067.69691205",
+      "position": {
+        "x": -7.423213678016964,
+        "y": 0.9057398989584309,
+        "z": 1.92767197011268
+      },
+      "headingRad": -0.7372872593956845,
+      "imageRel": "frames/1560100067.696912.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 255,
+      "timestamp": "1560100067.897062063",
+      "position": {
+        "x": -7.202328067782965,
+        "y": 0.9050180902351814,
+        "z": 1.764072376168361
+      },
+      "headingRad": -0.7009402726464627,
+      "imageRel": "frames/1560100067.897062.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 261,
+      "timestamp": "1560100068.097212076",
+      "position": {
+        "x": -6.9748131952860675,
+        "y": 0.9043062466025367,
+        "z": 1.6017062645264595
+      },
+      "headingRad": -0.6593277564305564,
+      "imageRel": "frames/1560100068.097212.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 264,
+      "timestamp": "1560100068.197287083",
+      "position": {
+        "x": -6.8540088404855695,
+        "y": 0.9039427715731273,
+        "z": 1.518309692570984
+      },
+      "headingRad": -0.6360867397083495,
+      "imageRel": "frames/1560100068.197287.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 270,
+      "timestamp": "1560100068.397437096",
+      "position": {
+        "x": -6.620339096372284,
+        "y": 0.9033490557205157,
+        "z": 1.3782368719173554
+      },
+      "headingRad": -0.5903172523433116,
+      "imageRel": "frames/1560100068.397437.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 276,
+      "timestamp": "1560100068.597799063",
+      "position": {
+        "x": -6.3737452903678715,
+        "y": 0.9028010012014727,
+        "z": 1.2456644697799781
+      },
+      "headingRad": -0.546056689938948,
+      "imageRel": "frames/1560100068.597799.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 279,
+      "timestamp": "1560100068.697874069",
+      "position": {
+        "x": -6.249816000151718,
+        "y": 0.902499982709367,
+        "z": 1.1740685015257917
+      },
+      "headingRad": -0.5211083120705589,
+      "imageRel": "frames/1560100068.697874.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 285,
+      "timestamp": "1560100068.89802289",
+      "position": {
+        "x": -6.001466301364125,
+        "y": 0.9020918998711025,
+        "z": 1.0684982777754293
+      },
+      "headingRad": -0.47602032849874,
+      "imageRel": "frames/1560100068.898023.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 291,
+      "timestamp": "1560100069.098174095",
+      "position": {
+        "x": -5.74254297499381,
+        "y": 0.901642774942182,
+        "z": 0.9538361123909276
+      },
+      "headingRad": -0.4289135939191866,
+      "imageRel": "frames/1560100069.098174.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 294,
+      "timestamp": "1560100069.198249102",
+      "position": {
+        "x": -5.613474589270162,
+        "y": 0.9014831226934439,
+        "z": 0.9091548697124914
+      },
+      "headingRad": -0.40734147684592914,
+      "imageRel": "frames/1560100069.198249.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 300,
+      "timestamp": "1560100069.398397923",
+      "position": {
+        "x": -5.349190622788228,
+        "y": 0.9011545235637795,
+        "z": 0.8173359088457737
+      },
+      "headingRad": -0.3720772637897088,
+      "imageRel": "frames/1560100069.398398.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 306,
+      "timestamp": "1560100069.598761082",
+      "position": {
+        "x": -5.081331569049439,
+        "y": 0.9008850981623426,
+        "z": 0.7366322195488841
+      },
+      "headingRad": -0.35308971048233523,
+      "imageRel": "frames/1560100069.598761.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 309,
+      "timestamp": "1560100069.698836088",
+      "position": {
+        "x": -4.947997987032949,
+        "y": 0.9007422022660683,
+        "z": 0.694753987495556
+      },
+      "headingRad": -0.3449537728222368,
+      "imageRel": "frames/1560100069.698836.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 315,
+      "timestamp": "1560100069.898986101",
+      "position": {
+        "x": -4.6776581973499205,
+        "y": 0.9004822677771014,
+        "z": 0.6156310686898969
+      },
+      "headingRad": -0.33009403611414306,
+      "imageRel": "frames/1560100069.898986.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 321,
+      "timestamp": "1560100070.099136114",
+      "position": {
+        "x": -4.411427009850833,
+        "y": 0.9002022995610697,
+        "z": 0.5330519550006478
+      },
+      "headingRad": -0.31672189650478805,
+      "imageRel": "frames/1560100070.099136.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 324,
+      "timestamp": "1560100070.199210882",
+      "position": {
+        "x": -4.268948275506837,
+        "y": 0.9000831787933636,
+        "z": 0.49482320101705213
+      },
+      "headingRad": -0.3093542567137874,
+      "imageRel": "frames/1560100070.199211.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 330,
+      "timestamp": "1560100070.399360895",
+      "position": {
+        "x": -3.99756477074569,
+        "y": 0.8998365489928117,
+        "z": 0.41817404465453833
+      },
+      "headingRad": -0.3021988074083888,
+      "imageRel": "frames/1560100070.399361.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 336,
+      "timestamp": "1560100070.599716902",
+      "position": {
+        "x": -3.719062180175932,
+        "y": 0.8996192658478347,
+        "z": 0.3464711735660124
+      },
+      "headingRad": -0.29890914862667806,
+      "imageRel": "frames/1560100070.599717.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 339,
+      "timestamp": "1560100070.699791908",
+      "position": {
+        "x": -3.5792205777139046,
+        "y": 0.899508268183716,
+        "z": 0.31009956724670573
+      },
+      "headingRad": -0.2956643120894909,
+      "imageRel": "frames/1560100070.699792.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 345,
+      "timestamp": "1560100070.899941921",
+      "position": {
+        "x": -3.303846265508156,
+        "y": 0.8992891133810303,
+        "z": 0.2383644774151854
+      },
+      "headingRad": -0.29950256510699225,
+      "imageRel": "frames/1560100070.899942.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 351,
+      "timestamp": "1560100071.100091934",
+      "position": {
+        "x": -3.024415952279476,
+        "y": 0.899069481551252,
+        "z": 0.16610713676842082
+      },
+      "headingRad": -0.2997189272838081,
+      "imageRel": "frames/1560100071.100092.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 354,
+      "timestamp": "1560100071.200166941",
+      "position": {
+        "x": -2.878898217698648,
+        "y": 0.8989684474824927,
+        "z": 0.13106967345479958
+      },
+      "headingRad": -0.2998804538679112,
+      "imageRel": "frames/1560100071.200167.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 360,
+      "timestamp": "1560100071.400316954",
+      "position": {
+        "x": -2.605706097736892,
+        "y": 0.8987338089852057,
+        "z": 0.056558152400047135
+      },
+      "headingRad": -0.29919381687753677,
+      "imageRel": "frames/1560100071.400317.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 366,
+      "timestamp": "1560100071.600668907",
+      "position": {
+        "x": -2.3177314503512036,
+        "y": 0.898528784615716,
+        "z": -0.01376680579243228
+      },
+      "headingRad": -0.2836376756434585,
+      "imageRel": "frames/1560100071.600669.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 369,
+      "timestamp": "1560100071.700743914",
+      "position": {
+        "x": -2.1820057143538207,
+        "y": 0.898437008021272,
+        "z": -0.04596897040751813
+      },
+      "headingRad": -0.27152604540263675,
+      "imageRel": "frames/1560100071.700744.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 375,
+      "timestamp": "1560100071.900895119",
+      "position": {
+        "x": -1.9027132159953055,
+        "y": 0.8982840779056215,
+        "z": -0.10525554710121199
+      },
+      "headingRad": -0.24142989950219093,
+      "imageRel": "frames/1560100071.900895.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 381,
+      "timestamp": "1560100072.10104394",
+      "position": {
+        "x": -1.6178524168421404,
+        "y": 0.8981896427900444,
+        "z": -0.15376980061617118
+      },
+      "headingRad": -0.21426162114203515,
+      "imageRel": "frames/1560100072.101044.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 384,
+      "timestamp": "1560100072.201118946",
+      "position": {
+        "x": -1.4781490984605128,
+        "y": 0.8981484495745653,
+        "z": -0.1765679169114911
+      },
+      "headingRad": -0.20426653011820997,
+      "imageRel": "frames/1560100072.201119.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 390,
+      "timestamp": "1560100072.401268959",
+      "position": {
+        "x": -1.1951939261260662,
+        "y": 0.898100595728213,
+        "z": -0.21583237114849751
+      },
+      "headingRad": -0.18240145070951125,
+      "imageRel": "frames/1560100072.401269.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 396,
+      "timestamp": "1560100072.601614952",
+      "position": {
+        "x": -0.9124411718588519,
+        "y": 0.8980842562368301,
+        "z": -0.24895402547039325
+      },
+      "headingRad": -0.14896905410920946,
+      "imageRel": "frames/1560100072.601615.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 399,
+      "timestamp": "1560100072.701689959",
+      "position": {
+        "x": -0.7758851855956053,
+        "y": 0.8980871959174264,
+        "z": -0.26284639976603685
+      },
+      "headingRad": -0.13104844196959475,
+      "imageRel": "frames/1560100072.701690.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 405,
+      "timestamp": "1560100072.901839018",
+      "position": {
+        "x": -0.49337000525428465,
+        "y": 0.8981440464141902,
+        "z": -0.2817264392142498
+      },
+      "headingRad": -0.09297302812714314,
+      "imageRel": "frames/1560100072.901839.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 411,
+      "timestamp": "1560100073.101989031",
+      "position": {
+        "x": -0.21296086930759373,
+        "y": 0.898270234532587,
+        "z": -0.2869152492211846
+      },
+      "headingRad": -0.05854954118946883,
+      "imageRel": "frames/1560100073.101989.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 414,
+      "timestamp": "1560100073.202064037",
+      "position": {
+        "x": -0.06884435287075519,
+        "y": 0.8983406916893332,
+        "z": -0.28849377875859616
+      },
+      "headingRad": -0.04443713745511264,
+      "imageRel": "frames/1560100073.202064.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 420,
+      "timestamp": "1560100073.40221405",
+      "position": {
+        "x": 0.21464833594369281,
+        "y": 0.8985227751445899,
+        "z": -0.28315205217595363
+      },
+      "headingRad": -0.018238501450089924,
+      "imageRel": "frames/1560100073.402214.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 423,
+      "timestamp": "1560100073.502289057",
+      "position": {
+        "x": 0.3585333604053247,
+        "y": 0.8986225320555181,
+        "z": -0.2790148673539612
+      },
+      "headingRad": -0.004586594902837559,
+      "imageRel": "frames/1560100073.502289.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 429,
+      "timestamp": "1560100073.702646017",
+      "position": {
+        "x": 0.6391302079484404,
+        "y": 0.8988486230413721,
+        "z": -0.2648183865598135
+      },
+      "headingRad": 0.020591747263397315,
+      "imageRel": "frames/1560100073.702646.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 435,
+      "timestamp": "1560100073.902795076",
+      "position": {
+        "x": 0.921050133473976,
+        "y": 0.8991279125870849,
+        "z": -0.24042873083921634
+      },
+      "headingRad": 0.04776849265147771,
+      "imageRel": "frames/1560100073.902795.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 438,
+      "timestamp": "1560100074.002870083",
+      "position": {
+        "x": 1.0601670815135975,
+        "y": 0.8992820217823247,
+        "z": -0.22522912427227837
+      },
+      "headingRad": 0.05778885950714492,
+      "imageRel": "frames/1560100074.002870.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 444,
+      "timestamp": "1560100074.203020096",
+      "position": {
+        "x": 1.3424857027462451,
+        "y": 0.8995810385900764,
+        "z": -0.1970498654056989
+      },
+      "headingRad": 0.07338648289640375,
+      "imageRel": "frames/1560100074.203020.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 450,
+      "timestamp": "1560100074.403168917",
+      "position": {
+        "x": 1.6242796410048328,
+        "y": 0.8999026245665225,
+        "z": -0.16443119032164688
+      },
+      "headingRad": 0.08472791296155059,
+      "imageRel": "frames/1560100074.403169.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 453,
+      "timestamp": "1560100074.503243923",
+      "position": {
+        "x": 1.7593932239209025,
+        "y": 0.9000636010519392,
+        "z": -0.1474736606708298
+      },
+      "headingRad": 0.08581854518749343,
+      "imageRel": "frames/1560100074.503244.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 459,
+      "timestamp": "1560100074.703624964",
+      "position": {
+        "x": 2.039040939652409,
+        "y": 0.9003853939164655,
+        "z": -0.1145874815925616
+      },
+      "headingRad": 0.07842098574851639,
+      "imageRel": "frames/1560100074.703625.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 465,
+      "timestamp": "1560100074.90377593",
+      "position": {
+        "x": 2.3133939472762464,
+        "y": 0.9006726160870345,
+        "z": -0.08785553671775759
+      },
+      "headingRad": 0.05717100560307286,
+      "imageRel": "frames/1560100074.903776.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 468,
+      "timestamp": "1560100075.003850937",
+      "position": {
+        "x": 2.4529709903105186,
+        "y": 0.9007972883367076,
+        "z": -0.07842250519425065
+      },
+      "headingRad": 0.04480093454626934,
+      "imageRel": "frames/1560100075.003851.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 474,
+      "timestamp": "1560100075.20400095",
+      "position": {
+        "x": 2.7255200774008657,
+        "y": 0.9010167269619199,
+        "z": -0.06466579995590749
+      },
+      "headingRad": 0.016897380157344138,
+      "imageRel": "frames/1560100075.204001.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 480,
+      "timestamp": "1560100075.404150963",
+      "position": {
+        "x": 3.002309858719272,
+        "y": 0.9012124920229283,
+        "z": -0.055956611893687835
+      },
+      "headingRad": -0.015824664388162178,
+      "imageRel": "frames/1560100075.404151.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 483,
+      "timestamp": "1560100075.504225969",
+      "position": {
+        "x": 3.1355341855660086,
+        "y": 0.9012547952550511,
+        "z": -0.06185012045873961
+      },
+      "headingRad": -0.032770517646476406,
+      "imageRel": "frames/1560100075.504226.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 489,
+      "timestamp": "1560100075.704560995",
+      "position": {
+        "x": 3.4078878818280387,
+        "y": 0.9013601279796247,
+        "z": -0.0702366954352236
+      },
+      "headingRad": -0.07626487780131737,
+      "imageRel": "frames/1560100075.704561.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 495,
+      "timestamp": "1560100075.904711008",
+      "position": {
+        "x": 3.673107824937425,
+        "y": 0.9013941966422654,
+        "z": -0.09171005571876023
+      },
+      "headingRad": -0.1258255952833568,
+      "imageRel": "frames/1560100075.904711.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 498,
+      "timestamp": "1560100076.004785061",
+      "position": {
+        "x": 3.8003507826303746,
+        "y": 0.9013626300650763,
+        "z": -0.11131854617645232
+      },
+      "headingRad": -0.15031896208454312,
+      "imageRel": "frames/1560100076.004785.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 504,
+      "timestamp": "1560100076.204935074",
+      "position": {
+        "x": 4.06512852003727,
+        "y": 0.9012905958855211,
+        "z": -0.15335452795804017
+      },
+      "headingRad": -0.1976978270623011,
+      "imageRel": "frames/1560100076.204935.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 510,
+      "timestamp": "1560100076.405085087",
+      "position": {
+        "x": 4.330522712811721,
+        "y": 0.9011644013737181,
+        "z": -0.20597592612342552
+      },
+      "headingRad": -0.24515156552984693,
+      "imageRel": "frames/1560100076.405085.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 513,
+      "timestamp": "1560100076.505160093",
+      "position": {
+        "x": 4.461501980537406,
+        "y": 0.9010691903728678,
+        "z": -0.23834246720735663
+      },
+      "headingRad": -0.26891372615661685,
+      "imageRel": "frames/1560100076.505160.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 519,
+      "timestamp": "1560100076.710939884",
+      "position": {
+        "x": 4.721938469581879,
+        "y": 0.9008178273985539,
+        "z": -0.31475153979032555
+      },
+      "headingRad": -0.31437648243101207,
+      "imageRel": "frames/1560100076.710940.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 525,
+      "timestamp": "1560100076.911192894",
+      "position": {
+        "x": 4.976312851085773,
+        "y": 0.9005096585496307,
+        "z": -0.4015525374276514
+      },
+      "headingRad": -0.3623010234268893,
+      "imageRel": "frames/1560100076.911193.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 528,
+      "timestamp": "1560100077.011318922",
+      "position": {
+        "x": 5.1029684622282545,
+        "y": 0.9003434374502719,
+        "z": -0.44725416630565107
+      },
+      "headingRad": -0.3840278581287576,
+      "imageRel": "frames/1560100077.011319.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 534,
+      "timestamp": "1560100077.211571932",
+      "position": {
+        "x": 5.3461137185,
+        "y": 0.8999597871193694,
+        "z": -0.5475273796967777
+      },
+      "headingRad": -0.42534081061286755,
+      "imageRel": "frames/1560100077.211572.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 540,
+      "timestamp": "1560100077.411824942",
+      "position": {
+        "x": 5.587554024741557,
+        "y": 0.8995506677117526,
+        "z": -0.6525671361577814
+      },
+      "headingRad": -0.4662335818674542,
+      "imageRel": "frames/1560100077.411825.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 543,
+      "timestamp": "1560100077.51195097",
+      "position": {
+        "x": 5.707413776314617,
+        "y": 0.8993118645654339,
+        "z": -0.7116473444007276
+      },
+      "headingRad": -0.48843311287232427,
+      "imageRel": "frames/1560100077.511951.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 549,
+      "timestamp": "1560100077.714123011",
+      "position": {
+        "x": 5.940124365897965,
+        "y": 0.8987903963338977,
+        "z": -0.8375851694490244
+      },
+      "headingRad": -0.54146109202307,
+      "imageRel": "frames/1560100077.714123.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 555,
+      "timestamp": "1560100077.914475918",
+      "position": {
+        "x": 6.160662078353873,
+        "y": 0.898159690367153,
+        "z": -0.9834520803419515
+      },
+      "headingRad": -0.6107891515548202,
+      "imageRel": "frames/1560100077.914476.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 558,
+      "timestamp": "1560100078.014652014",
+      "position": {
+        "x": 6.271319592766169,
+        "y": 0.8978229057367852,
+        "z": -1.0605895922256998
+      },
+      "headingRad": -0.645672535506375,
+      "imageRel": "frames/1560100078.014652.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 564,
+      "timestamp": "1560100078.215004921",
+      "position": {
+        "x": 6.470005785404844,
+        "y": 0.897094811522184,
+        "z": -1.2230588227634165
+      },
+      "headingRad": -0.7177106748753806,
+      "imageRel": "frames/1560100078.215005.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 570,
+      "timestamp": "1560100078.415358067",
+      "position": {
+        "x": 6.6502011017269,
+        "y": 0.8962816313027963,
+        "z": -1.4000967242331548
+      },
+      "headingRad": -0.7887978360995801,
+      "imageRel": "frames/1560100078.415358.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 573,
+      "timestamp": "1560100078.515535116",
+      "position": {
+        "x": 6.735122460967013,
+        "y": 0.8958442140102012,
+        "z": -1.4940553094625209
+      },
+      "headingRad": -0.8263521359002126,
+      "imageRel": "frames/1560100078.515535.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 579,
+      "timestamp": "1560100078.71508503",
+      "position": {
+        "x": 6.89126652836331,
+        "y": 0.8949514214135009,
+        "z": -1.6840097533354204
+      },
+      "headingRad": -0.9088052756834848,
+      "imageRel": "frames/1560100078.715085.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 587,
+      "timestamp": "1560100078.982223988",
+      "position": {
+        "x": 7.0582047966966925,
+        "y": 0.8937941685193278,
+        "z": -1.9264763414926058
+      },
+      "headingRad": -1.0208302803857139,
+      "imageRel": "frames/1560100078.982224.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 591,
+      "timestamp": "1560100079.11579299",
+      "position": {
+        "x": 7.141769418068186,
+        "y": 0.8930671002151812,
+        "z": -2.0765531539498916
+      },
+      "headingRad": -1.0905726959620474,
+      "imageRel": "frames/1560100079.115793.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-01-240",
+      "index": 599,
+      "timestamp": "1560100079.382931948",
+      "position": {
+        "x": 7.261096446029548,
+        "y": 0.8917111857839044,
+        "z": -2.3525650748058418
+      },
+      "headingRad": -1.199155869080858,
+      "imageRel": "frames/1560100079.382932.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 480,
+      "timestamp": "1560100075.404150963",
+      "position": {
+        "x": -3.845246504647939,
+        "y": 0.28245506528418923,
+        "z": 5.522773944986955
+      },
+      "headingRad": -0.015824664388162178,
+      "imageRel": "frames/1560100075.404151.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 486,
+      "timestamp": "1560100075.604485989",
+      "position": {
+        "x": -3.575850208074556,
+        "y": 0.2825543529587908,
+        "z": 5.513526411229893
+      },
+      "headingRad": -0.05385430751603194,
+      "imageRel": "frames/1560100075.604486.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 489,
+      "timestamp": "1560100075.704560995",
+      "position": {
+        "x": -3.4396684815391723,
+        "y": 0.2826027012408857,
+        "z": 5.5084938614454195
+      },
+      "headingRad": -0.07626487780131737,
+      "imageRel": "frames/1560100075.704561.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 495,
+      "timestamp": "1560100075.904711008",
+      "position": {
+        "x": -3.174448538429786,
+        "y": 0.28263676990352643,
+        "z": 5.487020501161883
+      },
+      "headingRad": -0.1258255952833568,
+      "imageRel": "frames/1560100075.904711.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 501,
+      "timestamp": "1560100076.104860067",
+      "position": {
+        "x": -2.91339117321062,
+        "y": 0.282583022074012,
+        "z": 5.448930511848307
+      },
+      "headingRad": -0.17476762743384558,
+      "imageRel": "frames/1560100076.104860.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 504,
+      "timestamp": "1560100076.204935074",
+      "position": {
+        "x": -2.782427843329941,
+        "y": 0.2825331691467821,
+        "z": 5.425376028922603
+      },
+      "headingRad": -0.1976978270623011,
+      "imageRel": "frames/1560100076.204935.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 510,
+      "timestamp": "1560100076.405085087",
+      "position": {
+        "x": -2.51703365055549,
+        "y": 0.28240697463497905,
+        "z": 5.372754630757218
+      },
+      "headingRad": -0.24515156552984693,
+      "imageRel": "frames/1560100076.405085.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 516,
+      "timestamp": "1560100076.610814095",
+      "position": {
+        "x": -2.255439401984262,
+        "y": 0.28218276191909586,
+        "z": 5.301496610532734
+      },
+      "headingRad": -0.2905125084602025,
+      "imageRel": "frames/1560100076.610814.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 519,
+      "timestamp": "1560100076.710939884",
+      "position": {
+        "x": -2.125617893785332,
+        "y": 0.2820604006598148,
+        "z": 5.263979017090318
+      },
+      "headingRad": -0.31437648243101207,
+      "imageRel": "frames/1560100076.710940.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 525,
+      "timestamp": "1560100076.911192894",
+      "position": {
+        "x": -1.8712435122814384,
+        "y": 0.2817522318108917,
+        "z": 5.177178019452992
+      },
+      "headingRad": -0.3623010234268893,
+      "imageRel": "frames/1560100076.911193.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 528,
+      "timestamp": "1560100077.011318922",
+      "position": {
+        "x": -1.7445879011389565,
+        "y": 0.28158601071153283,
+        "z": 5.131476390574992
+      },
+      "headingRad": -0.3840278581287576,
+      "imageRel": "frames/1560100077.011319.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 534,
+      "timestamp": "1560100077.211571932",
+      "position": {
+        "x": -1.5014426448672111,
+        "y": 0.28120236038063035,
+        "z": 5.0312031771838654
+      },
+      "headingRad": -0.42534081061286755,
+      "imageRel": "frames/1560100077.211572.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 540,
+      "timestamp": "1560100077.411824942",
+      "position": {
+        "x": -1.2600023386256538,
+        "y": 0.28079324097301356,
+        "z": 4.926163420722862
+      },
+      "headingRad": -0.4662335818674542,
+      "imageRel": "frames/1560100077.411825.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 543,
+      "timestamp": "1560100077.51195097",
+      "position": {
+        "x": -1.140142587052594,
+        "y": 0.2805544378266949,
+        "z": 4.8670832124799155
+      },
+      "headingRad": -0.48843311287232427,
+      "imageRel": "frames/1560100077.511951.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 549,
+      "timestamp": "1560100077.714123011",
+      "position": {
+        "x": -0.9074319974692457,
+        "y": 0.2800329695951587,
+        "z": 4.741145387431619
+      },
+      "headingRad": -0.54146109202307,
+      "imageRel": "frames/1560100077.714123.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 555,
+      "timestamp": "1560100077.914475918",
+      "position": {
+        "x": -0.6868942850133379,
+        "y": 0.279402263628414,
+        "z": 4.595278476538692
+      },
+      "headingRad": -0.6107891515548202,
+      "imageRel": "frames/1560100077.914476.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 558,
+      "timestamp": "1560100078.014652014",
+      "position": {
+        "x": -0.5762367706010423,
+        "y": 0.27906547899804623,
+        "z": 4.518140964654943
+      },
+      "headingRad": -0.645672535506375,
+      "imageRel": "frames/1560100078.014652.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 564,
+      "timestamp": "1560100078.215004921",
+      "position": {
+        "x": -0.37755057796236713,
+        "y": 0.278337384783445,
+        "z": 4.355671734117227
+      },
+      "headingRad": -0.7177106748753806,
+      "imageRel": "frames/1560100078.215005.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 570,
+      "timestamp": "1560100078.415358067",
+      "position": {
+        "x": -0.19735526164031114,
+        "y": 0.27752420456405724,
+        "z": 4.178633832647488
+      },
+      "headingRad": -0.7887978360995801,
+      "imageRel": "frames/1560100078.415358.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 573,
+      "timestamp": "1560100078.515535116",
+      "position": {
+        "x": -0.11243390240019835,
+        "y": 0.2770867872714622,
+        "z": 4.084675247418122
+      },
+      "headingRad": -0.8263521359002126,
+      "imageRel": "frames/1560100078.515535.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 579,
+      "timestamp": "1560100078.71508503",
+      "position": {
+        "x": 0.043710164996099365,
+        "y": 0.2761939946747619,
+        "z": 3.8947208035452228
+      },
+      "headingRad": -0.9088052756834848,
+      "imageRel": "frames/1560100078.715085.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 587,
+      "timestamp": "1560100078.982223988",
+      "position": {
+        "x": 0.21064843332948158,
+        "y": 0.27503674178058873,
+        "z": 3.6522542153880373
+      },
+      "headingRad": -1.0208302803857139,
+      "imageRel": "frames/1560100078.982224.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 591,
+      "timestamp": "1560100079.11579299",
+      "position": {
+        "x": 0.29421305470097536,
+        "y": 0.2743096734764422,
+        "z": 3.5021774029307515
+      },
+      "headingRad": -1.0905726959620474,
+      "imageRel": "frames/1560100079.115793.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 599,
+      "timestamp": "1560100079.382931948",
+      "position": {
+        "x": 0.41354008266233677,
+        "y": 0.2729537590451654,
+        "z": 3.2261654820748014
+      },
+      "headingRad": -1.199155869080858,
+      "imageRel": "frames/1560100079.382932.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 605,
+      "timestamp": "1560100079.583286047",
+      "position": {
+        "x": 0.4813008568377768,
+        "y": 0.2717693593218361,
+        "z": 2.988930304986642
+      },
+      "headingRad": -1.2938933620330233,
+      "imageRel": "frames/1560100079.583286.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 608,
+      "timestamp": "1560100079.682004929",
+      "position": {
+        "x": 0.5094440441864378,
+        "y": 0.2711246751306142,
+        "z": 2.8607257972692857
+      },
+      "headingRad": -1.346275095573574,
+      "imageRel": "frames/1560100079.682005.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 615,
+      "timestamp": "1560100079.915723085",
+      "position": {
+        "x": 0.5619789684206609,
+        "y": 0.2694886237453024,
+        "z": 2.5373742750289985
+      },
+      "headingRad": -1.459503555099615,
+      "imageRel": "frames/1560100079.915723.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 619,
+      "timestamp": "1560100080.049276114",
+      "position": {
+        "x": 0.5759674454971133,
+        "y": 0.2687353275098754,
+        "z": 2.3895721225423436
+      },
+      "headingRad": -1.502607947901936,
+      "imageRel": "frames/1560100080.049276.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 625,
+      "timestamp": "1560100080.24960494",
+      "position": {
+        "x": 0.591970903162732,
+        "y": 0.2673823714075945,
+        "z": 2.125078383763789
+      },
+      "headingRad": -1.5500374198620506,
+      "imageRel": "frames/1560100080.249605.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 631,
+      "timestamp": "1560100080.449934006",
+      "position": {
+        "x": 0.6009698038962625,
+        "y": 0.266039131067529,
+        "z": 1.8632137287676862
+      },
+      "headingRad": -1.5795473575190113,
+      "imageRel": "frames/1560100080.449934.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 634,
+      "timestamp": "1560100080.550098896",
+      "position": {
+        "x": 0.5985466303728657,
+        "y": 0.2653188132285799,
+        "z": 1.723555559199557
+      },
+      "headingRad": -1.5935841977870504,
+      "imageRel": "frames/1560100080.550099.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 640,
+      "timestamp": "1560100080.747160912",
+      "position": {
+        "x": 0.5991868353573864,
+        "y": 0.26392449335153695,
+        "z": 1.45265450923743
+      },
+      "headingRad": -1.6093348146589483,
+      "imageRel": "frames/1560100080.747161.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 646,
+      "timestamp": "1560100080.947391033",
+      "position": {
+        "x": 0.6002088200864648,
+        "y": 0.2624882056000673,
+        "z": 1.1735611664611518
+      },
+      "headingRad": -1.5990020932538054,
+      "imageRel": "frames/1560100080.947391.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 649,
+      "timestamp": "1560100081.047507048",
+      "position": {
+        "x": 0.6018114828247718,
+        "y": 0.26175356922559817,
+        "z": 1.0306953609381146
+      },
+      "headingRad": -1.5875511744013262,
+      "imageRel": "frames/1560100081.047507.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 655,
+      "timestamp": "1560100081.247737885",
+      "position": {
+        "x": 0.6088359654741282,
+        "y": 0.26034707243306565,
+        "z": 0.7567528689251937
+      },
+      "headingRad": -1.5764578889751304,
+      "imageRel": "frames/1560100081.247738.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 661,
+      "timestamp": "1560100081.44796896",
+      "position": {
+        "x": 0.6232205795007957,
+        "y": 0.2588787250519688,
+        "z": 0.47001694311176934
+      },
+      "headingRad": -1.5790371350507324,
+      "imageRel": "frames/1560100081.447969.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 664,
+      "timestamp": "1560100081.548084021",
+      "position": {
+        "x": 0.626345978939284,
+        "y": 0.258170288448421,
+        "z": 0.3320789101832098
+      },
+      "headingRad": -1.576187993699867,
+      "imageRel": "frames/1560100081.548084.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 670,
+      "timestamp": "1560100081.748315096",
+      "position": {
+        "x": 0.6407190626194819,
+        "y": 0.25674785131290295,
+        "z": 0.054261829804939765
+      },
+      "headingRad": -1.5683337752984352,
+      "imageRel": "frames/1560100081.748315.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 676,
+      "timestamp": "1560100081.946964979",
+      "position": {
+        "x": 0.6511278702789838,
+        "y": 0.25525533605273737,
+        "z": -0.23674737532576628
+      },
+      "headingRad": -1.5574016508307789,
+      "imageRel": "frames/1560100081.946965.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 679,
+      "timestamp": "1560100082.047065973",
+      "position": {
+        "x": 0.6589881365130879,
+        "y": 0.2545820253599272,
+        "z": -0.36836403272000595
+      },
+      "headingRad": -1.5534922337600283,
+      "imageRel": "frames/1560100082.047066.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 685,
+      "timestamp": "1560100082.247267962",
+      "position": {
+        "x": 0.6751162475946728,
+        "y": 0.2530970803926558,
+        "z": -0.6585085433639826
+      },
+      "headingRad": -1.546093273513013,
+      "imageRel": "frames/1560100082.247268.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 691,
+      "timestamp": "1560100082.44746995",
+      "position": {
+        "x": 0.6977271977637685,
+        "y": 0.2516489696984306,
+        "z": -0.9421849826530497
+      },
+      "headingRad": -1.5488479695321355,
+      "imageRel": "frames/1560100082.447470.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 694,
+      "timestamp": "1560100082.54756999",
+      "position": {
+        "x": 0.7097194572169627,
+        "y": 0.2508687969892441,
+        "z": -1.0949962018488257
+      },
+      "headingRad": -1.5518184558454882,
+      "imageRel": "frames/1560100082.547570.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 700,
+      "timestamp": "1560100082.747771978",
+      "position": {
+        "x": 0.7277968101541603,
+        "y": 0.24940251472138175,
+        "z": -1.3817221170942737
+      },
+      "headingRad": -1.5593685291532624,
+      "imageRel": "frames/1560100082.747772.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 706,
+      "timestamp": "1560100082.946578979",
+      "position": {
+        "x": 0.7413844833679946,
+        "y": 0.24786682553468625,
+        "z": -1.6814541334780522
+      },
+      "headingRad": -1.5639328954160054,
+      "imageRel": "frames/1560100082.946579.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 709,
+      "timestamp": "1560100083.046664953",
+      "position": {
+        "x": 0.7471017607642096,
+        "y": 0.24713657363546426,
+        "z": -1.8239040977713152
+      },
+      "headingRad": -1.5643623431790705,
+      "imageRel": "frames/1560100083.046665.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 715,
+      "timestamp": "1560100083.24684",
+      "position": {
+        "x": 0.7622641417609373,
+        "y": 0.24559747567885576,
+        "z": -2.1244650207377127
+      },
+      "headingRad": -1.565014356664295,
+      "imageRel": "frames/1560100083.246840.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 718,
+      "timestamp": "1560100083.346926928",
+      "position": {
+        "x": 0.7675877203325996,
+        "y": 0.24494058840787003,
+        "z": -2.252622911969734
+      },
+      "headingRad": -1.5678469237759407,
+      "imageRel": "frames/1560100083.346927.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 724,
+      "timestamp": "1560100083.547101021",
+      "position": {
+        "x": 0.7803232893970602,
+        "y": 0.2434915779713404,
+        "z": -2.5354281628280297
+      },
+      "headingRad": -1.5744467293220148,
+      "imageRel": "frames/1560100083.547101.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 730,
+      "timestamp": "1560100083.747275114",
+      "position": {
+        "x": 0.7902383090048772,
+        "y": 0.2419370819015823,
+        "z": -2.838424245091648
+      },
+      "headingRad": -1.577658580706286,
+      "imageRel": "frames/1560100083.747275.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 733,
+      "timestamp": "1560100083.847362041",
+      "position": {
+        "x": 0.7934732445695687,
+        "y": 0.24128076513403518,
+        "z": -2.9662501020956675
+      },
+      "headingRad": -1.580281696633779,
+      "imageRel": "frames/1560100083.847362.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 740,
+      "timestamp": "1560100084.080615044",
+      "position": {
+        "x": 0.801710895730082,
+        "y": 0.23971224419174625,
+        "z": -3.2717927220122824
+      },
+      "headingRad": -1.5824503805686583,
+      "imageRel": "frames/1560100084.080615.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 745,
+      "timestamp": "1560100084.247420073",
+      "position": {
+        "x": 0.8092718710889244,
+        "y": 0.23834367274387858,
+        "z": -3.538425402959934
+      },
+      "headingRad": -1.5875692944523434,
+      "imageRel": "frames/1560100084.247420.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 748,
+      "timestamp": "1560100084.347501993",
+      "position": {
+        "x": 0.8080778647069309,
+        "y": 0.23761770549276262,
+        "z": -3.6793111042771507
+      },
+      "headingRad": -1.5874243340442509,
+      "imageRel": "frames/1560100084.347502.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 754,
+      "timestamp": "1560100084.54766798",
+      "position": {
+        "x": 0.8167866691774037,
+        "y": 0.23626706843701106,
+        "z": -3.942581774587513
+      },
+      "headingRad": -1.5888200548197047,
+      "imageRel": "frames/1560100084.547668.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 760,
+      "timestamp": "1560100084.747833014",
+      "position": {
+        "x": 0.8202135968229669,
+        "y": 0.23480531412631694,
+        "z": -4.226876472303747
+      },
+      "headingRad": -1.5834040674428385,
+      "imageRel": "frames/1560100084.747833.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 763,
+      "timestamp": "1560100084.847915888",
+      "position": {
+        "x": 0.8224312462566843,
+        "y": 0.23408945625812244,
+        "z": -4.366159869916327
+      },
+      "headingRad": -1.582739824534493,
+      "imageRel": "frames/1560100084.847916.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 769,
+      "timestamp": "1560100085.046789885",
+      "position": {
+        "x": 0.8297345659471063,
+        "y": 0.23263037256882135,
+        "z": -4.650346394612537
+      },
+      "headingRad": -1.5830869665566707,
+      "imageRel": "frames/1560100085.046790.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 776,
+      "timestamp": "1560100085.280282974",
+      "position": {
+        "x": 0.838191895785414,
+        "y": 0.23115250135839954,
+        "z": -4.9383044422372215
+      },
+      "headingRad": -1.5774339874536023,
+      "imageRel": "frames/1560100085.280283.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 779,
+      "timestamp": "1560100085.380351067",
+      "position": {
+        "x": 0.8427781024702767,
+        "y": 0.2304977076208119,
+        "z": -5.065977585694252
+      },
+      "headingRad": -1.573192921136421,
+      "imageRel": "frames/1560100085.380351.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 785,
+      "timestamp": "1560100085.580487967",
+      "position": {
+        "x": 0.8590783057336182,
+        "y": 0.2291795482068371,
+        "z": -5.323743831945489
+      },
+      "headingRad": -1.5639965083728453,
+      "imageRel": "frames/1560100085.580488.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 791,
+      "timestamp": "1560100085.780625105",
+      "position": {
+        "x": 0.8706005928101348,
+        "y": 0.22787830387874697,
+        "z": -5.577718430445547
+      },
+      "headingRad": -1.5542264086157316,
+      "imageRel": "frames/1560100085.780625.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 794,
+      "timestamp": "1560100085.880693913",
+      "position": {
+        "x": 0.8797009085860168,
+        "y": 0.22718821402995287,
+        "z": -5.712725618027616
+      },
+      "headingRad": -1.550896190515084,
+      "imageRel": "frames/1560100085.880694.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 800,
+      "timestamp": "1560100086.080851078",
+      "position": {
+        "x": 0.8942781447444048,
+        "y": 0.22587032308305505,
+        "z": -5.970257228414429
+      },
+      "headingRad": -1.550002591671139,
+      "imageRel": "frames/1560100086.080851.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 803,
+      "timestamp": "1560100086.180917025",
+      "position": {
+        "x": 0.902482892940327,
+        "y": 0.22519827053075936,
+        "z": -6.101665990036782
+      },
+      "headingRad": -1.553656713052695,
+      "imageRel": "frames/1560100086.180917.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 809,
+      "timestamp": "1560100086.381047964",
+      "position": {
+        "x": 0.9182913153402978,
+        "y": 0.2238907567161424,
+        "z": -6.3573123437169805
+      },
+      "headingRad": -1.5612136075442788,
+      "imageRel": "frames/1560100086.381048.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 815,
+      "timestamp": "1560100086.581178904",
+      "position": {
+        "x": 0.9275060353725593,
+        "y": 0.22248598076973286,
+        "z": -6.631152557722874
+      },
+      "headingRad": -1.5735696472237877,
+      "imageRel": "frames/1560100086.581179.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 818,
+      "timestamp": "1560100086.681243896",
+      "position": {
+        "x": 0.9344262271341677,
+        "y": 0.22178940300030053,
+        "z": -6.767189052905739
+      },
+      "headingRad": -1.580867737211016,
+      "imageRel": "frames/1560100086.681244.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 824,
+      "timestamp": "1560100086.881375074",
+      "position": {
+        "x": 0.9371642373355087,
+        "y": 0.2204313210171327,
+        "z": -7.031273429914659
+      },
+      "headingRad": -1.591408837928712,
+      "imageRel": "frames/1560100086.881375.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 830,
+      "timestamp": "1560100087.08155489",
+      "position": {
+        "x": 0.9355948818819684,
+        "y": 0.219052729465047,
+        "z": -7.298885377407867
+      },
+      "headingRad": -1.6061433011923523,
+      "imageRel": "frames/1560100087.081555.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 833,
+      "timestamp": "1560100087.181617022",
+      "position": {
+        "x": 0.9372223329417722,
+        "y": 0.21836940321356385,
+        "z": -7.431787309885603
+      },
+      "headingRad": -1.6123150864932232,
+      "imageRel": "frames/1560100087.181617.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-02-480",
+      "index": 839,
+      "timestamp": "1560100087.381742001",
+      "position": {
+        "x": 0.9334351102193352,
+        "y": 0.21700590724335345,
+        "z": -7.696232179354357
+      },
+      "headingRad": -1.6169533432142718,
+      "imageRel": "frames/1560100087.381742.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 720,
+      "timestamp": "1560100083.413651943",
+      "position": {
+        "x": -0.22414860932624947,
+        "y": 0.5322008076675621,
+        "z": 8.369248564936811
+      },
+      "headingRad": -1.569887473596064,
+      "imageRel": "frames/1560100083.413652.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 726,
+      "timestamp": "1560100083.613826036",
+      "position": {
+        "x": -0.21298309068068022,
+        "y": 0.5307382991469013,
+        "z": 8.083987733382237
+      },
+      "headingRad": -1.575591765993154,
+      "imageRel": "frames/1560100083.613826.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 729,
+      "timestamp": "1560100083.713912964",
+      "position": {
+        "x": -0.21094005408352245,
+        "y": 0.5300089964737049,
+        "z": 7.942111305732318
+      },
+      "headingRad": -1.5757238877676978,
+      "imageRel": "frames/1560100083.713913.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 734,
+      "timestamp": "1560100083.88045001",
+      "position": {
+        "x": -0.20243232861444937,
+        "y": 0.5286415819311658,
+        "z": 7.675603067135057
+      },
+      "headingRad": -1.580707994661311,
+      "imageRel": "frames/1560100083.880450.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 740,
+      "timestamp": "1560100084.080615044",
+      "position": {
+        "x": -0.1951382204342167,
+        "y": 0.527329629579167,
+        "z": 7.41999636702046
+      },
+      "headingRad": -1.5824503805686583,
+      "imageRel": "frames/1560100084.080615.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 745,
+      "timestamp": "1560100084.247420073",
+      "position": {
+        "x": -0.18757724507537432,
+        "y": 0.5259610581312992,
+        "z": 7.153363686072808
+      },
+      "headingRad": -1.5875692944523434,
+      "imageRel": "frames/1560100084.247420.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 748,
+      "timestamp": "1560100084.347501993",
+      "position": {
+        "x": -0.18877125145736784,
+        "y": 0.5252350908801833,
+        "z": 7.012477984755591
+      },
+      "headingRad": -1.5874243340442509,
+      "imageRel": "frames/1560100084.347502.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 754,
+      "timestamp": "1560100084.54766798",
+      "position": {
+        "x": -0.180062446986895,
+        "y": 0.5238844538244317,
+        "z": 6.749207314445229
+      },
+      "headingRad": -1.5888200548197047,
+      "imageRel": "frames/1560100084.547668.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 760,
+      "timestamp": "1560100084.747833014",
+      "position": {
+        "x": -0.17663551934133181,
+        "y": 0.5224226995137375,
+        "z": 6.464912616728995
+      },
+      "headingRad": -1.5834040674428385,
+      "imageRel": "frames/1560100084.747833.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 763,
+      "timestamp": "1560100084.847915888",
+      "position": {
+        "x": -0.17441786990761443,
+        "y": 0.521706841645543,
+        "z": 6.325629219116415
+      },
+      "headingRad": -1.582739824534493,
+      "imageRel": "frames/1560100084.847916.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 769,
+      "timestamp": "1560100085.046789885",
+      "position": {
+        "x": -0.16711455021719246,
+        "y": 0.520247757956242,
+        "z": 6.041442694420205
+      },
+      "headingRad": -1.5830869665566707,
+      "imageRel": "frames/1560100085.046790.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 776,
+      "timestamp": "1560100085.280282974",
+      "position": {
+        "x": -0.15865722037888474,
+        "y": 0.5187698867458201,
+        "z": 5.7534846467955205
+      },
+      "headingRad": -1.5774339874536023,
+      "imageRel": "frames/1560100085.280283.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 779,
+      "timestamp": "1560100085.380351067",
+      "position": {
+        "x": -0.15407101369402199,
+        "y": 0.5181150930082326,
+        "z": 5.62581150333849
+      },
+      "headingRad": -1.573192921136421,
+      "imageRel": "frames/1560100085.380351.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 785,
+      "timestamp": "1560100085.580487967",
+      "position": {
+        "x": -0.1377708104306805,
+        "y": 0.5167969335942577,
+        "z": 5.368045257087253
+      },
+      "headingRad": -1.5639965083728453,
+      "imageRel": "frames/1560100085.580488.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 791,
+      "timestamp": "1560100085.780625105",
+      "position": {
+        "x": -0.12624852335416392,
+        "y": 0.5154956892661676,
+        "z": 5.114070658587195
+      },
+      "headingRad": -1.5542264086157316,
+      "imageRel": "frames/1560100085.780625.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 797,
+      "timestamp": "1560100085.980784893",
+      "position": {
+        "x": -0.10637081895895051,
+        "y": 0.5141504892023204,
+        "z": 4.850673113460651
+      },
+      "headingRad": -1.5511450058842688,
+      "imageRel": "frames/1560100085.980785.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 800,
+      "timestamp": "1560100086.080851078",
+      "position": {
+        "x": -0.10257097141989391,
+        "y": 0.5134877084704756,
+        "z": 4.721531860618313
+      },
+      "headingRad": -1.550002591671139,
+      "imageRel": "frames/1560100086.080851.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 806,
+      "timestamp": "1560100086.280982018",
+      "position": {
+        "x": -0.08415958370828491,
+        "y": 0.5121545161872695,
+        "z": 4.460622017022644
+      },
+      "headingRad": -1.5578896720790043,
+      "imageRel": "frames/1560100086.280982.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 812,
+      "timestamp": "1560100086.481112957",
+      "position": {
+        "x": -0.07277757516216354,
+        "y": 0.5108150798960633,
+        "z": 4.199243854209435
+      },
+      "headingRad": -1.5678936721243562,
+      "imageRel": "frames/1560100086.481113.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 815,
+      "timestamp": "1560100086.581178904",
+      "position": {
+        "x": -0.06934308079173945,
+        "y": 0.5101033661571535,
+        "z": 4.060636531309868
+      },
+      "headingRad": -1.5735696472237877,
+      "imageRel": "frames/1560100086.581179.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 821,
+      "timestamp": "1560100086.781310081",
+      "position": {
+        "x": -0.06114491690010482,
+        "y": 0.5087175665875139,
+        "z": 3.7905899651349344
+      },
+      "headingRad": -1.5854416189988896,
+      "imageRel": "frames/1560100086.781310.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 827,
+      "timestamp": "1560100086.981492043",
+      "position": {
+        "x": -0.0610707723934496,
+        "y": 0.5073781793668386,
+        "z": 3.5304190105041613
+      },
+      "headingRad": -1.5975982660763608,
+      "imageRel": "frames/1560100086.981492.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 830,
+      "timestamp": "1560100087.08155489",
+      "position": {
+        "x": -0.061254234282330344,
+        "y": 0.5066701148524677,
+        "z": 3.392903711624875
+      },
+      "headingRad": -1.6061433011923523,
+      "imageRel": "frames/1560100087.081555.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 836,
+      "timestamp": "1560100087.281680107",
+      "position": {
+        "x": -0.06347239496238899,
+        "y": 0.5053121233441993,
+        "z": 3.129361843212429
+      },
+      "headingRad": -1.6143621756284396,
+      "imageRel": "frames/1560100087.281680.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 842,
+      "timestamp": "1560100087.481805086",
+      "position": {
+        "x": -0.0672287311977442,
+        "y": 0.5038286877428619,
+        "z": 2.841616581172204
+      },
+      "headingRad": -1.6183156851059715,
+      "imageRel": "frames/1560100087.481805.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 847,
+      "timestamp": "1560100087.648576021",
+      "position": {
+        "x": -0.06981838638563431,
+        "y": 0.5025717438198748,
+        "z": 2.5977415825284424
+      },
+      "headingRad": -1.6205973812867327,
+      "imageRel": "frames/1560100087.648576.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 850,
+      "timestamp": "1560100087.748637915",
+      "position": {
+        "x": -0.0701064188653362,
+        "y": 0.5019152368155749,
+        "z": 2.4702519103575327
+      },
+      "headingRad": -1.6208214977358475,
+      "imageRel": "frames/1560100087.748638.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 856,
+      "timestamp": "1560100087.948762894",
+      "position": {
+        "x": -0.07350696991676386,
+        "y": 0.5005355419906706,
+        "z": 2.2026196144926757
+      },
+      "headingRad": -1.6208796726439394,
+      "imageRel": "frames/1560100087.948763.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 863,
+      "timestamp": "1560100088.180911064",
+      "position": {
+        "x": -0.0788261616816186,
+        "y": 0.49893914000854367,
+        "z": 1.8930972485640325
+      },
+      "headingRad": -1.6198964213298341,
+      "imageRel": "frames/1560100088.180911.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 866,
+      "timestamp": "1560100088.280957937",
+      "position": {
+        "x": -0.0772354959352981,
+        "y": 0.498228751717191,
+        "z": 1.754942670927477
+      },
+      "headingRad": -1.6184086695895157,
+      "imageRel": "frames/1560100088.280958.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 872,
+      "timestamp": "1560100088.481050968",
+      "position": {
+        "x": -0.0811195650193497,
+        "y": 0.4968178362112627,
+        "z": 1.4812972696722397
+      },
+      "headingRad": -1.6111577873308507,
+      "imageRel": "frames/1560100088.481051.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 878,
+      "timestamp": "1560100088.681143999",
+      "position": {
+        "x": -0.07633346932988161,
+        "y": 0.4953437045318062,
+        "z": 1.1944544301715254
+      },
+      "headingRad": -1.5960261131636317,
+      "imageRel": "frames/1560100088.681144.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 884,
+      "timestamp": "1560100088.881237984",
+      "position": {
+        "x": -0.06506727107588972,
+        "y": 0.4939534020648567,
+        "z": 0.9232082674268867
+      },
+      "headingRad": -1.582188116679054,
+      "imageRel": "frames/1560100088.881238.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 887,
+      "timestamp": "1560100088.981283903",
+      "position": {
+        "x": -0.060805358486206273,
+        "y": 0.49319578722031177,
+        "z": 0.7755974593653221
+      },
+      "headingRad": -1.5823216328409906,
+      "imageRel": "frames/1560100088.981284.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 893,
+      "timestamp": "1560100089.18176198",
+      "position": {
+        "x": -0.05384369193141936,
+        "y": 0.49170268884231727,
+        "z": 0.48484009445363085
+      },
+      "headingRad": -1.5830411895866792,
+      "imageRel": "frames/1560100089.181762.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 899,
+      "timestamp": "1560100089.381853104",
+      "position": {
+        "x": -0.046179121619928765,
+        "y": 0.4902391962593843,
+        "z": 0.1997589225244596
+      },
+      "headingRad": -1.5762789292885289,
+      "imageRel": "frames/1560100089.381853.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 902,
+      "timestamp": "1560100089.481899023",
+      "position": {
+        "x": -0.03731483566517113,
+        "y": 0.4894928166458164,
+        "z": 0.05384298803725329
+      },
+      "headingRad": -1.5759563763800464,
+      "imageRel": "frames/1560100089.481899.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 908,
+      "timestamp": "1560100089.681988955",
+      "position": {
+        "x": -0.03180926738383505,
+        "y": 0.48798582736242446,
+        "z": -0.23945832861294036
+      },
+      "headingRad": -1.5715747495297976,
+      "imageRel": "frames/1560100089.681989.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 914,
+      "timestamp": "1560100089.882081032",
+      "position": {
+        "x": -0.024132071654960896,
+        "y": 0.4865057462679727,
+        "z": -0.5277629967827835
+      },
+      "headingRad": -1.5715973851560154,
+      "imageRel": "frames/1560100089.882081.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 917,
+      "timestamp": "1560100089.982125998",
+      "position": {
+        "x": -0.016488496969159883,
+        "y": 0.4857870162215946,
+        "z": -0.6681789763461055
+      },
+      "headingRad": -1.574932714604668,
+      "imageRel": "frames/1560100089.982126.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 923,
+      "timestamp": "1560100090.182620049",
+      "position": {
+        "x": -0.0021117755632076296,
+        "y": 0.484261809583574,
+        "z": -0.9659584306823348
+      },
+      "headingRad": -1.5791711280539535,
+      "imageRel": "frames/1560100090.182620.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 929,
+      "timestamp": "1560100090.382709026",
+      "position": {
+        "x": 0.0072573628273460145,
+        "y": 0.4828022025150319,
+        "z": -1.2504654187387345
+      },
+      "headingRad": -1.57944817408582,
+      "imageRel": "frames/1560100090.382709.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 935,
+      "timestamp": "1560100090.582798004",
+      "position": {
+        "x": 0.01728121983281028,
+        "y": 0.4812991778301266,
+        "z": -1.5434752064782344
+      },
+      "headingRad": -1.5783228235974087,
+      "imageRel": "frames/1560100090.582798.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 938,
+      "timestamp": "1560100090.682842016",
+      "position": {
+        "x": 0.020349498873230232,
+        "y": 0.48050942550047426,
+        "z": -1.6972019881627034
+      },
+      "headingRad": -1.5756009167650502,
+      "imageRel": "frames/1560100090.682842.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 944,
+      "timestamp": "1560100090.882930994",
+      "position": {
+        "x": 0.028969692854104778,
+        "y": 0.4789208739467082,
+        "z": -2.0066758791143045
+      },
+      "headingRad": -1.5716480763112264,
+      "imageRel": "frames/1560100090.882931.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 950,
+      "timestamp": "1560100091.083420992",
+      "position": {
+        "x": 0.04089924176656723,
+        "y": 0.4775022411481423,
+        "z": -2.2834951956731615
+      },
+      "headingRad": -1.5702909180413742,
+      "imageRel": "frames/1560100091.083421.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 953,
+      "timestamp": "1560100091.183465004",
+      "position": {
+        "x": 0.04893383383944183,
+        "y": 0.47672181071025305,
+        "z": -2.435937298353977
+      },
+      "headingRad": -1.5680359838015179,
+      "imageRel": "frames/1560100091.183465.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 959,
+      "timestamp": "1560100091.383550882",
+      "position": {
+        "x": 0.06155895548673129,
+        "y": 0.47519860562452976,
+        "z": -2.7331424490312273
+      },
+      "headingRad": -1.56754951971512,
+      "imageRel": "frames/1560100091.383551.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 965,
+      "timestamp": "1560100091.583637953",
+      "position": {
+        "x": 0.07570667405433085,
+        "y": 0.47373685241232444,
+        "z": -3.01857243000817
+      },
+      "headingRad": -1.5655089140424694,
+      "imageRel": "frames/1560100091.583638.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 971,
+      "timestamp": "1560100091.78372407",
+      "position": {
+        "x": 0.08977270655292102,
+        "y": 0.4722417490893081,
+        "z": -3.3104716978411375
+      },
+      "headingRad": -1.5705003589341686,
+      "imageRel": "frames/1560100091.783724.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 974,
+      "timestamp": "1560100091.883768082",
+      "position": {
+        "x": 0.09477229589501235,
+        "y": 0.47151770546469235,
+        "z": -3.4516397502261427
+      },
+      "headingRad": -1.5724443933967138,
+      "imageRel": "frames/1560100091.883768.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 980,
+      "timestamp": "1560100092.08385396",
+      "position": {
+        "x": 0.1043247097718023,
+        "y": 0.46996636068633985,
+        "z": -3.753985318881874
+      },
+      "headingRad": -1.5716786697275054,
+      "imageRel": "frames/1560100092.083854.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 986,
+      "timestamp": "1560100092.282480001",
+      "position": {
+        "x": 0.11493559754751459,
+        "y": 0.46846324653234545,
+        "z": -4.047074660718891
+      },
+      "headingRad": -1.5729524050910693,
+      "imageRel": "frames/1560100092.282480.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 989,
+      "timestamp": "1560100092.38250494",
+      "position": {
+        "x": 0.11848503922223586,
+        "y": 0.4677520635238043,
+        "z": -4.185591069029769
+      },
+      "headingRad": -1.5717993418440226,
+      "imageRel": "frames/1560100092.382505.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 995,
+      "timestamp": "1560100092.582555056",
+      "position": {
+        "x": 0.12958080014053053,
+        "y": 0.4662814276530603,
+        "z": -4.472423171851339
+      },
+      "headingRad": -1.5682213687803184,
+      "imageRel": "frames/1560100092.582555.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 1001,
+      "timestamp": "1560100092.782603979",
+      "position": {
+        "x": 0.1487838541317359,
+        "y": 0.46477008576756806,
+        "z": -4.768020714036453
+      },
+      "headingRad": -1.5706270130131652,
+      "imageRel": "frames/1560100092.782604.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 1004,
+      "timestamp": "1560100092.882628918",
+      "position": {
+        "x": 0.15591769357371277,
+        "y": 0.4640665679527461,
+        "z": -4.905427874945822
+      },
+      "headingRad": -1.5730741745536527,
+      "imageRel": "frames/1560100092.882629.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 1010,
+      "timestamp": "1560100093.082679033",
+      "position": {
+        "x": 0.16353366288036852,
+        "y": 0.46254381874883566,
+        "z": -5.202013928692438
+      },
+      "headingRad": -1.5777487041134886,
+      "imageRel": "frames/1560100093.082679.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 1016,
+      "timestamp": "1560100093.284574032",
+      "position": {
+        "x": 0.16932661968422735,
+        "y": 0.4611054005617686,
+        "z": -5.48202640743331
+      },
+      "headingRad": -1.5758026349775558,
+      "imageRel": "frames/1560100093.284574.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 1022,
+      "timestamp": "1560100093.484704018",
+      "position": {
+        "x": 0.17788014976173372,
+        "y": 0.4595752801480895,
+        "z": -5.780143549974532
+      },
+      "headingRad": -1.5778164158797747,
+      "imageRel": "frames/1560100093.484704.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 1025,
+      "timestamp": "1560100093.584769011",
+      "position": {
+        "x": 0.18146228280842536,
+        "y": 0.4586962979674298,
+        "z": -5.9512567981252715
+      },
+      "headingRad": -1.5799665028934902,
+      "imageRel": "frames/1560100093.584769.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 1031,
+      "timestamp": "1560100093.784898996",
+      "position": {
+        "x": 0.19391550001537894,
+        "y": 0.4572966125218942,
+        "z": -6.2244512378902925
+      },
+      "headingRad": -1.5857363082468612,
+      "imageRel": "frames/1560100093.784899.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 1037,
+      "timestamp": "1560100093.985028982",
+      "position": {
+        "x": 0.2019315582686403,
+        "y": 0.4557771926558985,
+        "z": -6.520432975300608
+      },
+      "headingRad": -1.5927659344095355,
+      "imageRel": "frames/1560100093.985029.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 1041,
+      "timestamp": "1560100094.118448973",
+      "position": {
+        "x": 0.20214277183973195,
+        "y": 0.4548834480358516,
+        "z": -6.6940566532824874
+      },
+      "headingRad": -1.595387142920043,
+      "imageRel": "frames/1560100094.118449.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 1045,
+      "timestamp": "1560100094.251868963",
+      "position": {
+        "x": 0.21453296984968517,
+        "y": 0.4523496705108611,
+        "z": -7.187530910796596
+      },
+      "headingRad": -1.5955149369686203,
+      "imageRel": "frames/1560100094.251869.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 1049,
+      "timestamp": "1560100094.384126902",
+      "position": {
+        "x": 0.21220689922290603,
+        "y": 0.45264647227549276,
+        "z": -7.12963365241545
+      },
+      "headingRad": -1.5979845092867264,
+      "imageRel": "frames/1560100094.384127.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 1053,
+      "timestamp": "1560100094.517529964",
+      "position": {
+        "x": 0.21692176543584196,
+        "y": 0.4517926438738437,
+        "z": -7.295980994480622
+      },
+      "headingRad": -1.5996267582029144,
+      "imageRel": "frames/1560100094.517530.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 1059,
+      "timestamp": "1560100094.717634916",
+      "position": {
+        "x": 0.21565576687055454,
+        "y": 0.450405450026969,
+        "z": -7.565295985263482
+      },
+      "headingRad": -1.6008098068628085,
+      "imageRel": "frames/1560100094.717635.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 1064,
+      "timestamp": "1560100094.884390116",
+      "position": {
+        "x": 0.2190643495784883,
+        "y": 0.4490681980974412,
+        "z": -7.825405348385424
+      },
+      "headingRad": -1.599908572695746,
+      "imageRel": "frames/1560100094.884390.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 1070,
+      "timestamp": "1560100095.084495068",
+      "position": {
+        "x": 0.2231533278580713,
+        "y": 0.44754152515016854,
+        "z": -8.122379988998347
+      },
+      "headingRad": -1.5944773255911726,
+      "imageRel": "frames/1560100095.084495.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 1073,
+      "timestamp": "1560100095.184546947",
+      "position": {
+        "x": 0.22517614202098457,
+        "y": 0.446750996970357,
+        "z": -8.276146741314967
+      },
+      "headingRad": -1.5900641393860184,
+      "imageRel": "frames/1560100095.184547.jpg"
+    },
+    {
+      "submapId": "openloris-corridor1-2-mac-submap-03-720",
+      "index": 1079,
+      "timestamp": "1560100095.384651899",
+      "position": {
+        "x": 0.23662724877800656,
+        "y": 0.4451572504672358,
+        "z": -8.586929538475644
+      },
+      "headingRad": -1.589396558552302,
+      "imageRel": "frames/1560100095.384652.jpg"
+    }
+  ]
+}

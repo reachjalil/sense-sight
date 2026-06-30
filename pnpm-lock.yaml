@@ -65,6 +65,9 @@ importers:
       '@sense-sight/replay-protocol':
         specifier: workspace:*
         version: link:../../packages/replay-protocol
+      '@sense-sight/runpod-orchestrator':
+        specifier: workspace:*
+        version: link:../../packages/runpod-orchestrator
       '@sense-sight/splat-codec':
         specifier: workspace:*
         version: link:../../packages/splat-codec
