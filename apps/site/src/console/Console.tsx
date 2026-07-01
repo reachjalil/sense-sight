@@ -1099,10 +1099,16 @@ export function Console() {
     fallbackColorGain: 1.1,
     fallbackOpacity: 0.9,
   };
-  const activeTrainedRenderProfile = applyInteriorVisibilityProfile(
-    isLive ? liveTrainedProfile : trainedRenderProfile,
-    interiorVisibility
-  );
+  const livePhotorealFusion = isLive && Boolean(liveTrainedSplats);
+  const effectiveInteriorVisibility = livePhotorealFusion
+    ? { ...interiorVisibility, enabled: false }
+    : interiorVisibility;
+  const activeTrainedRenderProfile = livePhotorealFusion
+    ? liveTrainedProfile
+    : applyInteriorVisibilityProfile(
+        isLive ? liveTrainedProfile : trainedRenderProfile,
+        effectiveInteriorVisibility
+      );
 
   const hasScene = seedPositions !== null && seedColors !== null;
   const liveGaussianLabel = new Intl.NumberFormat("en-US").format(
@@ -1268,7 +1274,7 @@ export function Console() {
                 trainedSplat={null}
                 trainedSplats={isLive ? liveTrainedSplats : null}
                 sceneShapes={sceneShapeAnalysis?.shapes ?? []}
-                showInteriorShapes={interiorVisibility.enabled}
+                showInteriorShapes={effectiveInteriorVisibility.enabled}
                 isStreamingLive={isLive}
                 onAutoOrbitChange={setAutoOrbit}
                 onCameraStatusChange={setCameraStatus}
@@ -1376,7 +1382,7 @@ export function Console() {
           loadStatus={loadStatus}
           preset={DEMO_PRESET}
           trainedRenderProfile={activeTrainedRenderProfile}
-          interiorVisibility={interiorVisibility}
+          interiorVisibility={effectiveInteriorVisibility}
           onInteriorVisibilityChange={setInteriorVisibility}
           sceneShapeAnalysis={sceneShapeAnalysis}
           pointCount={isLive ? getRevealedPoints() : pointCount}

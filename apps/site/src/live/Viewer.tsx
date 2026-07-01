@@ -283,7 +283,7 @@ function orientNormalizedBounds(bounds: Bounds): Bounds {
   };
 }
 
-/** Fit `source` to the target's metric floor footprint; Y is height, not scale authority. */
+/** Fit `source` bounds inside `targetBounds`, centered and scaled to 86% of available span. */
 function fitBounds(
   source: Bounds,
   targetBounds: Bounds
@@ -292,14 +292,16 @@ function fitBounds(
   const targetCenter = centerOf(targetBounds);
   const sourceSize = sizeOf(source);
   const targetSize = sizeOf(targetBounds);
-  const scale = Math.min(
-    targetSize[0] / Math.max(sourceSize[0], 0.001),
-    targetSize[2] / Math.max(sourceSize[2], 0.001)
-  );
+  const scale =
+    Math.min(
+      targetSize[0] / sourceSize[0],
+      targetSize[1] / sourceSize[1],
+      targetSize[2] / sourceSize[2]
+    ) * 0.86;
   return {
     position: [
       targetCenter[0] - sourceCenter[0] * scale,
-      targetBounds.min.y - source.min.y * scale,
+      targetBounds.min.y - source.min.y * scale + 0.03,
       targetCenter[2] - sourceCenter[2] * scale,
     ],
     scale,
