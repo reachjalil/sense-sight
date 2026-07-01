@@ -3,6 +3,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
   DEFAULT_TRAINED_RENDER_PROFILE,
   type CoordinateFrame,
+  type InferredSceneShape,
   type RenderLayers,
   type TrainedRenderProfile,
 } from "@sense-sight/render-contracts";
@@ -10,6 +11,7 @@ import {
   BoundsFrame,
   FloorGrid,
   RobotMarker,
+  SceneShapeOverlays,
   SparkTrainedSplatCloud,
   SplatPointCloud,
   StreamedTrainedSplatCloud,
@@ -124,8 +126,13 @@ function cameraTargetOf(bounds: Bounds | null): [number, number, number] {
 
 function cameraPoseForView(
   id: CameraViewId,
-  bounds: Bounds | null
+  bounds: Bounds | null,
+  useTrainedEnvironment = false
 ): CameraPose {
+  if (id === "orbit" && bounds && useTrainedEnvironment) {
+    return trainedSplatEnvironmentPose(bounds);
+  }
+
   const target = new THREE.Vector3(...cameraTargetOf(bounds));
   const span = spanOf(bounds);
   const yFloor = bounds?.min.y ?? 0;
@@ -172,6 +179,52 @@ function cameraPoseForView(
         target,
       };
   }
+}
+
+function trainedSplatEnvironmentPose(bounds: Bounds): CameraPose {
+  const boundsCenter = centerOf(bounds);
+  const size = sizeOf(bounds);
+  const longAxis = size[2] >= size[0] ? "z" : "x";
+  const longSpan = longAxis === "z" ? size[2] : size[0];
+  const entryMargin = Math.min(3.2, Math.max(1.4, longSpan * 0.18));
+  const eyeY = Math.min(
+    bounds.max.y - 0.28,
+    Math.max(bounds.min.y + 1.12, boundsCenter[1])
+  );
+  const targetY = Math.min(
+    bounds.max.y - 0.55,
+    Math.max(bounds.min.y + 1, eyeY)
+  );
+
+  if (longAxis === "x") {
+    return {
+      fov: 54,
+      position: new THREE.Vector3(
+        bounds.max.x + entryMargin,
+        eyeY,
+        boundsCenter[2]
+      ),
+      target: new THREE.Vector3(
+        bounds.min.x + longSpan * 0.35,
+        targetY,
+        boundsCenter[2]
+      ),
+    };
+  }
+
+  return {
+    fov: 54,
+    position: new THREE.Vector3(
+      boundsCenter[0],
+      eyeY,
+      bounds.max.z + entryMargin
+    ),
+    target: new THREE.Vector3(
+      boundsCenter[0],
+      targetY,
+      bounds.min.z + longSpan * 0.35
+    ),
+  };
 }
 
 function robotTargetOf(
@@ -659,6 +712,8 @@ export interface ViewerProps {
   robotPose?: RobotPose | null;
   trainedSplat: TrainedSplatAsset | null;
   trainedSplats?: readonly TrainedSplatAsset[] | null;
+  sceneShapes?: readonly InferredSceneShape[];
+  showInteriorShapes?: boolean;
   /** Gate the live StreamedTrainedSplatCloud render path behind an explicit flag. */
   isStreamingLive: boolean;
   onAutoOrbitChange?: (enabled: boolean) => void;
@@ -680,6 +735,8 @@ export function Viewer({
   robotPose,
   trainedSplat,
   trainedSplats,
+  sceneShapes = [],
+  showInteriorShapes = false,
   isStreamingLive,
   onAutoOrbitChange,
   onCameraStatusChange,
@@ -755,18 +812,24 @@ export function Viewer({
       ),
     [activeTrainedSplats]
   );
-  const viewBounds = trainedTargetBounds ?? worldBounds;
+  const dominantShapeBounds =
+    showInteriorShapes && sceneShapes.length > 0
+      ? sceneShapes[0]?.bounds
+      : null;
+  const cameraBounds =
+    dominantShapeBounds ?? trainedTargetBounds ?? worldBounds;
 
-  const target = cameraTargetOf(viewBounds);
-  const span = spanOf(viewBounds);
-  const initialPose = cameraPoseForView(cameraView.id, viewBounds);
+  const target = cameraTargetOf(cameraBounds);
+  const span = spanOf(cameraBounds);
+  const worldSpan = spanOf(worldBounds ?? cameraBounds);
+  const initialPose = cameraPoseForView(cameraView.id, cameraBounds);
   const cameraPosition = initialPose.position.toArray() as [
     number,
     number,
     number,
   ];
-  const gridSize = clamp(span * 1.8, 16, 96);
-  const cameraFar = Math.max(200, span * 18);
+  const gridSize = clamp(worldSpan * 1.8, 16, 96);
+  const cameraFar = Math.max(200, Math.max(span, worldSpan) * 18);
   const cloudBuffers = isStreamingLive ? getCloudBuffers() : null;
   const splatBuffers = isStreamingLive ? getSplatBuffers() : null;
 
@@ -813,6 +876,13 @@ export function Viewer({
       {worldBounds && (
         <BoundsFrame bounds={worldBounds} visible={layers.annotations} />
       )}
+      <SceneShapeOverlays
+        shapes={sceneShapes}
+        visible={
+          sceneShapes.length > 0 && (showInteriorShapes || layers.annotations)
+        }
+        floorY={worldBounds?.min.y ?? 0}
+      />
 
       {!isStreamingLive && seedPositions && seedColors && (
         <SplatPointCloud
@@ -919,7 +989,7 @@ export function Viewer({
         autoOrbit={autoOrbit}
         cameraView={cameraView}
         robotPose={robotPose}
-        worldBounds={viewBounds}
+        worldBounds={cameraBounds}
         onAutoOrbitChange={onAutoOrbitChange}
         onCameraStatusChange={onCameraStatusChange}
         onCameraViewChange={onCameraViewChange}

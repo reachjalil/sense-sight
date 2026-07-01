@@ -1,6 +1,8 @@
 import type {
+  InteriorVisibilityTuning,
   RenderLayers,
   RenderPreset,
+  SceneShapeAnalysis,
   TrainedRenderProfile,
 } from "@sense-sight/render-contracts";
 
@@ -52,6 +54,9 @@ export interface ControlPanelProps {
   loadStatus: LoadStatus;
   preset: RenderPreset | null;
   trainedRenderProfile: TrainedRenderProfile;
+  interiorVisibility: InteriorVisibilityTuning;
+  onInteriorVisibilityChange?: (next: InteriorVisibilityTuning) => void;
+  sceneShapeAnalysis?: SceneShapeAnalysis | null;
   pointCount: number;
   gaussianCount: number;
   /** Whether a replay stream is currently live (enables the transport row). */
@@ -76,6 +81,9 @@ export function ControlPanel({
   loadStatus,
   preset,
   trainedRenderProfile,
+  interiorVisibility,
+  onInteriorVisibilityChange,
+  sceneShapeAnalysis,
   pointCount,
   gaussianCount,
   isLive = false,
@@ -90,6 +98,17 @@ export function ControlPanel({
   sensorEvidence,
   runPodStatus,
 }: ControlPanelProps) {
+  const dominantShape = sceneShapeAnalysis?.shapes[0];
+  const shapeCount = sceneShapeAnalysis?.shapes.length ?? 0;
+  const updateInteriorVisibility = (
+    patch: Partial<InteriorVisibilityTuning>
+  ) => {
+    onInteriorVisibilityChange?.({
+      ...interiorVisibility,
+      ...patch,
+    });
+  };
+
   return (
     <aside className="cn-panel" aria-label="Console controls">
       {isLive && (
@@ -315,6 +334,107 @@ export function ControlPanel({
             <span className="k">Max px radius</span>
             <span className="v">{trainedRenderProfile.maxPixelRadius}</span>
           </div>
+        </div>
+      </section>
+
+      <section className="panel-section">
+        <div className="panel-section-head">
+          <span className="tick" />
+          Interior view
+        </div>
+        <div className="panel-section-body">
+          <button
+            type="button"
+            className={`cn-visibility-toggle${
+              interiorVisibility.enabled ? "" : " off"
+            }`}
+            aria-pressed={interiorVisibility.enabled}
+            onClick={() =>
+              updateInteriorVisibility({
+                enabled: !interiorVisibility.enabled,
+              })
+            }
+          >
+            <span
+              className="swatch"
+              style={{
+                background: interiorVisibility.enabled ? "#4fd1ff" : "#61757e",
+              }}
+            />
+            Interior mode
+          </button>
+
+          <div className="metric">
+            <span className="k">Shapes</span>
+            <span className="v">{shapeCount === 0 ? "—" : shapeCount}</span>
+          </div>
+          <div className="metric">
+            <span className="k">Dominant</span>
+            <span className="v">
+              {dominantShape
+                ? `${dominantShape.kind} ${Math.round(
+                    dominantShape.confidence * 100
+                  )}%`
+                : "—"}
+            </span>
+          </div>
+          <label className="cn-tuning-control">
+            <span>
+              Opacity
+              <strong>{Math.round(interiorVisibility.opacity * 100)}%</strong>
+            </span>
+            <input
+              type="range"
+              min={0.08}
+              max={1}
+              step={0.01}
+              value={interiorVisibility.opacity}
+              disabled={!interiorVisibility.enabled}
+              onChange={(event) =>
+                updateInteriorVisibility({
+                  opacity: Number.parseFloat(event.target.value),
+                })
+              }
+            />
+          </label>
+          <label className="cn-tuning-control">
+            <span>
+              Spacing
+              <strong>{Math.round(interiorVisibility.spacing * 100)}%</strong>
+            </span>
+            <input
+              type="range"
+              min={0}
+              max={1}
+              step={0.01}
+              value={interiorVisibility.spacing}
+              disabled={!interiorVisibility.enabled}
+              onChange={(event) =>
+                updateInteriorVisibility({
+                  spacing: Number.parseFloat(event.target.value),
+                })
+              }
+            />
+          </label>
+          <label className="cn-tuning-control">
+            <span>
+              Intensity
+              <strong>{Math.round(interiorVisibility.intensity * 100)}%</strong>
+            </span>
+            <input
+              type="range"
+              min={0}
+              max={1}
+              step={0.01}
+              value={interiorVisibility.intensity}
+              disabled={!interiorVisibility.enabled}
+              onChange={(event) =>
+                updateInteriorVisibility({
+                  intensity: Number.parseFloat(event.target.value),
+                })
+              }
+            />
+          </label>
         </div>
       </section>
 

@@ -44,11 +44,13 @@ export function BoundsFrame({
   visible,
   color = "#33f0d1",
   opacity = 0.42,
+  depthTest = true,
 }: {
   bounds: Bounds;
   visible: boolean;
   color?: string;
   opacity?: number;
+  depthTest?: boolean;
 }) {
   const geometry = useMemo(() => {
     const { min, max } = bounds;
@@ -107,9 +109,93 @@ export function BoundsFrame({
         color={color}
         transparent
         opacity={opacity}
+        depthTest={depthTest}
         depthWrite={false}
       />
     </lineSegments>
+  );
+}
+
+export interface SceneShapeOverlayItem {
+  readonly id: string;
+  readonly label?: string;
+  readonly kind?: "room" | "corridor" | "alcove";
+  readonly bounds: Bounds;
+  readonly confidence?: number;
+}
+
+function shapeOverlayColor(kind?: SceneShapeOverlayItem["kind"]): string {
+  switch (kind) {
+    case "corridor":
+      return "#4fd1ff";
+    case "alcove":
+      return "#ffb24d";
+    default:
+      return "#33f0d1";
+  }
+}
+
+function SceneShapeOverlayVolume({
+  shape,
+  floorY,
+}: {
+  shape: SceneShapeOverlayItem;
+  floorY: number;
+}) {
+  const color = shapeOverlayColor(shape.kind);
+  const width = Math.max(0.001, shape.bounds.max.x - shape.bounds.min.x);
+  const depth = Math.max(0.001, shape.bounds.max.z - shape.bounds.min.z);
+  const centerX = (shape.bounds.min.x + shape.bounds.max.x) / 2;
+  const centerZ = (shape.bounds.min.z + shape.bounds.max.z) / 2;
+  const fillOpacity =
+    shape.kind === "corridor" ? 0.075 : shape.kind === "alcove" ? 0.09 : 0.08;
+
+  return (
+    <group renderOrder={18}>
+      <mesh
+        position={[centerX, floorY + 0.024, centerZ]}
+        rotation-x={-Math.PI / 2}
+        renderOrder={18}
+      >
+        <planeGeometry args={[width, depth]} />
+        <meshBasicMaterial
+          color={color}
+          transparent
+          opacity={fillOpacity}
+          depthTest={false}
+          depthWrite={false}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+      <BoundsFrame
+        bounds={shape.bounds}
+        visible
+        color={color}
+        opacity={0.58}
+        depthTest={false}
+      />
+    </group>
+  );
+}
+
+/** Transparent floor/bounds overlays for inferred room-like shapes. */
+export function SceneShapeOverlays({
+  shapes,
+  visible,
+  floorY = 0,
+}: {
+  shapes: readonly SceneShapeOverlayItem[];
+  visible: boolean;
+  floorY?: number;
+}) {
+  if (!visible || shapes.length === 0) return null;
+
+  return (
+    <group>
+      {shapes.slice(0, 8).map((shape) => (
+        <SceneShapeOverlayVolume key={shape.id} shape={shape} floorY={floorY} />
+      ))}
+    </group>
   );
 }
 

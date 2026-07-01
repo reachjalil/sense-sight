@@ -387,7 +387,8 @@ p {
   border-color: rgba(255, 93, 82, 0.5);
 }
 
-.layer-toggle {
+.layer-toggle,
+.cn-visibility-toggle {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -400,15 +401,46 @@ p {
   font-size: 0.78rem;
   text-align: left;
 }
-.layer-toggle.off {
+.layer-toggle.off,
+.cn-visibility-toggle.off {
   color: var(--cn-text-faint);
   opacity: 0.6;
 }
-.layer-toggle .swatch {
+.layer-toggle .swatch,
+.cn-visibility-toggle .swatch {
   width: 9px;
   height: 9px;
   border-radius: 999px;
   flex: none;
+}
+
+.cn-tuning-control {
+  display: grid;
+  gap: 7px;
+  color: var(--cn-text-muted);
+  font-family: var(--cn-font-mono);
+  font-size: 0.76rem;
+}
+
+.cn-tuning-control span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.cn-tuning-control strong {
+  color: var(--cn-text);
+  font-weight: 600;
+}
+
+.cn-tuning-control input[type="range"] {
+  width: 100%;
+  accent-color: #4fd1ff;
+}
+
+.cn-tuning-control input[type="range"]:disabled {
+  opacity: 0.45;
 }
 
 .metric {

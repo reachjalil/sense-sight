@@ -1,8 +1,13 @@
 import {
+  DEFAULT_INTERIOR_VISIBILITY_TUNING,
   DEFAULT_TRAINED_RENDER_PROFILE,
+  applyInteriorVisibilityProfile,
+  inferSceneShapesFromPoints,
   trainedSplatFilename,
+  type InteriorVisibilityTuning,
   type RenderLayers,
   type RenderPreset,
+  type SceneShapeAnalysis,
 } from "@sense-sight/render-contracts";
 import {
   decodeSplat,
@@ -349,10 +354,15 @@ export function Console() {
   const [worldBounds, setWorldBounds] = useState<Bounds | null>(null);
   const [seedPositions, setSeedPositions] = useState<Float32Array | null>(null);
   const [seedColors, setSeedColors] = useState<Float32Array | null>(null);
+  const [sceneShapeAnalysis, setSceneShapeAnalysis] =
+    useState<SceneShapeAnalysis | null>(null);
+  const [interiorVisibility, setInteriorVisibility] =
+    useState<InteriorVisibilityTuning>(DEFAULT_INTERIOR_VISIBILITY_TUNING);
   const [pointCount, setPointCount] = useState(0);
   const [trajectoryPoints, setTrajectoryPoints] = useState<readonly Vec3[]>([]);
-  const [trajectorySegments, setTrajectorySegments] =
-    useState<readonly (readonly Vec3[])[] | null>(null);
+  const [trajectorySegments, setTrajectorySegments] = useState<
+    readonly (readonly Vec3[])[] | null
+  >(null);
   const [robotPose, setRobotPose] = useState<RobotPose | null>(null);
   const [sensorEvidence, setSensorEvidence] =
     useState<SensorEvidenceSummary | null>(null);
@@ -445,6 +455,26 @@ export function Console() {
       if (trainedSplat) URL.revokeObjectURL(trainedSplat.url);
     };
   }, [trainedSplat]);
+
+  useEffect(() => {
+    if (!seedPositions || !worldBounds) {
+      setSceneShapeAnalysis(null);
+      return;
+    }
+
+    let cancelled = false;
+    const timeout = window.setTimeout(() => {
+      if (cancelled) return;
+      setSceneShapeAnalysis(
+        inferSceneShapesFromPoints(seedPositions, worldBounds)
+      );
+    }, 0);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timeout);
+    };
+  }, [seedPositions, worldBounds]);
 
   const teardownSource = useCallback(() => {
     runPodAbortRef.current?.abort();
@@ -613,19 +643,18 @@ export function Console() {
         }),
         signal,
       });
-      const startPayload = (await startRes.json().catch(() => null)) as
-        | {
-            ok?: boolean;
-            message?: string;
-            job?: RunPodSubmittedJob;
-            jobs?: RunPodSubmittedJob[];
-          }
-        | null;
+      const startPayload = (await startRes.json().catch(() => null)) as {
+        ok?: boolean;
+        message?: string;
+        job?: RunPodSubmittedJob;
+        jobs?: RunPodSubmittedJob[];
+      } | null;
       const submittedJobs =
         startPayload?.jobs ?? (startPayload?.job ? [startPayload.job] : []);
       if (!startRes.ok || !startPayload?.ok || submittedJobs.length === 0) {
         throw new Error(
-          startPayload?.message || `RunPod submission failed (${startRes.status})`
+          startPayload?.message ||
+            `RunPod submission failed (${startRes.status})`
         );
       }
 
@@ -644,13 +673,11 @@ export function Console() {
             cache: "no-store",
             signal,
           });
-          const statusPayload = (await statusRes.json().catch(() => null)) as
-            | {
-                ok?: boolean;
-                message?: string;
-                status?: RunPodStatusResponse;
-              }
-            | null;
+          const statusPayload = (await statusRes.json().catch(() => null)) as {
+            ok?: boolean;
+            message?: string;
+            status?: RunPodStatusResponse;
+          } | null;
           if (!statusRes.ok || !statusPayload?.ok || !statusPayload.status) {
             throw new Error(
               statusPayload?.message ||
@@ -818,38 +845,40 @@ export function Console() {
             targetBounds: item.targetBounds,
             coordinateFrame: (fusion.coordinateFrame ??
               "normalized") as TrainedSplatAsset["coordinateFrame"],
-        }));
-        if (items.length > 0) {
-          setLiveTrainedSplats(items);
-          setLayers(PHOTOREAL_LAYERS);
-          setAutoOrbit(true);
-          const fusionKeyframesRes = await fetch(
-            `${presetBase}/fusion_keyframes.json`,
-            { cache: "no-store" }
-          );
-          if (sourceRef.current !== src) {
-            setIsPreloadingLive(false);
-            return;
-          }
-          if (fusionKeyframesRes.ok) {
-            const fusionKeyframesDoc =
-              (await fusionKeyframesRes.json()) as FusionKeyframesDoc;
-            fusionKeyframesRef.current = fusionKeyframesDoc.keyframes;
-            setTrajectoryPoints(
-              fusionKeyframesDoc.keyframes.map((keyframe) => keyframe.position)
+          }));
+          if (items.length > 0) {
+            setLiveTrainedSplats(items);
+            setLayers(PHOTOREAL_LAYERS);
+            setAutoOrbit(true);
+            const fusionKeyframesRes = await fetch(
+              `${presetBase}/fusion_keyframes.json`,
+              { cache: "no-store" }
             );
-            setTrajectorySegments(
-              groupFusionTrajectory(fusionKeyframesDoc.keyframes)
-            );
-            const firstFusionPose = nearestFusionPose(
-              hello.keyframeCount > 0 ? 0 : 0,
-              fusionKeyframesDoc.keyframes
-            );
-            if (firstFusionPose) setRobotPose(firstFusionPose);
-          }
-          setGaussianCount(
-            fusion.items.reduce(
-              (sum, item) => sum + (item.gaussianCount ?? 0),
+            if (sourceRef.current !== src) {
+              setIsPreloadingLive(false);
+              return;
+            }
+            if (fusionKeyframesRes.ok) {
+              const fusionKeyframesDoc =
+                (await fusionKeyframesRes.json()) as FusionKeyframesDoc;
+              fusionKeyframesRef.current = fusionKeyframesDoc.keyframes;
+              setTrajectoryPoints(
+                fusionKeyframesDoc.keyframes.map(
+                  (keyframe) => keyframe.position
+                )
+              );
+              setTrajectorySegments(
+                groupFusionTrajectory(fusionKeyframesDoc.keyframes)
+              );
+              const firstFusionPose = nearestFusionPose(
+                hello.keyframeCount > 0 ? 0 : 0,
+                fusionKeyframesDoc.keyframes
+              );
+              if (firstFusionPose) setRobotPose(firstFusionPose);
+            }
+            setGaussianCount(
+              fusion.items.reduce(
+                (sum, item) => sum + (item.gaussianCount ?? 0),
                 0
               )
             );
@@ -968,11 +997,13 @@ export function Console() {
           setPlaying(msg.snapshot.playing);
           setProgress(msg.snapshot.progress);
           setRobotPose(
-            nearestFusionPose(msg.snapshot.index, fusionKeyframesRef.current) ??
-              {
-                position: msg.snapshot.position,
-                headingRad: msg.snapshot.headingRad,
-              }
+            nearestFusionPose(
+              msg.snapshot.index,
+              fusionKeyframesRef.current
+            ) ?? {
+              position: msg.snapshot.position,
+              headingRad: msg.snapshot.headingRad,
+            }
           );
           break;
         }
@@ -1060,6 +1091,10 @@ export function Console() {
     fallbackColorGain: 1.1,
     fallbackOpacity: 0.9,
   };
+  const activeTrainedRenderProfile = applyInteriorVisibilityProfile(
+    isLive ? liveTrainedProfile : trainedRenderProfile,
+    interiorVisibility
+  );
 
   const hasScene = seedPositions !== null && seedColors !== null;
   const liveGaussianLabel = new Intl.NumberFormat("en-US").format(
@@ -1215,9 +1250,7 @@ export function Console() {
                 autoOrbit={autoOrbit}
                 cameraView={cameraView}
                 layers={layers}
-                trainedRenderProfile={
-                  isLive ? liveTrainedProfile : trainedRenderProfile
-                }
+                trainedRenderProfile={activeTrainedRenderProfile}
                 worldBounds={worldBounds}
                 seedPositions={seedPositions}
                 seedColors={seedColors}
@@ -1226,6 +1259,8 @@ export function Console() {
                 robotPose={robotPose}
                 trainedSplat={null}
                 trainedSplats={isLive ? liveTrainedSplats : null}
+                sceneShapes={sceneShapeAnalysis?.shapes ?? []}
+                showInteriorShapes={interiorVisibility.enabled}
                 isStreamingLive={isLive}
                 onAutoOrbitChange={setAutoOrbit}
                 onCameraStatusChange={setCameraStatus}
@@ -1332,7 +1367,10 @@ export function Console() {
           onToggleLayer={toggleLayer}
           loadStatus={loadStatus}
           preset={DEMO_PRESET}
-          trainedRenderProfile={isLive ? liveTrainedProfile : trainedRenderProfile}
+          trainedRenderProfile={activeTrainedRenderProfile}
+          interiorVisibility={interiorVisibility}
+          onInteriorVisibilityChange={setInteriorVisibility}
+          sceneShapeAnalysis={sceneShapeAnalysis}
           pointCount={isLive ? getRevealedPoints() : pointCount}
           gaussianCount={
             isLive && !liveTrainedSplats

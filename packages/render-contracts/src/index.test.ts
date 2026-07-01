@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { trainedSplatFilename } from "./index";
+import {
+  DEFAULT_INTERIOR_VISIBILITY_TUNING,
+  DEFAULT_TRAINED_RENDER_PROFILE,
+  applyInteriorVisibilityProfile,
+  inferSceneShapesFromPoints,
+  trainedSplatFilename,
+} from "./index";
 
 describe("trainedSplatFilename", () => {
   it("builds a bare filename when no variant is given", () => {
@@ -21,5 +27,80 @@ describe("trainedSplatFilename", () => {
   it("supports arbitrary iteration counts", () => {
     expect(trainedSplatFilename(1)).toBe("trained-1.splat");
     expect(trainedSplatFilename(0)).toBe("trained-0.splat");
+  });
+});
+
+describe("applyInteriorVisibilityProfile", () => {
+  it("keeps the original profile when disabled", () => {
+    const tuned = applyInteriorVisibilityProfile(
+      DEFAULT_TRAINED_RENDER_PROFILE,
+      {
+        ...DEFAULT_INTERIOR_VISIBILITY_TUNING,
+        enabled: false,
+      }
+    );
+
+    expect(tuned).toBe(DEFAULT_TRAINED_RENDER_PROFILE);
+  });
+
+  it("reduces opacity and splat footprint for interior inspection", () => {
+    const tuned = applyInteriorVisibilityProfile(
+      DEFAULT_TRAINED_RENDER_PROFILE,
+      DEFAULT_INTERIOR_VISIBILITY_TUNING
+    );
+
+    expect(tuned.opacity).toBeCloseTo(
+      DEFAULT_INTERIOR_VISIBILITY_TUNING.opacity
+    );
+    expect(tuned.radiusDefault).toBeLessThan(
+      DEFAULT_TRAINED_RENDER_PROFILE.radiusDefault
+    );
+    expect(tuned.maxPixelRadius).toBeLessThan(
+      DEFAULT_TRAINED_RENDER_PROFILE.maxPixelRadius
+    );
+    expect(tuned.minAlpha).toBeGreaterThan(
+      DEFAULT_TRAINED_RENDER_PROFILE.minAlpha
+    );
+    expect(tuned.fallbackColorGain).toBeGreaterThan(
+      DEFAULT_TRAINED_RENDER_PROFILE.fallbackColorGain
+    );
+  });
+});
+
+describe("inferSceneShapesFromPoints", () => {
+  function rectangularFootprint(width: number, depth: number): Float32Array {
+    const points: number[] = [];
+    for (let x = -width / 2; x <= width / 2; x += 0.25) {
+      for (let z = -depth / 2; z <= depth / 2; z += 0.25) {
+        points.push(x, 0.05, z);
+        points.push(x, 1.6, z);
+      }
+    }
+    return new Float32Array(points);
+  }
+
+  it("labels an elongated footprint as a corridor", () => {
+    const analysis = inferSceneShapesFromPoints(
+      rectangularFootprint(2.5, 12),
+      {
+        min: { x: -2, y: 0, z: -6.5 },
+        max: { x: 2, y: 2.4, z: 6.5 },
+      },
+      { minCellSizeM: 0.25, targetGridCells: 48 }
+    );
+
+    expect(analysis.shapes.length).toBeGreaterThanOrEqual(1);
+    expect(analysis.shapes[0]?.kind).toBe("corridor");
+    expect(analysis.shapes[0]?.areaM2).toBeGreaterThan(20);
+  });
+
+  it("returns no shapes for an empty cloud", () => {
+    const analysis = inferSceneShapesFromPoints(new Float32Array(), {
+      min: { x: -1, y: 0, z: -1 },
+      max: { x: 1, y: 2, z: 1 },
+    });
+
+    expect(analysis.shapes).toEqual([]);
+    expect(analysis.sampledPointCount).toBe(0);
   });
 });
