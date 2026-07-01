@@ -22,8 +22,8 @@ catalogs:
       specifier: ^2.9.6
       version: 2.10.2
     typescript:
-      specifier: ^5.9.3
-      version: 5.9.3
+      specifier: ^6.0.3
+      version: 6.0.3
     vitest:
       specifier: ^4.0.15
       version: 4.1.9
@@ -40,7 +40,7 @@ importers:
         version: 2.10.2
       typescript:
         specifier: 'catalog:'
-        version: 5.9.3
+        version: 6.0.3
 
   apps/site:
     dependencies:
@@ -101,7 +101,7 @@ importers:
     devDependencies:
       '@astrojs/check':
         specifier: 'catalog:'
-        version: 0.9.9(prettier@3.9.4)(typescript@5.9.3)
+        version: 0.9.9(prettier@3.9.4)(typescript@6.0.3)
       '@types/react':
         specifier: ^19.2.0
         version: 19.2.17
@@ -113,7 +113,7 @@ importers:
         version: 0.184.1
       typescript:
         specifier: 'catalog:'
-        version: 5.9.3
+        version: 6.0.3
       wrangler:
         specifier: ^4.92.0
         version: 4.106.0
@@ -125,7 +125,7 @@ importers:
         version: 25.9.4
       typescript:
         specifier: 'catalog:'
-        version: 5.9.3
+        version: 6.0.3
       vitest:
         specifier: 'catalog:'
         version: 4.1.9(@types/node@25.9.4)(vite@8.1.2(@types/node@25.9.4)(esbuild@0.28.1)(yaml@2.9.0))
@@ -137,7 +137,7 @@ importers:
         version: 25.9.4
       typescript:
         specifier: 'catalog:'
-        version: 5.9.3
+        version: 6.0.3
       vitest:
         specifier: 'catalog:'
         version: 4.1.9(@types/node@25.9.4)(vite@8.1.2(@types/node@25.9.4)(esbuild@0.28.1)(yaml@2.9.0))
@@ -153,7 +153,7 @@ importers:
         version: 25.9.4
       typescript:
         specifier: 'catalog:'
-        version: 5.9.3
+        version: 6.0.3
       vitest:
         specifier: 'catalog:'
         version: 4.1.9(@types/node@25.9.4)(vite@8.1.2(@types/node@25.9.4)(esbuild@0.28.1)(yaml@2.9.0))
@@ -169,7 +169,7 @@ importers:
         version: 25.9.4
       typescript:
         specifier: 'catalog:'
-        version: 5.9.3
+        version: 6.0.3
       vitest:
         specifier: 'catalog:'
         version: 4.1.9(@types/node@25.9.4)(vite@8.1.2(@types/node@25.9.4)(esbuild@0.28.1)(yaml@2.9.0))
@@ -188,7 +188,7 @@ importers:
         version: 25.9.4
       typescript:
         specifier: 'catalog:'
-        version: 5.9.3
+        version: 6.0.3
       vitest:
         specifier: 'catalog:'
         version: 4.1.9(@types/node@25.9.4)(vite@8.1.2(@types/node@25.9.4)(esbuild@0.28.1)(yaml@2.9.0))
@@ -200,7 +200,7 @@ importers:
         version: 25.9.4
       typescript:
         specifier: 'catalog:'
-        version: 5.9.3
+        version: 6.0.3
       vitest:
         specifier: 'catalog:'
         version: 4.1.9(@types/node@25.9.4)(vite@8.1.2(@types/node@25.9.4)(esbuild@0.28.1)(yaml@2.9.0))
@@ -212,7 +212,7 @@ importers:
         version: 25.9.4
       typescript:
         specifier: 'catalog:'
-        version: 5.9.3
+        version: 6.0.3
       vitest:
         specifier: 'catalog:'
         version: 4.1.9(@types/node@25.9.4)(vite@8.1.2(@types/node@25.9.4)(esbuild@0.28.1)(yaml@2.9.0))
@@ -255,7 +255,7 @@ importers:
         version: 0.184.0
       typescript:
         specifier: 'catalog:'
-        version: 5.9.3
+        version: 6.0.3
 
   packages/world-schema:
     devDependencies:
@@ -264,7 +264,7 @@ importers:
         version: 25.9.4
       typescript:
         specifier: 'catalog:'
-        version: 5.9.3
+        version: 6.0.3
       vitest:
         specifier: 'catalog:'
         version: 4.1.9(@types/node@25.9.4)(vite@8.1.2(@types/node@25.9.4)(esbuild@0.28.1)(yaml@2.9.0))
@@ -2892,8 +2892,8 @@ packages:
   typescript-auto-import-cache@0.3.6:
     resolution: {integrity: sha512-RpuHXrknHdVdK7wv/8ug3Fr0WNsNi5l5aB8MYYuXhq2UH5lnEB1htJ1smhtD5VeCsGr2p8mUDtd83LCQDFVgjQ==}
 
-  typescript@5.9.3:
-    resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
+  typescript@6.0.3:
+    resolution: {integrity: sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -3410,12 +3410,12 @@ packages:
 
 snapshots:
 
-  '@astrojs/check@0.9.9(prettier@3.9.4)(typescript@5.9.3)':
+  '@astrojs/check@0.9.9(prettier@3.9.4)(typescript@6.0.3)':
     dependencies:
-      '@astrojs/language-server': 2.16.10(prettier@3.9.4)(typescript@5.9.3)
+      '@astrojs/language-server': 2.16.10(prettier@3.9.4)(typescript@6.0.3)
       chokidar: 4.0.3
       kleur: 4.1.5
-      typescript: 5.9.3
+      typescript: 6.0.3
       yargs: 17.7.3
     transitivePeerDependencies:
       - prettier
@@ -3462,12 +3462,12 @@ snapshots:
       smol-toml: 1.7.0
       unified: 11.0.5
 
-  '@astrojs/language-server@2.16.10(prettier@3.9.4)(typescript@5.9.3)':
+  '@astrojs/language-server@2.16.10(prettier@3.9.4)(typescript@6.0.3)':
     dependencies:
       '@astrojs/compiler': 2.13.1
       '@astrojs/yaml2ts': 0.2.4
       '@jridgewell/sourcemap-codec': 1.5.5
-      '@volar/kit': 2.4.28(typescript@5.9.3)
+      '@volar/kit': 2.4.28(typescript@6.0.3)
       '@volar/language-core': 2.4.28
       '@volar/language-server': 2.4.28
       '@volar/language-service': 2.4.28
@@ -4580,12 +4580,12 @@ snapshots:
       convert-source-map: 2.0.0
       tinyrainbow: 3.1.0
 
-  '@volar/kit@2.4.28(typescript@5.9.3)':
+  '@volar/kit@2.4.28(typescript@6.0.3)':
     dependencies:
       '@volar/language-service': 2.4.28
       '@volar/typescript': 2.4.28
       typesafe-path: 0.2.2
-      typescript: 5.9.3
+      typescript: 6.0.3
       vscode-languageserver-textdocument: 1.0.12
       vscode-uri: 3.1.0
 
@@ -6149,7 +6149,7 @@ snapshots:
     dependencies:
       semver: 7.8.5
 
-  typescript@5.9.3: {}
+  typescript@6.0.3: {}
 
   ufo@1.6.4: {}
 
