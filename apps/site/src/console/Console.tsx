@@ -488,7 +488,9 @@ export function Console() {
     runPodGaussianCountRef.current = 0;
     resetCloud();
     resetSplat();
-    liveTrainedUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+    for (const url of liveTrainedUrlsRef.current) {
+      URL.revokeObjectURL(url);
+    }
     liveTrainedUrlsRef.current = [];
     useStreamedSplatRef.current = false;
     setLiveTrainedSplats(null);
@@ -694,7 +696,7 @@ export function Console() {
 
           if (status.status === "COMPLETED") {
             const output = status.output;
-            if (!output || output.status !== "completed") {
+            if (output?.status !== "completed") {
               throw new Error(
                 output?.error || "RunPod job completed without a splat."
               );
@@ -817,7 +819,9 @@ export function Console() {
     // via Spark in its normalized frame. Fall back to the point-init streamed
     // splat only when a source ships no trained.json manifest.
     useStreamedSplatRef.current = false;
-    liveTrainedUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+    for (const url of liveTrainedUrlsRef.current) {
+      URL.revokeObjectURL(url);
+    }
     liveTrainedUrlsRef.current = [];
     setLiveTrainedSplats(null);
     const presetBase = selected.presetPath ?? `/presets/${selected.id}`;
@@ -849,7 +853,11 @@ export function Console() {
           if (items.length > 0) {
             setLiveTrainedSplats(items);
             setLayers(PHOTOREAL_LAYERS);
-            setAutoOrbit(true);
+            setAutoOrbit(false);
+            setCameraView((current) => ({
+              id: "orbit",
+              version: current.version + 1,
+            }));
             const fusionKeyframesRes = await fetch(
               `${presetBase}/fusion_keyframes.json`,
               { cache: "no-store" }

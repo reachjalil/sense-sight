@@ -283,7 +283,7 @@ function orientNormalizedBounds(bounds: Bounds): Bounds {
   };
 }
 
-/** Fit `source` bounds inside `targetBounds`, centered and scaled to 86% of available span. */
+/** Fit `source` to the target's metric floor footprint; Y is height, not scale authority. */
 function fitBounds(
   source: Bounds,
   targetBounds: Bounds
@@ -292,16 +292,14 @@ function fitBounds(
   const targetCenter = centerOf(targetBounds);
   const sourceSize = sizeOf(source);
   const targetSize = sizeOf(targetBounds);
-  const scale =
-    Math.min(
-      targetSize[0] / sourceSize[0],
-      targetSize[1] / sourceSize[1],
-      targetSize[2] / sourceSize[2]
-    ) * 0.86;
+  const scale = Math.min(
+    targetSize[0] / Math.max(sourceSize[0], 0.001),
+    targetSize[2] / Math.max(sourceSize[2], 0.001)
+  );
   return {
     position: [
       targetCenter[0] - sourceCenter[0] * scale,
-      targetBounds.min.y - source.min.y * scale + 0.03,
+      targetBounds.min.y - source.min.y * scale,
       targetCenter[2] - sourceCenter[2] * scale,
     ],
     scale,
@@ -312,6 +310,7 @@ function ViewerCameraController({
   autoOrbit,
   cameraView,
   robotPose,
+  trainedEnvironment,
   worldBounds,
   onAutoOrbitChange,
   onCameraStatusChange,
@@ -320,6 +319,7 @@ function ViewerCameraController({
   autoOrbit: boolean;
   cameraView: CameraViewRequest;
   robotPose?: RobotPose | null;
+  trainedEnvironment: boolean;
   worldBounds: Bounds | null;
   onAutoOrbitChange?: (enabled: boolean) => void;
   onCameraStatusChange?: (status: string) => void;
@@ -341,7 +341,12 @@ function ViewerCameraController({
     toPosition: THREE.Vector3;
     toTarget: THREE.Vector3;
   } | null>(null);
-  const handledView = useRef<CameraViewRequest | null>(null);
+  const handledView = useRef<{
+    boundsKey: string;
+    id: CameraViewId;
+    trainedEnvironment: boolean;
+    version: number;
+  } | null>(null);
   const reducedMotion = useRef(false);
   const orbitOffset = useRef(new THREE.Vector3());
   const orbitSpherical = useRef(new THREE.Spherical());
@@ -392,15 +397,38 @@ function ViewerCameraController({
 
   useEffect(() => {
     if (!controls || !perspectiveCamera) return;
+    const boundsKey = worldBounds
+      ? [
+          worldBounds.min.x,
+          worldBounds.min.y,
+          worldBounds.min.z,
+          worldBounds.max.x,
+          worldBounds.max.y,
+          worldBounds.max.z,
+        ]
+          .map((value) => value.toFixed(3))
+          .join(":")
+      : "none";
     if (
       handledView.current?.id === cameraView.id &&
-      handledView.current.version === cameraView.version
+      handledView.current.version === cameraView.version &&
+      handledView.current.boundsKey === boundsKey &&
+      handledView.current.trainedEnvironment === trainedEnvironment
     ) {
       return;
     }
-    handledView.current = cameraView;
+    handledView.current = {
+      boundsKey,
+      id: cameraView.id,
+      trainedEnvironment,
+      version: cameraView.version,
+    };
 
-    const nextPose = cameraPoseForView(cameraView.id, worldBounds);
+    const nextPose = cameraPoseForView(
+      cameraView.id,
+      worldBounds,
+      trainedEnvironment
+    );
     onCameraStatusChange?.(`${CAMERA_VIEW_LABELS[cameraView.id]} camera`);
 
     if (reducedMotion.current) {
@@ -430,6 +458,7 @@ function ViewerCameraController({
     invalidate,
     onCameraStatusChange,
     perspectiveCamera,
+    trainedEnvironment,
     worldBounds,
   ]);
 
@@ -607,8 +636,8 @@ function ViewerCameraController({
       const currentRobotTarget = robotTarget;
       if (robotPose && currentRobotTarget) {
         const forward = robotForwardOf(robotPose.headingRad);
-        const followDistance = clamp(radius * 0.38, 1.2, 3.4);
-        const lookAhead = clamp(span * 0.18, 4.5, 9);
+        const followDistance = clamp(span * 0.18, 3.2, 6.5);
+        const lookAhead = clamp(span * 0.22, 5, 10);
         const eyeY = yFloor + clamp(span * 0.065, 1.15, 1.65);
         const targetY = yFloor + clamp(span * 0.06, 1.05, 1.45);
         target
@@ -633,7 +662,7 @@ function ViewerCameraController({
       perspectiveCamera.position.lerp(followPosition.current, cameraEase);
       perspectiveCamera.fov = THREE.MathUtils.lerp(
         perspectiveCamera.fov,
-        48,
+        robotPose ? 52 : 48,
         targetEase
       );
       perspectiveCamera.updateProjectionMatrix();
@@ -819,15 +848,20 @@ export function Viewer({
   const cameraBounds =
     dominantShapeBounds ?? trainedTargetBounds ?? worldBounds;
 
-  const target = cameraTargetOf(cameraBounds);
   const span = spanOf(cameraBounds);
   const worldSpan = spanOf(worldBounds ?? cameraBounds);
-  const initialPose = cameraPoseForView(cameraView.id, cameraBounds);
+  const trainedEnvironment = hasTrainedSplats && layers.splat;
+  const initialPose = cameraPoseForView(
+    cameraView.id,
+    cameraBounds,
+    trainedEnvironment
+  );
   const cameraPosition = initialPose.position.toArray() as [
     number,
     number,
     number,
   ];
+  const target = initialPose.target.toArray() as [number, number, number];
   const gridSize = clamp(worldSpan * 1.8, 16, 96);
   const cameraFar = Math.max(200, Math.max(span, worldSpan) * 18);
   const cloudBuffers = isStreamingLive ? getCloudBuffers() : null;
@@ -855,7 +889,12 @@ export function Viewer({
   return (
     <Canvas
       dpr={[1, 2]}
-      camera={{ position: cameraPosition, fov: 50, near: 0.05, far: cameraFar }}
+      camera={{
+        position: cameraPosition,
+        fov: initialPose.fov,
+        near: 0.05,
+        far: cameraFar,
+      }}
       gl={{
         antialias: false,
         powerPreference: "high-performance",
@@ -923,7 +962,10 @@ export function Viewer({
             minAlpha={trainedRenderProfile.minAlpha}
             maxPixelRadius={trainedRenderProfile.maxPixelRadius}
             minPixelRadius={0}
-            maxStdDev={trainedRenderProfile.maxStdDev}
+            maxStdDev={
+              trainedRenderProfile.maxStdDev *
+              trainedRenderProfile.radiusDefault
+            }
             focalAdjustment={trainedRenderProfile.focalAdjustment}
             falloff={trainedRenderProfile.falloff}
             sortRadial={trainedRenderProfile.sortRadial}
@@ -989,6 +1031,7 @@ export function Viewer({
         autoOrbit={autoOrbit}
         cameraView={cameraView}
         robotPose={robotPose}
+        trainedEnvironment={trainedEnvironment}
         worldBounds={cameraBounds}
         onAutoOrbitChange={onAutoOrbitChange}
         onCameraStatusChange={onCameraStatusChange}
