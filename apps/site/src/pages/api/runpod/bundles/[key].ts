@@ -37,7 +37,10 @@ export const GET: APIRoute = async ({ params, request }) => {
 
   const headers = new Headers();
   object.writeHttpMetadata(headers);
-  headers.set("content-type", headers.get("content-type") ?? "application/zstd");
+  headers.set(
+    "content-type",
+    headers.get("content-type") ?? "application/zstd"
+  );
   headers.set("content-length", String(object.size));
   headers.set("cache-control", "private, max-age=300");
   return new Response(object.body, { headers });

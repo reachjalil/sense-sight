@@ -58,7 +58,9 @@ export const POST: APIRoute = async ({ cookies, request }) => {
   }
   const endpointId = env.RUNPOD_ENDPOINT_ID;
 
-  const hasR2Bundle = Boolean(env.RUNPOD_BUNDLE_URI && env.RUNPOD_BUNDLE_SHA256);
+  const hasR2Bundle = Boolean(
+    env.RUNPOD_BUNDLE_URI && env.RUNPOD_BUNDLE_SHA256
+  );
   const hasVolumeBundle = Boolean(
     env.RUNPOD_BUNDLE_VOLUME_PATH && env.RUNPOD_BUNDLE_SHA256
   );
@@ -88,12 +90,19 @@ export const POST: APIRoute = async ({ cookies, request }) => {
   const qualityPreset = configuredQualityPreset(env.RUNPOD_QUALITY_PRESET);
   const trainSteps = parsePositiveInt(
     env.RUNPOD_TRAIN_STEPS,
-    qualityPreset === "preview" ? 300 : qualityPreset === "balanced" ? 3000 : 9000
+    qualityPreset === "preview"
+      ? 300
+      : qualityPreset === "balanced"
+        ? 3000
+        : 9000
   );
   const shardCount = clamp(
     Math.floor(
       body.shardCount ??
-        parsePositiveInt(env.RUNPOD_PARALLEL_SHARDS, qualityPreset === "preview" ? 3 : 2)
+        parsePositiveInt(
+          env.RUNPOD_PARALLEL_SHARDS,
+          qualityPreset === "preview" ? 3 : 2
+        )
     ),
     1,
     4

@@ -186,7 +186,8 @@ function trainedSplatEnvironmentPose(bounds: Bounds): CameraPose {
   const size = sizeOf(bounds);
   const longAxis = size[2] >= size[0] ? "z" : "x";
   const longSpan = longAxis === "z" ? size[2] : size[0];
-  const entryMargin = Math.min(3.2, Math.max(1.4, longSpan * 0.18));
+  const entryMargin = Math.min(0.85, Math.max(0.28, longSpan * 0.025));
+  const lookDepth = Math.min(4.6, Math.max(2.4, longSpan * 0.18));
   const eyeY = Math.min(
     bounds.max.y - 0.28,
     Math.max(bounds.min.y + 1.12, boundsCenter[1])
@@ -198,14 +199,14 @@ function trainedSplatEnvironmentPose(bounds: Bounds): CameraPose {
 
   if (longAxis === "x") {
     return {
-      fov: 54,
+      fov: 68,
       position: new THREE.Vector3(
         bounds.max.x + entryMargin,
         eyeY,
         boundsCenter[2]
       ),
       target: new THREE.Vector3(
-        bounds.min.x + longSpan * 0.35,
+        bounds.max.x - lookDepth,
         targetY,
         boundsCenter[2]
       ),
@@ -213,7 +214,7 @@ function trainedSplatEnvironmentPose(bounds: Bounds): CameraPose {
   }
 
   return {
-    fov: 54,
+    fov: 68,
     position: new THREE.Vector3(
       boundsCenter[0],
       eyeY,
@@ -222,7 +223,7 @@ function trainedSplatEnvironmentPose(bounds: Bounds): CameraPose {
     target: new THREE.Vector3(
       boundsCenter[0],
       targetY,
-      bounds.min.z + longSpan * 0.35
+      bounds.max.z - lookDepth
     ),
   };
 }

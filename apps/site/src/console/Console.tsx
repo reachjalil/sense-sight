@@ -1081,7 +1081,7 @@ export function Console() {
   const liveTrainedProfile = {
     ...trainedRenderProfile,
     label: "Fusion footprint clamp",
-    radiusDefault: 0.38,
+    radiusDefault: 0.56,
     radiusMin: 0.12,
     radiusMax: 0.9,
     radiusStep: 0.025,
