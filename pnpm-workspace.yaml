@@ -9,5 +9,5 @@ catalogs:
     "@types/node": ^25.5.0
     astro: ^6.0.8
     turbo: ^2.9.6
-    typescript: ^5.9.3
+    typescript: ^6.0.3
     vitest: ^4.0.15
