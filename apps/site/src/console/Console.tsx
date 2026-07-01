@@ -13,11 +13,7 @@ import {
   type TrainedRenderProfile,
   type TrainedRenderProfileId,
 } from "@sense-sight/render-contracts";
-import {
-  decodeSplat,
-  SPLAT_RECORD_BYTES,
-  type DecodedSplat,
-} from "@sense-sight/splat-codec";
+import { SPLAT_RECORD_BYTES } from "@sense-sight/splat-codec";
 import {
   SOURCE_REGISTRY,
   type FrameStreamSource,
@@ -34,14 +30,10 @@ import {
   type SensorEvidenceSummary,
 } from "../live/ControlPanel";
 import {
-  appendGaussians,
   appendPoints,
-  getRevealedGaussians,
   getRevealedPoints,
   initCloud,
-  initSplat,
   resetCloud,
-  resetSplat,
 } from "../live/live-cloud";
 import { createReplaySource } from "../live/replay-source";
 import {
@@ -135,18 +127,6 @@ interface RunPodSubmittedJob {
     readonly keyframeEnd: number;
   };
   readonly submapId?: string;
-}
-
-interface FusionManifest {
-  coordinateFrame?: string;
-  items: Array<{
-    id: string;
-    base: string;
-    splatFile: string;
-    gaussianCount?: number;
-    sourceBounds: Bounds;
-    targetBounds: Bounds;
-  }>;
 }
 
 function base64ToArrayBuffer(value: string): ArrayBuffer {
@@ -438,8 +418,6 @@ export function Console() {
   const sourceRef = useRef<FrameStreamSource | null>(null);
   const previewControllerRef = useRef<AbortController | null>(null);
   const helloRef = useRef<ReplayHello | null>(null);
-  const splatRef = useRef<DecodedSplat | null>(null);
-  const splatCursorRef = useRef(0);
   const fusionKeyframesRef = useRef<readonly FusionKeyframeDoc[]>([]);
   const runPodAbortRef = useRef<AbortController | null>(null);
   const runPodGaussianCountRef = useRef(0);
@@ -449,7 +427,6 @@ export function Console() {
     readonly TrainedSplatAsset[] | null
   >(null);
   const liveTrainedUrlsRef = useRef<string[]>([]);
-  const useStreamedSplatRef = useRef(false);
 
   // Static preview assets (idle/selected state): keep the corridor-demo Spark
   // splat path working so the picker → idle viewer shows a real scene.
@@ -534,17 +511,13 @@ export function Console() {
     sourceRef.current?.dispose();
     sourceRef.current = null;
     helloRef.current = null;
-    splatRef.current = null;
-    splatCursorRef.current = 0;
     fusionKeyframesRef.current = [];
     runPodGaussianCountRef.current = 0;
     resetCloud();
-    resetSplat();
     for (const url of liveTrainedUrlsRef.current) {
       URL.revokeObjectURL(url);
     }
     liveTrainedUrlsRef.current = [];
-    useStreamedSplatRef.current = false;
     setLiveTrainedSplats(null);
     setTrajectorySegments(null);
     setRunPodStatus(null);
@@ -646,37 +619,6 @@ export function Console() {
     setPhase("picker");
     setSelected(null);
   };
-
-  const revealSplatTo = useCallback((target: number) => {
-    const splat = splatRef.current;
-    if (!splat) return;
-    const cursor = splatCursorRef.current;
-    const clampedTarget = Math.min(target, splat.count);
-    if (clampedTarget <= cursor) return;
-    const n = clampedTarget - cursor;
-    const positions = Array.from(
-      splat.positions.subarray(cursor * 3, clampedTarget * 3)
-    );
-    const scales = Array.from(
-      splat.scales.subarray(cursor * 3, clampedTarget * 3)
-    );
-    const rotations: number[] = new Array(n * 4);
-    const colorsRGBA = Array.from(
-      splat.colors.subarray(cursor * 4, clampedTarget * 4)
-    );
-    const opacities: number[] = new Array(n);
-    for (let i = 0; i < n; i += 1) {
-      const src = (cursor + i) * 4;
-      // Decode antimatter15 rotation bytes → quaternion x,y,z,w in [-1,1].
-      rotations[i * 4] = (splat.rotations[src] - 128) / 128;
-      rotations[i * 4 + 1] = (splat.rotations[src + 1] - 128) / 128;
-      rotations[i * 4 + 2] = (splat.rotations[src + 2] - 128) / 128;
-      rotations[i * 4 + 3] = (splat.rotations[src + 3] - 128) / 128;
-      opacities[i] = splat.colors[src + 3] / 255;
-    }
-    appendGaussians(positions, scales, rotations, colorsRGBA, opacities);
-    splatCursorRef.current = clampedTarget;
-  }, []);
 
   const trainLiveSplatOnRunPod = useCallback(
     async (
@@ -868,158 +810,74 @@ export function Console() {
     initCloud(hello.pointTotal);
     setPointCount(0);
 
-    // Prefer the photometrically-trained (photoreal) OpenSplat splat, rendered
-    // via Spark in its normalized frame. Fall back to the point-init streamed
-    // splat only when a source ships no trained.json manifest.
-    useStreamedSplatRef.current = false;
+    // Every live session must go through RunPod so demos exercise the GPU
+    // endpoint and render fresh splats for that request.
     for (const url of liveTrainedUrlsRef.current) {
       URL.revokeObjectURL(url);
     }
     liveTrainedUrlsRef.current = [];
     setLiveTrainedSplats(null);
     const presetBase = selected.presetPath ?? `/presets/${selected.id}`;
-    let usedTrained = false;
-    void trainLiveSplatOnRunPod(selected, hello, runPodController.signal).catch(
-      (err: unknown) => {
-        if (runPodController.signal.aborted) return;
-        console.warn("[console] RunPod live splat failed:", err);
-        setRunPodStatus("RunPod unavailable; using published splat fallback");
-      }
-    );
 
     try {
-      if (!usedTrained) {
-        const fusionRes = await fetch(`${presetBase}/fusion_manifest.json`, {
-          cache: "no-store",
-        });
-        if (fusionRes.ok) {
-          const fusion = (await fusionRes.json()) as FusionManifest;
-          const items = fusion.items.map((item) => ({
-            id: item.id,
-            url: `${presetBase}/${item.base}/${item.splatFile}`,
-            fileName: item.splatFile,
-            sourceBounds: item.sourceBounds,
-            targetBounds: item.targetBounds,
-            coordinateFrame: (fusion.coordinateFrame ??
-              "normalized") as TrainedSplatAsset["coordinateFrame"],
-          }));
-          if (items.length > 0) {
-            setLiveTrainedSplats(items);
-            setLayers(PHOTOREAL_LAYERS);
-            setAutoOrbit(false);
-            setCameraView((current) => ({
-              id: "orbit",
-              version: current.version + 1,
-            }));
-            const fusionKeyframesRes = await fetch(
-              `${presetBase}/fusion_keyframes.json`,
-              { cache: "no-store" }
-            );
-            if (sourceRef.current !== src) {
-              setIsPreloadingLive(false);
-              return;
-            }
-            if (fusionKeyframesRes.ok) {
-              const fusionKeyframesDoc =
-                (await fusionKeyframesRes.json()) as FusionKeyframesDoc;
-              fusionKeyframesRef.current = fusionKeyframesDoc.keyframes;
-              setTrajectoryPoints(
-                fusionKeyframesDoc.keyframes.map(
-                  (keyframe) => keyframe.position
-                )
-              );
-              setTrajectorySegments(
-                groupFusionTrajectory(fusionKeyframesDoc.keyframes)
-              );
-              const firstFusionPose = nearestFusionPose(
-                hello.keyframeCount > 0 ? 0 : 0,
-                fusionKeyframesDoc.keyframes
-              );
-              if (firstFusionPose) setRobotPose(firstFusionPose);
-            }
-            setGaussianCount(
-              fusion.items.reduce(
-                (sum, item) => sum + (item.gaussianCount ?? 0),
-                0
-              )
-            );
-            usedTrained = true;
-          }
-        }
+      const rendered = await trainLiveSplatOnRunPod(
+        selected,
+        hello,
+        runPodController.signal
+      );
+      if (!rendered || sourceRef.current !== src) {
+        setIsPreloadingLive(false);
+        return;
       }
     } catch (err: unknown) {
-      console.warn("[console] fusion splat load failed:", err);
+      if (runPodController.signal.aborted) return;
+      console.warn("[console] RunPod live splat failed:", err);
+      setLiveError(
+        err instanceof Error
+          ? err.message
+          : "RunPod GPU rendering failed before live mode could start."
+      );
+      setRunPodStatus("RunPod GPU render failed");
+      teardownSource();
+      setIsPreloadingLive(false);
+      setLoadStatus(hasScene ? "ready" : "failed");
+      return;
     }
 
-    if (!usedTrained) {
-      try {
-        const metaRes = await fetch(`${presetBase}/trained.json`, {
-          cache: "no-store",
-        });
-        if (metaRes.ok) {
-          const meta = (await metaRes.json()) as {
-            splatFile: string;
-            coordinateFrame?: string;
-            gaussianCount?: number;
-            bounds: Bounds;
-          };
-          const splatRes = await fetch(`${presetBase}/${meta.splatFile}`, {
-            cache: "no-store",
-          });
-          if (splatRes.ok) {
-            const buf = await splatRes.arrayBuffer();
-            if (sourceRef.current !== src) {
-              setIsPreloadingLive(false);
-              return;
-            }
-            const blobUrl = URL.createObjectURL(
-              new Blob([buf], { type: "application/octet-stream" })
-            );
-            liveTrainedUrlsRef.current.push(blobUrl);
-            setLiveTrainedSplats([
-              {
-                id: "trained",
-                url: blobUrl,
-                fileBytes: buf,
-                fileName: meta.splatFile,
-                sourceBounds: meta.bounds,
-                coordinateFrame: (meta.coordinateFrame ??
-                  "normalized") as TrainedSplatAsset["coordinateFrame"],
-              },
-            ]);
-            setGaussianCount(
-              meta.gaussianCount ??
-                Math.floor(buf.byteLength / SPLAT_RECORD_BYTES)
-            );
-            usedTrained = true;
-          }
-        }
-      } catch (err: unknown) {
-        console.warn("[console] trained splat load failed:", err);
-      }
-    }
+    setLayers(PHOTOREAL_LAYERS);
+    setAutoOrbit(false);
+    setCameraView((current) => ({
+      id: "orbit",
+      version: current.version + 1,
+    }));
 
-    // Fallback: point-init streamed splat revealed progressively.
-    if (!usedTrained && hello.splatUrl && hello.splatCount !== undefined) {
-      try {
-        const res = await fetch(hello.splatUrl);
-        if (!res.ok) throw new Error(`scene.splat ${res.status}`);
-        const buf = await res.arrayBuffer();
-        if (sourceRef.current !== src) {
-          setIsPreloadingLive(false);
-          return;
-        }
-        splatRef.current = decodeSplat(buf);
-        splatCursorRef.current = 0;
-        resetSplat();
-        initSplat(hello.splatCount);
-        setGaussianCount(hello.splatCount);
-        useStreamedSplatRef.current = true;
-        revealSplatTo(hello.splatCount);
-      } catch (err: unknown) {
-        console.warn("[console] splat decode failed:", err);
-        splatRef.current = null;
+    try {
+      const fusionKeyframesRes = await fetch(
+        `${presetBase}/fusion_keyframes.json`,
+        { cache: "no-store" }
+      );
+      if (sourceRef.current !== src) {
+        setIsPreloadingLive(false);
+        return;
       }
+      if (fusionKeyframesRes.ok) {
+        const fusionKeyframesDoc =
+          (await fusionKeyframesRes.json()) as FusionKeyframesDoc;
+        fusionKeyframesRef.current = fusionKeyframesDoc.keyframes;
+        setTrajectoryPoints(
+          fusionKeyframesDoc.keyframes.map((keyframe) => keyframe.position)
+        );
+        setTrajectorySegments(
+          groupFusionTrajectory(fusionKeyframesDoc.keyframes)
+        );
+        const firstFusionPose = nearestFusionPose(
+          hello.keyframeCount > 0 ? 0 : 0,
+          fusionKeyframesDoc.keyframes
+        );
+        if (firstFusionPose) setRobotPose(firstFusionPose);
+      }
+    } catch (err: unknown) {
+      console.warn("[console] fusion keyframes load failed:", err);
     }
 
     const unsubscribe = src.subscribe((msg) => {
@@ -1036,9 +894,6 @@ export function Console() {
             }
           );
           if (msg.frame.imageUrl) setCameraImageUrl(msg.frame.imageUrl);
-          if (useStreamedSplatRef.current && helloRef.current?.splatCount) {
-            revealSplatTo(helloRef.current.splatCount);
-          }
           break;
         }
         case "reset": {
@@ -1046,11 +901,6 @@ export function Console() {
           if (!h) break;
           resetCloud();
           initCloud(h.pointTotal);
-          if (useStreamedSplatRef.current) {
-            resetSplat();
-            if (h.splatCount !== undefined) initSplat(h.splatCount);
-            splatCursorRef.current = 0;
-          }
           setPointCount(0);
           break;
         }
@@ -1166,7 +1016,7 @@ export function Console() {
 
   const hasScene = seedPositions !== null && seedColors !== null;
   const liveGaussianLabel = new Intl.NumberFormat("en-US").format(
-    isLive && !liveTrainedSplats ? getRevealedGaussians() : gaussianCount
+    gaussianCount
   );
   const livePointLabel = new Intl.NumberFormat("en-US").format(pointCount);
   const sequenceLabel = selected?.label ?? DEMO_PRESET.label;
@@ -1446,11 +1296,7 @@ export function Console() {
           onInteriorVisibilityChange={setInteriorVisibility}
           sceneShapeAnalysis={sceneShapeAnalysis}
           pointCount={isLive ? getRevealedPoints() : pointCount}
-          gaussianCount={
-            isLive && !liveTrainedSplats
-              ? getRevealedGaussians()
-              : gaussianCount
-          }
+          gaussianCount={gaussianCount}
           isLive={isLive}
           playing={playing}
           speed={speed}
