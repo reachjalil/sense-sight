@@ -414,6 +414,83 @@ p {
   flex: none;
 }
 
+.cn-segmented {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  margin: 0;
+  padding: 4px;
+  border: 1px solid var(--cn-line-strong);
+  border-radius: var(--cn-radius-sm);
+  background: rgba(7, 12, 17, 0.58);
+}
+
+.cn-segmented button,
+.cn-panel-action {
+  min-height: 30px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--cn-text-muted);
+  font-family: var(--cn-font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.cn-segmented button:hover,
+.cn-segmented button.active,
+.cn-panel-action:hover {
+  border-color: rgba(51, 240, 209, 0.36);
+  background: rgba(51, 240, 209, 0.1);
+  color: var(--cn-text);
+}
+
+.cn-render-presets {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.cn-render-presets button {
+  display: grid;
+  gap: 3px;
+  width: 100%;
+  min-height: 54px;
+  padding: 9px 10px;
+  border: 1px solid var(--cn-line-strong);
+  border-radius: var(--cn-radius-sm);
+  background: rgba(7, 12, 17, 0.55);
+  color: var(--cn-text-muted);
+  text-align: left;
+}
+
+.cn-render-presets button:hover,
+.cn-render-presets button.active {
+  border-color: rgba(51, 240, 209, 0.45);
+  background: rgba(51, 240, 209, 0.09);
+  color: var(--cn-text);
+}
+
+.cn-render-presets strong {
+  font-size: 0.78rem;
+  font-weight: 650;
+}
+
+.cn-render-presets span {
+  color: var(--cn-text-faint);
+  font-size: 0.68rem;
+  line-height: 1.35;
+}
+
+.cn-panel-action {
+  width: 100%;
+  border-color: var(--cn-line-strong);
+  background: rgba(7, 12, 17, 0.45);
+}
+
 .cn-tuning-control {
   display: grid;
   gap: 7px;

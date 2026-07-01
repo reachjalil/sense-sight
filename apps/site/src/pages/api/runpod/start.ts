@@ -20,9 +20,13 @@ function json(body: unknown, init?: ResponseInit): Response {
   });
 }
 
-function parsePositiveInt(value: string | undefined, fallback: number): number {
+function parsePositiveInt(
+  value: number | string | undefined,
+  fallback: number
+): number {
   if (!value) return fallback;
-  const parsed = Number.parseInt(value, 10);
+  const parsed =
+    typeof value === "number" ? Math.floor(value) : Number.parseInt(value, 10);
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
 }
 
@@ -81,20 +85,33 @@ export const POST: APIRoute = async ({ cookies, request }) => {
     keyframeCount?: number;
     shardCount?: number;
     overlapKeyframes?: number;
+    qualityPreset?: string;
+    trainSteps?: number;
+    seedPointLimit?: number;
   };
   const sequence = body.sequence || body.sourceId || "corridor1-2";
   const keyframeCount =
     typeof body.keyframeCount === "number" && body.keyframeCount > 0
       ? Math.floor(body.keyframeCount)
       : 180;
-  const qualityPreset = configuredQualityPreset(env.RUNPOD_QUALITY_PRESET);
+  const qualityPreset = configuredQualityPreset(
+    body.qualityPreset ?? env.RUNPOD_QUALITY_PRESET
+  );
   const trainSteps = parsePositiveInt(
-    env.RUNPOD_TRAIN_STEPS,
+    body.trainSteps ?? env.RUNPOD_TRAIN_STEPS,
     qualityPreset === "preview"
       ? 300
       : qualityPreset === "balanced"
         ? 3000
         : 9000
+  );
+  const seedPointLimit = parsePositiveInt(
+    body.seedPointLimit,
+    qualityPreset === "preview"
+      ? 80_000
+      : qualityPreset === "balanced"
+        ? 160_000
+        : 240_000
   );
   const shardCount = clamp(
     Math.floor(
@@ -141,8 +158,8 @@ export const POST: APIRoute = async ({ cookies, request }) => {
       initScale: 0.01,
       prune: 0.005,
       qualityPreset,
-      seedPointLimit: 80_000,
-      shDegree: 0,
+      seedPointLimit,
+      shDegree: qualityPreset === "preview" ? 0 : 3,
       densify: qualityPreset !== "preview",
       scaleRegQuantile: 0.99,
     },
@@ -187,6 +204,7 @@ export const POST: APIRoute = async ({ cookies, request }) => {
         shardCount,
         qualityPreset,
         steps: trainSteps,
+        seedPointLimit,
         outputMode: env.RUNPOD_OUTPUT_PREFIX_URI ? "r2" : "return",
       },
     });

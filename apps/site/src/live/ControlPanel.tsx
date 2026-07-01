@@ -3,6 +3,7 @@ import type {
   RenderLayers,
   RenderPreset,
   SceneShapeAnalysis,
+  TrainedRenderProfileId,
   TrainedRenderProfile,
 } from "@sense-sight/render-contracts";
 
@@ -47,6 +48,19 @@ function metric(value: number): string {
 }
 
 const SPEED_OPTIONS = [0.25, 0.5, 1, 2, 4] as const;
+const LIVE_QUALITY_OPTIONS = [
+  { id: "preview", label: "Fast" },
+  { id: "balanced", label: "Balanced" },
+  { id: "research", label: "Research" },
+] as const;
+
+export type LiveGenerationQuality = (typeof LIVE_QUALITY_OPTIONS)[number]["id"];
+
+export interface RenderProfileControlOption {
+  readonly id: TrainedRenderProfileId;
+  readonly label: string;
+  readonly description?: string;
+}
 
 export interface ControlPanelProps {
   layers: RenderLayers;
@@ -54,6 +68,12 @@ export interface ControlPanelProps {
   loadStatus: LoadStatus;
   preset: RenderPreset | null;
   trainedRenderProfile: TrainedRenderProfile;
+  baseTrainedRenderProfile?: TrainedRenderProfile;
+  renderProfileOptions?: readonly RenderProfileControlOption[];
+  renderProfileId?: TrainedRenderProfileId;
+  onRenderProfileIdChange?: (id: TrainedRenderProfileId) => void;
+  onTrainedRenderProfileChange?: (patch: Partial<TrainedRenderProfile>) => void;
+  onResetTrainedRenderProfile?: () => void;
   interiorVisibility: InteriorVisibilityTuning;
   onInteriorVisibilityChange?: (next: InteriorVisibilityTuning) => void;
   sceneShapeAnalysis?: SceneShapeAnalysis | null;
@@ -71,6 +91,8 @@ export interface ControlPanelProps {
   /** Receives a 0..1 fraction to seek to. */
   onSeek?: (fraction: number) => void;
   onLoop?: (loop: boolean) => void;
+  liveQualityPreset?: LiveGenerationQuality;
+  onLiveQualityPresetChange?: (quality: LiveGenerationQuality) => void;
   sensorEvidence?: SensorEvidenceSummary | null;
   runPodStatus?: string | null;
 }
@@ -81,6 +103,12 @@ export function ControlPanel({
   loadStatus,
   preset,
   trainedRenderProfile,
+  baseTrainedRenderProfile,
+  renderProfileOptions = [],
+  renderProfileId,
+  onRenderProfileIdChange,
+  onTrainedRenderProfileChange,
+  onResetTrainedRenderProfile,
   interiorVisibility,
   onInteriorVisibilityChange,
   sceneShapeAnalysis,
@@ -95,11 +123,17 @@ export function ControlPanel({
   onSpeed,
   onSeek,
   onLoop,
+  liveQualityPreset = "balanced",
+  onLiveQualityPresetChange,
   sensorEvidence,
   runPodStatus,
 }: ControlPanelProps) {
   const dominantShape = sceneShapeAnalysis?.shapes[0];
   const shapeCount = sceneShapeAnalysis?.shapes.length ?? 0;
+  const editableProfile = baseTrainedRenderProfile ?? trainedRenderProfile;
+  const selectedProfile =
+    renderProfileOptions.find((option) => option.id === renderProfileId) ??
+    renderProfileOptions[0];
   const updateInteriorVisibility = (
     patch: Partial<InteriorVisibilityTuning>
   ) => {
@@ -199,6 +233,20 @@ export function ControlPanel({
               <span className="v">{runPodStatus}</span>
             </div>
           )}
+          <fieldset className="cn-segmented" aria-label="Live splat quality">
+            <legend className="sr-only">Live splat quality</legend>
+            {LIVE_QUALITY_OPTIONS.map((option) => (
+              <button
+                key={option.id}
+                type="button"
+                className={liveQualityPreset === option.id ? "active" : ""}
+                aria-pressed={liveQualityPreset === option.id}
+                onClick={() => onLiveQualityPresetChange?.(option.id)}
+              >
+                {option.label}
+              </button>
+            ))}
+          </fieldset>
         </div>
       </section>
 
@@ -311,9 +359,27 @@ export function ControlPanel({
       <section className="panel-section">
         <div className="panel-section-head">
           <span className="tick" />
-          Render profile
+          Render style
         </div>
         <div className="panel-section-body">
+          {renderProfileOptions.length > 0 && (
+            <fieldset className="cn-render-presets">
+              <legend className="sr-only">Render style</legend>
+              {renderProfileOptions.map((option) => (
+                <button
+                  key={option.id}
+                  type="button"
+                  className={renderProfileId === option.id ? "active" : ""}
+                  aria-pressed={renderProfileId === option.id}
+                  title={option.description}
+                  onClick={() => onRenderProfileIdChange?.(option.id)}
+                >
+                  <strong>{option.label}</strong>
+                  {option.description && <span>{option.description}</span>}
+                </button>
+              ))}
+            </fieldset>
+          )}
           <div className="metric">
             <span className="k">Profile</span>
             <span className="v">{trainedRenderProfile.label}</span>
@@ -334,6 +400,105 @@ export function ControlPanel({
             <span className="k">Max px radius</span>
             <span className="v">{trainedRenderProfile.maxPixelRadius}</span>
           </div>
+          <label className="cn-tuning-control">
+            <span>
+              Spark radius
+              <strong>{editableProfile.radiusDefault.toFixed(2)}</strong>
+            </span>
+            <input
+              type="range"
+              min={editableProfile.radiusMin}
+              max={editableProfile.radiusMax}
+              step={editableProfile.radiusStep}
+              value={editableProfile.radiusDefault}
+              onChange={(event) =>
+                onTrainedRenderProfileChange?.({
+                  radiusDefault: Number.parseFloat(event.target.value),
+                })
+              }
+            />
+          </label>
+          <label className="cn-tuning-control">
+            <span>
+              Alpha gate
+              <strong>{Math.round(editableProfile.minAlpha * 255)}/255</strong>
+            </span>
+            <input
+              type="range"
+              min={1}
+              max={64}
+              step={1}
+              value={Math.round(editableProfile.minAlpha * 255)}
+              onChange={(event) =>
+                onTrainedRenderProfileChange?.({
+                  minAlpha: Number.parseInt(event.target.value, 10) / 255,
+                })
+              }
+            />
+          </label>
+          <label className="cn-tuning-control">
+            <span>
+              Max radius
+              <strong>{editableProfile.maxPixelRadius}px</strong>
+            </span>
+            <input
+              type="range"
+              min={12}
+              max={512}
+              step={1}
+              value={editableProfile.maxPixelRadius}
+              onChange={(event) =>
+                onTrainedRenderProfileChange?.({
+                  maxPixelRadius: Number.parseInt(event.target.value, 10),
+                })
+              }
+            />
+          </label>
+          <label className="cn-tuning-control">
+            <span>
+              Falloff
+              <strong>{editableProfile.falloff.toFixed(2)}</strong>
+            </span>
+            <input
+              type="range"
+              min={0.35}
+              max={1.4}
+              step={0.01}
+              value={editableProfile.falloff}
+              onChange={(event) =>
+                onTrainedRenderProfileChange?.({
+                  falloff: Number.parseFloat(event.target.value),
+                })
+              }
+            />
+          </label>
+          <button
+            type="button"
+            className={`cn-visibility-toggle${
+              editableProfile.sortRadial ? "" : " off"
+            }`}
+            aria-pressed={editableProfile.sortRadial}
+            onClick={() =>
+              onTrainedRenderProfileChange?.({
+                sortRadial: !editableProfile.sortRadial,
+              })
+            }
+          >
+            <span
+              className="swatch"
+              style={{
+                background: editableProfile.sortRadial ? "#33f0d1" : "#61757e",
+              }}
+            />
+            Radial sort
+          </button>
+          <button
+            type="button"
+            className="cn-panel-action"
+            onClick={() => onResetTrainedRenderProfile?.()}
+          >
+            Reset {selectedProfile?.label ?? "style"}
+          </button>
         </div>
       </section>
 

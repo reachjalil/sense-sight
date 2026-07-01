@@ -69,6 +69,12 @@ interface CameraPose {
   target: THREE.Vector3;
 }
 
+interface TrainedSplatTransform {
+  position?: [number, number, number];
+  rotation?: [number, number, number];
+  scale?: number | [number, number, number];
+}
+
 export interface RobotPose {
   position: Vec3;
   headingRad: number;
@@ -114,6 +120,42 @@ function unionBounds(bounds: readonly Bounds[]): Bounds | null {
   );
 }
 
+function transformBounds(
+  bounds: Bounds,
+  transform: TrainedSplatTransform
+): Bounds {
+  const position = new THREE.Vector3(...(transform.position ?? [0, 0, 0]));
+  const rotation = new THREE.Quaternion().setFromEuler(
+    new THREE.Euler(...(transform.rotation ?? [0, 0, 0]))
+  );
+  const scale =
+    typeof transform.scale === "number"
+      ? new THREE.Vector3(transform.scale, transform.scale, transform.scale)
+      : new THREE.Vector3(...(transform.scale ?? [1, 1, 1]));
+  const matrix = new THREE.Matrix4().compose(position, rotation, scale);
+  const xs = [bounds.min.x, bounds.max.x];
+  const ys = [bounds.min.y, bounds.max.y];
+  const zs = [bounds.min.z, bounds.max.z];
+  const points = xs.flatMap((x) =>
+    ys.flatMap((y) =>
+      zs.map((z) => new THREE.Vector3(x, y, z).applyMatrix4(matrix))
+    )
+  );
+
+  return {
+    min: {
+      x: Math.min(...points.map((p) => p.x)),
+      y: Math.min(...points.map((p) => p.y)),
+      z: Math.min(...points.map((p) => p.z)),
+    },
+    max: {
+      x: Math.max(...points.map((p) => p.x)),
+      y: Math.max(...points.map((p) => p.y)),
+      z: Math.max(...points.map((p) => p.z)),
+    },
+  };
+}
+
 function cameraTargetOf(bounds: Bounds | null): [number, number, number] {
   if (!bounds) return [0, 0, 0];
   const center = centerOf(bounds);
@@ -126,16 +168,21 @@ function cameraTargetOf(bounds: Bounds | null): [number, number, number] {
 
 function cameraPoseForView(
   id: CameraViewId,
-  bounds: Bounds | null,
+  focusBounds: Bounds | null,
+  navigationBounds: Bounds | null,
   useTrainedEnvironment = false
 ): CameraPose {
-  if (id === "orbit" && bounds && useTrainedEnvironment) {
-    return trainedSplatEnvironmentPose(bounds);
+  const stableBounds = navigationBounds ?? focusBounds;
+
+  if (id === "orbit" && stableBounds && useTrainedEnvironment) {
+    return trainedSplatEnvironmentPose(stableBounds);
   }
 
-  const target = new THREE.Vector3(...cameraTargetOf(bounds));
-  const span = spanOf(bounds);
-  const yFloor = bounds?.min.y ?? 0;
+  const target = new THREE.Vector3(
+    ...cameraTargetOf(focusBounds ?? stableBounds)
+  );
+  const span = spanOf(stableBounds);
+  const yFloor = stableBounds?.min.y ?? 0;
 
   switch (id) {
     case "top":
@@ -241,7 +288,7 @@ function robotTargetOf(
 }
 
 function robotForwardOf(headingRad: number): THREE.Vector3 {
-  return new THREE.Vector3(Math.sin(headingRad), 0, Math.cos(headingRad));
+  return new THREE.Vector3(-Math.sin(headingRad), 0, -Math.cos(headingRad));
 }
 
 function clamp(value: number, min: number, max: number): number {
@@ -312,18 +359,20 @@ function fitBounds(
 function ViewerCameraController({
   autoOrbit,
   cameraView,
+  focusBounds,
+  navigationBounds,
   robotPose,
   trainedEnvironment,
-  worldBounds,
   onAutoOrbitChange,
   onCameraStatusChange,
   onCameraViewChange,
 }: {
   autoOrbit: boolean;
   cameraView: CameraViewRequest;
+  focusBounds: Bounds | null;
+  navigationBounds: Bounds | null;
   robotPose?: RobotPose | null;
   trainedEnvironment: boolean;
-  worldBounds: Bounds | null;
   onAutoOrbitChange?: (enabled: boolean) => void;
   onCameraStatusChange?: (status: string) => void;
   onCameraViewChange?: (id: CameraViewId) => void;
@@ -377,8 +426,8 @@ function ViewerCameraController({
     controls.autoRotate = false;
     if (autoOrbit) {
       followTarget.current.copy(
-        robotTargetOf(robotPose, worldBounds) ??
-          new THREE.Vector3(...cameraTargetOf(worldBounds))
+        robotTargetOf(robotPose, navigationBounds) ??
+          new THREE.Vector3(...cameraTargetOf(focusBounds ?? navigationBounds))
       );
       orbitOffset.current.copy(camera.position).sub(followTarget.current);
       followAngle.current = Math.atan2(
@@ -393,25 +442,31 @@ function ViewerCameraController({
     camera,
     controls,
     invalidate,
+    focusBounds,
+    navigationBounds,
     onCameraStatusChange,
     robotPose,
-    worldBounds,
   ]);
 
   useEffect(() => {
     if (!controls || !perspectiveCamera) return;
-    const boundsKey = worldBounds
-      ? [
-          worldBounds.min.x,
-          worldBounds.min.y,
-          worldBounds.min.z,
-          worldBounds.max.x,
-          worldBounds.max.y,
-          worldBounds.max.z,
-        ]
-          .map((value) => value.toFixed(3))
-          .join(":")
-      : "none";
+    const viewBounds = focusBounds ?? navigationBounds;
+    const boundsKey = [viewBounds, navigationBounds]
+      .map((bounds) =>
+        bounds
+          ? [
+              bounds.min.x,
+              bounds.min.y,
+              bounds.min.z,
+              bounds.max.x,
+              bounds.max.y,
+              bounds.max.z,
+            ]
+              .map((value) => value.toFixed(3))
+              .join(":")
+          : "none"
+      )
+      .join("|");
     if (
       handledView.current?.id === cameraView.id &&
       handledView.current.version === cameraView.version &&
@@ -429,7 +484,8 @@ function ViewerCameraController({
 
     const nextPose = cameraPoseForView(
       cameraView.id,
-      worldBounds,
+      focusBounds,
+      navigationBounds,
       trainedEnvironment
     );
     onCameraStatusChange?.(`${CAMERA_VIEW_LABELS[cameraView.id]} camera`);
@@ -458,11 +514,12 @@ function ViewerCameraController({
   }, [
     cameraView,
     controls,
+    focusBounds,
     invalidate,
+    navigationBounds,
     onCameraStatusChange,
     perspectiveCamera,
     trainedEnvironment,
-    worldBounds,
   ]);
 
   useEffect(() => {
@@ -625,12 +682,14 @@ function ViewerCameraController({
 
   useFrame((_, delta) => {
     if (autoOrbit && controls && perspectiveCamera && !reducedMotion.current) {
-      const span = spanOf(worldBounds);
-      const yFloor = worldBounds?.min.y ?? 0;
-      const robotTarget = robotTargetOf(robotPose, worldBounds);
+      const span = spanOf(navigationBounds);
+      const yFloor = navigationBounds?.min.y ?? 0;
+      const robotTarget = robotTargetOf(robotPose, navigationBounds);
       const target = robotTarget
         ? followTarget.current.copy(robotTarget)
-        : followTarget.current.fromArray(cameraTargetOf(worldBounds));
+        : followTarget.current.fromArray(
+            cameraTargetOf(focusBounds ?? navigationBounds)
+          );
       const radius = clamp(
         perspectiveCamera.position.distanceTo(controls.target),
         Math.max(2.4, span * 0.24),
@@ -719,15 +778,10 @@ export interface TrainedSplatAsset {
   coordinateFrame: CoordinateFrame;
 }
 
-interface TrainedSplatTransform {
-  position?: [number, number, number];
-  rotation?: [number, number, number];
-  scale?: number | [number, number, number];
-}
-
 interface TrainedLayerItem {
   asset: TrainedSplatAsset;
   key: string;
+  bounds: Bounds;
   transform: TrainedSplatTransform;
 }
 
@@ -794,7 +848,7 @@ export function Viewer({
 
   useEffect(() => {
     setSparkFailed(false);
-  }, [trainedSplat]);
+  }, [trainedSplat, trainedSplats]);
 
   const activeTrainedSplats = useMemo(
     () => trainedSplats ?? (trainedSplat ? [trainedSplat] : []),
@@ -807,12 +861,14 @@ export function Viewer({
       const asset = activeTrainedSplats[index];
       if (!worldBounds) return [];
       if (asset.coordinateFrame === "training-frame") {
+        const transform = {
+          scale: [-1, 1, 1] as [number, number, number],
+        };
         items.push({
           asset,
           key: asset.id ?? asset.url ?? `trained-${index}`,
-          transform: {
-            scale: [-1, 1, 1],
-          },
+          bounds: transformBounds(asset.sourceBounds, transform),
+          transform,
         });
         continue;
       }
@@ -822,41 +878,41 @@ export function Viewer({
           orientedSource,
           asset.targetBounds ?? worldBounds
         );
+        const transform = {
+          position: fit.position,
+          rotation: [Math.PI / 2, 0, 0] as [number, number, number],
+          scale: fit.scale,
+        };
         items.push({
           asset,
           key: asset.id ?? asset.url ?? `trained-${index}`,
-          transform: {
-            position: fit.position,
-            rotation: [Math.PI / 2, 0, 0],
-            scale: fit.scale,
-          },
+          bounds: transformBounds(asset.sourceBounds, transform),
+          transform,
         });
       }
     }
     return items;
   }, [activeTrainedSplats, worldBounds]);
-  const trainedTargetBounds = useMemo(
-    () =>
-      unionBounds(
-        activeTrainedSplats
-          .map((asset) => asset.targetBounds)
-          .filter((bounds): bounds is Bounds => Boolean(bounds))
-      ),
-    [activeTrainedSplats]
+  const trainedRenderBounds = useMemo(
+    () => unionBounds(trainedLayerItems.map((item) => item.bounds)),
+    [trainedLayerItems]
   );
+  const visibleTrainedBounds = layers.splat ? trainedRenderBounds : null;
+  const navigationBounds = visibleTrainedBounds ?? worldBounds;
   const dominantShapeBounds =
     showInteriorShapes && sceneShapes.length > 0
       ? sceneShapes[0]?.bounds
       : null;
-  const cameraBounds =
-    dominantShapeBounds ?? trainedTargetBounds ?? worldBounds;
+  const focusBounds =
+    dominantShapeBounds ?? visibleTrainedBounds ?? worldBounds;
 
-  const span = spanOf(cameraBounds);
-  const worldSpan = spanOf(worldBounds ?? cameraBounds);
+  const span = spanOf(navigationBounds ?? focusBounds);
+  const focusSpan = spanOf(focusBounds ?? navigationBounds);
   const trainedEnvironment = hasTrainedSplats && layers.splat;
   const initialPose = cameraPoseForView(
     cameraView.id,
-    cameraBounds,
+    focusBounds,
+    navigationBounds,
     trainedEnvironment
   );
   const cameraPosition = initialPose.position.toArray() as [
@@ -865,8 +921,8 @@ export function Viewer({
     number,
   ];
   const target = initialPose.target.toArray() as [number, number, number];
-  const gridSize = clamp(worldSpan * 1.8, 16, 96);
-  const cameraFar = Math.max(200, Math.max(span, worldSpan) * 18);
+  const gridSize = clamp(span * 1.8, 16, 96);
+  const cameraFar = Math.max(200, Math.max(span, focusSpan) * 18);
   const cloudBuffers = isStreamingLive ? getCloudBuffers() : null;
   const splatBuffers = isStreamingLive ? getSplatBuffers() : null;
 
@@ -1033,9 +1089,10 @@ export function Viewer({
       <ViewerCameraController
         autoOrbit={autoOrbit}
         cameraView={cameraView}
+        focusBounds={focusBounds}
+        navigationBounds={navigationBounds}
         robotPose={robotPose}
         trainedEnvironment={trainedEnvironment}
-        worldBounds={cameraBounds}
         onAutoOrbitChange={onAutoOrbitChange}
         onCameraStatusChange={onCameraStatusChange}
         onCameraViewChange={onCameraViewChange}

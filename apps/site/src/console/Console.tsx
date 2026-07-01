@@ -1,6 +1,8 @@
 import {
   DEFAULT_INTERIOR_VISIBILITY_TUNING,
   DEFAULT_TRAINED_RENDER_PROFILE,
+  TRAINED_RENDER_PROFILE_OPTIONS,
+  TRAINED_RENDER_PROFILES,
   applyInteriorVisibilityProfile,
   inferSceneShapesFromPoints,
   trainedSplatFilename,
@@ -8,6 +10,8 @@ import {
   type RenderLayers,
   type RenderPreset,
   type SceneShapeAnalysis,
+  type TrainedRenderProfile,
+  type TrainedRenderProfileId,
 } from "@sense-sight/render-contracts";
 import {
   decodeSplat,
@@ -25,6 +29,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchPresetAssets } from "../live/asset-loader";
 import {
   ControlPanel,
+  type LiveGenerationQuality,
   type LoadStatus,
   type SensorEvidenceSummary,
 } from "../live/ControlPanel";
@@ -76,6 +81,8 @@ const DEMO_PRESET: RenderPreset = {
 };
 
 const TRAINED_ITERATIONS = 30000;
+const DEFAULT_RENDER_PROFILE_ID: TrainedRenderProfileId = "photoreal";
+const DEFAULT_LIVE_QUALITY: LiveGenerationQuality = "research";
 
 const RENDER_MODE_LABEL: Record<ViewerRenderMode, string> = {
   empty: "No scene",
@@ -168,6 +175,44 @@ function runPodStatusLabel(status: RunPodJobStatus): string {
     default:
       return "RunPod status pending";
   }
+}
+
+function applyRenderProfileOverrides(
+  profile: TrainedRenderProfile,
+  overrides: Partial<TrainedRenderProfile>
+): TrainedRenderProfile {
+  if (Object.keys(overrides).length === 0) return profile;
+  return {
+    ...profile,
+    ...overrides,
+    label: `${profile.label} custom`,
+  };
+}
+
+function liveProfileForBase(
+  profile: TrainedRenderProfile
+): TrainedRenderProfile {
+  return {
+    ...profile,
+    label: `${profile.label} live`,
+    radiusDefault: Math.min(profile.radiusDefault, 0.72),
+    radiusMin: Math.min(profile.radiusMin, 0.12),
+    radiusMax: Math.min(profile.radiusMax, 1.15),
+    radiusStep: Math.min(profile.radiusStep, 0.025),
+    minAlpha: Math.min(profile.minAlpha, 5 / 255),
+    maxPixelRadius: Math.min(profile.maxPixelRadius, 112),
+    maxStdDev: Math.min(profile.maxStdDev, Math.sqrt(8)),
+    focalAdjustment: Math.min(profile.focalAdjustment, 1.08),
+    falloff: Math.min(profile.falloff, 0.98),
+    opacity: Math.min(profile.opacity, 0.96),
+    fallbackMinAlpha: Math.min(profile.fallbackMinAlpha, 8 / 255),
+    fallbackMinScale: Math.min(profile.fallbackMinScale, 0.0002),
+    fallbackMaxScale: Math.min(profile.fallbackMaxScale, 0.012),
+    fallbackMaxScreenSize: Math.min(profile.fallbackMaxScreenSize, 12),
+    fallbackAlphaPower: Math.max(profile.fallbackAlphaPower, 1.25),
+    fallbackColorGain: Math.max(profile.fallbackColorGain, 1.08),
+    fallbackOpacity: Math.min(profile.fallbackOpacity, 0.92),
+  };
 }
 
 function parseTimestampSeconds(value: string | undefined): number | null {
@@ -358,6 +403,11 @@ export function Console() {
     useState<SceneShapeAnalysis | null>(null);
   const [interiorVisibility, setInteriorVisibility] =
     useState<InteriorVisibilityTuning>(DEFAULT_INTERIOR_VISIBILITY_TUNING);
+  const [renderProfileId, setRenderProfileId] =
+    useState<TrainedRenderProfileId>(DEFAULT_RENDER_PROFILE_ID);
+  const [renderProfileOverrides, setRenderProfileOverrides] = useState<
+    Partial<TrainedRenderProfile>
+  >({});
   const [pointCount, setPointCount] = useState(0);
   const [trajectoryPoints, setTrajectoryPoints] = useState<readonly Vec3[]>([]);
   const [trajectorySegments, setTrajectorySegments] = useState<
@@ -382,6 +432,8 @@ export function Console() {
   const [cameraImageUrl, setCameraImageUrl] = useState<string | null>(null);
   const [liveError, setLiveError] = useState<string | null>(null);
   const [runPodStatus, setRunPodStatus] = useState<string | null>(null);
+  const [liveQualityPreset, setLiveQualityPreset] =
+    useState<LiveGenerationQuality>(DEFAULT_LIVE_QUALITY);
 
   const sourceRef = useRef<FrameStreamSource | null>(null);
   const previewControllerRef = useRef<AbortController | null>(null);
@@ -640,8 +692,9 @@ export function Console() {
           sourceId: entry.id,
           sequence: entry.id,
           keyframeCount: hello.keyframeCount,
-          shardCount: 3,
+          shardCount: liveQualityPreset === "research" ? 2 : 3,
           overlapKeyframes: 4,
+          qualityPreset: liveQualityPreset,
         }),
         signal,
       });
@@ -777,7 +830,7 @@ export function Console() {
           : "RunPod GPU swarm produced no splats."
       );
     },
-    []
+    [liveQualityPreset]
   );
 
   const goLive = async () => {
@@ -1039,6 +1092,28 @@ export function Console() {
 
   const toggleLayer = (key: keyof RenderLayers) =>
     setLayers((current) => ({ ...current, [key]: !current[key] }));
+  const handleRenderProfileIdChange = (id: TrainedRenderProfileId) => {
+    setRenderProfileId(id);
+    setRenderProfileOverrides({});
+    if (id === "photoreal") {
+      setLayers((current) => ({
+        ...current,
+        pointcloud: false,
+        splat: true,
+      }));
+    }
+    if (id === "holographic") {
+      setLayers((current) => ({
+        ...current,
+        pointcloud: false,
+        splat: true,
+        grid: false,
+      }));
+    }
+  };
+  const handleRenderProfileChange = (patch: Partial<TrainedRenderProfile>) => {
+    setRenderProfileOverrides((current) => ({ ...current, ...patch }));
+  };
   const requestCameraView = (id: CameraViewId) =>
     setCameraView((current) => ({ id, version: current.version + 1 }));
 
@@ -1074,41 +1149,20 @@ export function Console() {
     sourceRef.current?.setLoop(next);
   };
 
-  const trainedRenderProfile =
-    DEMO_PRESET.trainedRender ?? DEFAULT_TRAINED_RENDER_PROFILE;
-  // Match human-sense SplatLab's fusion footprint clamp for the viewer-filtered
-  // OpenSplat submaps. The larger research profile makes fusion splats bloom.
-  const liveTrainedProfile = {
-    ...trainedRenderProfile,
-    label: "Fusion footprint clamp",
-    radiusDefault: 0.56,
-    radiusMin: 0.12,
-    radiusMax: 0.9,
-    radiusStep: 0.025,
-    minAlpha: 4 / 255,
-    maxPixelRadius: 96,
-    maxStdDev: Math.sqrt(8),
-    focalAdjustment: 1,
-    falloff: 0.96,
-    opacity: 0.95,
-    fallbackMinAlpha: 8 / 255,
-    fallbackMinScale: 0.0002,
-    fallbackMaxScale: 0.012,
-    fallbackMaxScreenSize: 10,
-    fallbackAlphaPower: 1.32,
-    fallbackColorGain: 1.1,
-    fallbackOpacity: 0.9,
-  };
-  const livePhotorealFusion = isLive && Boolean(liveTrainedSplats);
-  const effectiveInteriorVisibility = livePhotorealFusion
-    ? { ...interiorVisibility, enabled: false }
-    : interiorVisibility;
-  const activeTrainedRenderProfile = livePhotorealFusion
-    ? liveTrainedProfile
-    : applyInteriorVisibilityProfile(
-        isLive ? liveTrainedProfile : trainedRenderProfile,
-        effectiveInteriorVisibility
-      );
+  const selectedTrainedRenderProfile =
+    TRAINED_RENDER_PROFILES[renderProfileId] ??
+    DEMO_PRESET.trainedRender ??
+    DEFAULT_TRAINED_RENDER_PROFILE;
+  const baseTrainedRenderProfile = applyRenderProfileOverrides(
+    isLive
+      ? liveProfileForBase(selectedTrainedRenderProfile)
+      : selectedTrainedRenderProfile,
+    renderProfileOverrides
+  );
+  const activeTrainedRenderProfile = applyInteriorVisibilityProfile(
+    baseTrainedRenderProfile,
+    interiorVisibility
+  );
 
   const hasScene = seedPositions !== null && seedColors !== null;
   const liveGaussianLabel = new Intl.NumberFormat("en-US").format(
@@ -1271,10 +1325,10 @@ export function Console() {
                 trajectoryPoints={trajectoryPoints}
                 trajectorySegments={trajectorySegments ?? undefined}
                 robotPose={robotPose}
-                trainedSplat={null}
+                trainedSplat={isLive ? null : trainedSplat}
                 trainedSplats={isLive ? liveTrainedSplats : null}
                 sceneShapes={sceneShapeAnalysis?.shapes ?? []}
-                showInteriorShapes={effectiveInteriorVisibility.enabled}
+                showInteriorShapes={interiorVisibility.enabled}
                 isStreamingLive={isLive}
                 onAutoOrbitChange={setAutoOrbit}
                 onCameraStatusChange={setCameraStatus}
@@ -1382,7 +1436,13 @@ export function Console() {
           loadStatus={loadStatus}
           preset={DEMO_PRESET}
           trainedRenderProfile={activeTrainedRenderProfile}
-          interiorVisibility={effectiveInteriorVisibility}
+          baseTrainedRenderProfile={baseTrainedRenderProfile}
+          renderProfileOptions={TRAINED_RENDER_PROFILE_OPTIONS}
+          renderProfileId={renderProfileId}
+          onRenderProfileIdChange={handleRenderProfileIdChange}
+          onTrainedRenderProfileChange={handleRenderProfileChange}
+          onResetTrainedRenderProfile={() => setRenderProfileOverrides({})}
+          interiorVisibility={interiorVisibility}
           onInteriorVisibilityChange={setInteriorVisibility}
           sceneShapeAnalysis={sceneShapeAnalysis}
           pointCount={isLive ? getRevealedPoints() : pointCount}
@@ -1400,6 +1460,8 @@ export function Console() {
           onSpeed={handleSpeed}
           onSeek={handleSeek}
           onLoop={handleLoop}
+          liveQualityPreset={liveQualityPreset}
+          onLiveQualityPresetChange={setLiveQualityPreset}
           sensorEvidence={sensorEvidence}
           runPodStatus={runPodStatus}
         />

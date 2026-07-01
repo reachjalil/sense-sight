@@ -2,6 +2,9 @@ import { describe, expect, it } from "vitest";
 import {
   DEFAULT_INTERIOR_VISIBILITY_TUNING,
   DEFAULT_TRAINED_RENDER_PROFILE,
+  HOLOGRAPHIC_TRAINED_RENDER_PROFILE,
+  PHOTOREAL_TRAINED_RENDER_PROFILE,
+  TRAINED_RENDER_PROFILE_OPTIONS,
   applyInteriorVisibilityProfile,
   inferSceneShapesFromPoints,
   trainedSplatFilename,
@@ -27,6 +30,25 @@ describe("trainedSplatFilename", () => {
   it("supports arbitrary iteration counts", () => {
     expect(trainedSplatFilename(1)).toBe("trained-1.splat");
     expect(trainedSplatFilename(0)).toBe("trained-0.splat");
+  });
+});
+
+describe("trained render profiles", () => {
+  it("offers named Spark looks for realistic and holographic inspection", () => {
+    expect(TRAINED_RENDER_PROFILE_OPTIONS.map((option) => option.id)).toEqual([
+      "photoreal",
+      "holographic",
+      "balanced",
+    ]);
+    expect(PHOTOREAL_TRAINED_RENDER_PROFILE.maxPixelRadius).toBeGreaterThan(
+      DEFAULT_TRAINED_RENDER_PROFILE.maxPixelRadius
+    );
+    expect(HOLOGRAPHIC_TRAINED_RENDER_PROFILE.opacity).toBeLessThan(
+      PHOTOREAL_TRAINED_RENDER_PROFILE.opacity
+    );
+    expect(HOLOGRAPHIC_TRAINED_RENDER_PROFILE.radiusDefault).toBeLessThan(
+      PHOTOREAL_TRAINED_RENDER_PROFILE.radiusDefault
+    );
   });
 });
 

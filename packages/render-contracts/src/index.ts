@@ -48,6 +48,15 @@ export interface TrainedRenderProfile {
   readonly fallbackOpacity: number;
 }
 
+export type TrainedRenderProfileId = "balanced" | "photoreal" | "holographic";
+
+export interface TrainedRenderProfileOption {
+  readonly id: TrainedRenderProfileId;
+  readonly label: string;
+  readonly description: string;
+  readonly profile: TrainedRenderProfile;
+}
+
 /** Operator-controlled x-ray style tuning for seeing into dense splats. */
 export interface InteriorVisibilityTuning {
   /** Enables shape overlays and applies the tuned splat render profile. */
@@ -159,7 +168,7 @@ export function trainedSplatFilename(
 }
 
 export const DEFAULT_TRAINED_RENDER_PROFILE: TrainedRenderProfile = {
-  label: "default",
+  label: "Balanced Spark",
   radiusDefault: 1,
   radiusMin: 0.25,
   radiusMax: 4,
@@ -179,6 +188,84 @@ export const DEFAULT_TRAINED_RENDER_PROFILE: TrainedRenderProfile = {
   fallbackColorGain: 1,
   fallbackOpacity: 0.95,
 };
+
+export const PHOTOREAL_TRAINED_RENDER_PROFILE: TrainedRenderProfile = {
+  ...DEFAULT_TRAINED_RENDER_PROFILE,
+  label: "Photo real Spark",
+  radiusDefault: 1.18,
+  radiusMin: 0.18,
+  radiusMax: 5,
+  radiusStep: 0.04,
+  minAlpha: 3 / 255,
+  maxPixelRadius: 360,
+  maxStdDev: Math.sqrt(8),
+  focalAdjustment: 1.32,
+  falloff: 1,
+  sortRadial: true,
+  opacity: 1,
+  fallbackMinAlpha: 4 / 255,
+  fallbackMinScale: 0.00015,
+  fallbackMaxScale: 0.052,
+  fallbackMaxScreenSize: 92,
+  fallbackAlphaPower: 0.92,
+  fallbackColorGain: 1.08,
+  fallbackOpacity: 1,
+};
+
+export const HOLOGRAPHIC_TRAINED_RENDER_PROFILE: TrainedRenderProfile = {
+  ...DEFAULT_TRAINED_RENDER_PROFILE,
+  label: "Minority Report",
+  radiusDefault: 0.62,
+  radiusMin: 0.08,
+  radiusMax: 1.6,
+  radiusStep: 0.02,
+  minAlpha: 10 / 255,
+  maxPixelRadius: 48,
+  maxStdDev: 1.7,
+  focalAdjustment: 0.94,
+  falloff: 0.72,
+  sortRadial: true,
+  opacity: 0.54,
+  fallbackMinAlpha: 12 / 255,
+  fallbackMinScale: 0.0002,
+  fallbackMaxScale: 0.018,
+  fallbackMaxScreenSize: 22,
+  fallbackAlphaPower: 1.62,
+  fallbackColorGain: 1.34,
+  fallbackOpacity: 0.54,
+};
+
+export const TRAINED_RENDER_PROFILES: Record<
+  TrainedRenderProfileId,
+  TrainedRenderProfile
+> = {
+  balanced: DEFAULT_TRAINED_RENDER_PROFILE,
+  photoreal: PHOTOREAL_TRAINED_RENDER_PROFILE,
+  holographic: HOLOGRAPHIC_TRAINED_RENDER_PROFILE,
+};
+
+export const TRAINED_RENDER_PROFILE_OPTIONS: readonly TrainedRenderProfileOption[] =
+  [
+    {
+      id: "photoreal",
+      label: "Photo real",
+      description:
+        "High-fidelity Spark 3DGS with full opacity and large splats.",
+      profile: PHOTOREAL_TRAINED_RENDER_PROFILE,
+    },
+    {
+      id: "holographic",
+      label: "Holographic",
+      description: "Transparent, airy splats for the Minority Report view.",
+      profile: HOLOGRAPHIC_TRAINED_RENDER_PROFILE,
+    },
+    {
+      id: "balanced",
+      label: "Balanced",
+      description: "Default Spark/fallback tuning for mixed inspection.",
+      profile: DEFAULT_TRAINED_RENDER_PROFILE,
+    },
+  ];
 
 export const DEFAULT_INTERIOR_VISIBILITY_TUNING: InteriorVisibilityTuning = {
   enabled: true,
