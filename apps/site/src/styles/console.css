@@ -387,6 +387,29 @@ p {
   border-color: rgba(255, 93, 82, 0.5);
 }
 
+.cn-gpu-capacity {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 10px;
+  border: 1px solid rgba(47, 224, 200, 0.14);
+  border-radius: var(--cn-radius-sm);
+  background: rgba(47, 224, 200, 0.04);
+}
+.cn-gpu-meter {
+  width: 100%;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(97, 117, 126, 0.22);
+}
+.cn-gpu-meter span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--cn-machine), var(--cn-human));
+}
+
 .layer-toggle,
 .cn-visibility-toggle {
   display: flex;
@@ -423,6 +446,10 @@ p {
   border: 1px solid var(--cn-line-strong);
   border-radius: var(--cn-radius-sm);
   background: rgba(7, 12, 17, 0.58);
+}
+
+.cn-segmented--two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .cn-segmented button,
@@ -1008,6 +1035,24 @@ p {
   font-size: 0.78rem;
   line-height: 1.4;
 }
+.cn-preload-queue {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 10px;
+}
+.cn-preload-queue span {
+  margin: 0;
+  padding: 6px 7px;
+  border: 1px solid rgba(47, 224, 200, 0.18);
+  border-radius: 6px;
+  background: rgba(47, 224, 200, 0.06);
+  color: var(--cn-text);
+  font-family: var(--cn-font-mono);
+  font-size: 0.62rem;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
 .cn-preload-spinner {
   width: 28px;
   height: 28px;
@@ -1021,12 +1066,29 @@ p {
     transform: rotate(360deg);
   }
 }
-.cn-golive-btn {
+.cn-golive-actions {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
   margin-top: 10px;
+}
+.cn-golive-btn {
   justify-self: center;
   min-height: 44px;
   padding: 0 26px;
   font-size: 0.82rem;
+}
+.cn-golive-fallback-btn {
+  min-height: 36px;
+  padding: 0 18px;
+  border-color: rgba(255, 178, 77, 0.34);
+  background: rgba(255, 178, 77, 0.08);
+  color: var(--cn-human);
+  font-size: 0.68rem;
+}
+.cn-golive-fallback-btn:hover {
+  border-color: rgba(255, 178, 77, 0.5);
+  background: rgba(255, 178, 77, 0.14);
 }
 
 /* Robot camera PIP */

@@ -205,6 +205,281 @@ void main() {
 }
 `;
 
+const splatPointCloudVertexShader = `
+attribute vec4 splatColor;
+varying vec4 vPointColor;
+uniform float pointSize;
+uniform float viewportHeight;
+uniform float maxScreenSize;
+
+void main() {
+  vPointColor = splatColor;
+  vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+  gl_Position = projectionMatrix * mvPosition;
+
+  vec3 mx = vec3(modelMatrix[0][0], modelMatrix[0][1], modelMatrix[0][2]);
+  vec3 my = vec3(modelMatrix[1][0], modelMatrix[1][1], modelMatrix[1][2]);
+  vec3 mz = vec3(modelMatrix[2][0], modelMatrix[2][1], modelMatrix[2][2]);
+  float modelScale = max(max(length(mx), length(my)), length(mz));
+  float perspective = projectionMatrix[1][1] * viewportHeight / max(0.2, -mvPosition.z);
+  gl_PointSize = clamp(pointSize * modelScale * perspective, 1.0, maxScreenSize);
+}
+`;
+
+const splatPointCloudFragmentShader = `
+varying vec4 vPointColor;
+uniform float opacity;
+uniform float colorGain;
+
+void main() {
+  vec2 centered = gl_PointCoord - vec2(0.5);
+  float radius = dot(centered, centered);
+  if (radius > 0.25) discard;
+  float edge = smoothstep(0.25, 0.18, radius);
+  vec3 color = clamp(vPointColor.rgb * colorGain, 0.0, 1.0);
+  float alpha = vPointColor.a * opacity * edge;
+  if (alpha < 0.01) discard;
+  gl_FragColor = vec4(color, alpha);
+}
+`;
+
+function createSplatPointGeometry(
+  splat: ReturnType<typeof decodeSplat>,
+  minAlpha: number
+): THREE.BufferGeometry {
+  const minAlphaByte = Math.max(0, Math.min(255, Math.round(minAlpha)));
+  let kept = 0;
+  for (let i = 0; i < splat.count; i += 1) {
+    if (splat.colors[i * 4 + 3] >= minAlphaByte) kept += 1;
+  }
+
+  const positions = new Float32Array(kept * 3);
+  const colors = new Float32Array(kept * 4);
+  let next = 0;
+  for (let i = 0; i < splat.count; i += 1) {
+    const rgba = i * 4;
+    if (splat.colors[rgba + 3] < minAlphaByte) continue;
+    const src = i * 3;
+    const dst = next * 3;
+    const colorDst = next * 4;
+    positions[dst] = splat.positions[src];
+    positions[dst + 1] = splat.positions[src + 1];
+    positions[dst + 2] = splat.positions[src + 2];
+    colors[colorDst] = splat.colors[rgba] / 255;
+    colors[colorDst + 1] = splat.colors[rgba + 1] / 255;
+    colors[colorDst + 2] = splat.colors[rgba + 2] / 255;
+    colors[colorDst + 3] = splat.colors[rgba + 3] / 255;
+    next += 1;
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute("splatColor", new THREE.BufferAttribute(colors, 4));
+  geometry.computeBoundingSphere();
+  return geometry;
+}
+
+/**
+ * Renders a `.splat` asset as fixed-size colored dots. This intentionally
+ * ignores Gaussian scale and rotation so operators can get a cheap point-cloud
+ * preview of trained geometry without invoking the full splat renderer.
+ */
+export function TrainedSplatPointCloud({
+  url,
+  fileBytes,
+  visible,
+  position,
+  rotation,
+  scale,
+  size = 0.032,
+  maxScreenSize = 7,
+  minAlpha = 1,
+  colorGain = 1,
+  opacity = 0.9,
+}: {
+  url: string;
+  fileBytes?: ArrayBuffer | Uint8Array;
+  visible: boolean;
+  position?: [number, number, number];
+  rotation?: [number, number, number];
+  scale?: number | [number, number, number];
+  size?: number;
+  maxScreenSize?: number;
+  minAlpha?: number;
+  colorGain?: number;
+  opacity?: number;
+}) {
+  const viewportHeight = useThree((state) => state.size.height);
+  const [geometry, setGeometry] = useState<THREE.BufferGeometry | null>(null);
+  const material = useMemo(
+    () =>
+      new THREE.ShaderMaterial({
+        uniforms: {
+          opacity: { value: opacity },
+          pointSize: { value: size },
+          viewportHeight: { value: viewportHeight },
+          maxScreenSize: { value: maxScreenSize },
+          colorGain: { value: colorGain },
+        },
+        vertexShader: splatPointCloudVertexShader,
+        fragmentShader: splatPointCloudFragmentShader,
+        transparent: true,
+        depthWrite: false,
+        depthTest: true,
+        blending: THREE.NormalBlending,
+      }),
+    []
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+    const controller = new AbortController();
+    const load = fileBytes
+      ? Promise.resolve(fileBytes)
+      : fetch(url, { signal: controller.signal }).then((res) => {
+          if (!res.ok) throw new Error(`splat ${res.status}`);
+          return res.arrayBuffer();
+        });
+
+    load
+      .then((buf) => {
+        if (cancelled) return;
+        setGeometry(createSplatPointGeometry(decodeSplat(buf), minAlpha));
+      })
+      .catch((err: unknown) => {
+        if (cancelled) return;
+        console.warn("[viewer] splat point preview load failed:", err);
+      });
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
+  }, [url, fileBytes, minAlpha]);
+
+  useEffect(() => {
+    material.uniforms.opacity.value = opacity;
+    material.uniforms.pointSize.value = size;
+    material.uniforms.viewportHeight.value = viewportHeight;
+    material.uniforms.maxScreenSize.value = maxScreenSize;
+    material.uniforms.colorGain.value = colorGain;
+  }, [material, opacity, size, viewportHeight, maxScreenSize, colorGain]);
+
+  useEffect(() => () => geometry?.dispose(), [geometry]);
+  useEffect(() => () => material.dispose(), [material]);
+
+  if (!visible || !geometry) return null;
+
+  return (
+    <points
+      geometry={geometry}
+      material={material}
+      position={position}
+      rotation={rotation}
+      scale={scale}
+      visible={visible}
+      frustumCulled={false}
+    />
+  );
+}
+
+/**
+ * Dot-preview equivalent for live/incremental Gaussian buffers. It binds the
+ * externally-owned stream arrays directly and advances only the draw range.
+ */
+export function StreamedSplatPointCloud({
+  buffers,
+  visible,
+  revealedGaussians,
+  gaussianVersion,
+  size = 0.032,
+  maxScreenSize = 7,
+  colorGain = 1,
+  opacity = 0.9,
+}: {
+  buffers: SplatBuffers | null;
+  visible: boolean;
+  revealedGaussians: number;
+  gaussianVersion: number;
+  size?: number;
+  maxScreenSize?: number;
+  colorGain?: number;
+  opacity?: number;
+}) {
+  const viewportHeight = useThree((state) => state.size.height);
+
+  const geometry = useMemo(() => {
+    const g = new THREE.BufferGeometry();
+    if (buffers) {
+      g.setAttribute(
+        "position",
+        new THREE.BufferAttribute(buffers.positions, 3)
+      );
+      g.setAttribute(
+        "splatColor",
+        new THREE.BufferAttribute(buffers.colors, 4, true)
+      );
+    }
+    return g;
+  }, [buffers]);
+
+  const material = useMemo(
+    () =>
+      new THREE.ShaderMaterial({
+        uniforms: {
+          opacity: { value: opacity },
+          pointSize: { value: size },
+          viewportHeight: { value: viewportHeight },
+          maxScreenSize: { value: maxScreenSize },
+          colorGain: { value: colorGain },
+        },
+        vertexShader: splatPointCloudVertexShader,
+        fragmentShader: splatPointCloudFragmentShader,
+        transparent: true,
+        depthWrite: false,
+        depthTest: true,
+        blending: THREE.NormalBlending,
+      }),
+    []
+  );
+
+  useEffect(() => {
+    material.uniforms.opacity.value = opacity;
+    material.uniforms.pointSize.value = size;
+    material.uniforms.viewportHeight.value = viewportHeight;
+    material.uniforms.maxScreenSize.value = maxScreenSize;
+    material.uniforms.colorGain.value = colorGain;
+  }, [material, opacity, size, viewportHeight, maxScreenSize, colorGain]);
+
+  useEffect(() => {
+    const position = geometry.getAttribute("position") as
+      | THREE.BufferAttribute
+      | undefined;
+    const color = geometry.getAttribute("splatColor") as
+      | THREE.BufferAttribute
+      | undefined;
+    if (!position || !color) return;
+    geometry.setDrawRange(0, revealedGaussians);
+    position.needsUpdate = true;
+    color.needsUpdate = true;
+    geometry.computeBoundingSphere();
+  }, [geometry, revealedGaussians, gaussianVersion]);
+
+  useEffect(() => () => geometry.dispose(), [geometry]);
+  useEffect(() => () => material.dispose(), [material]);
+
+  if (!buffers || revealedGaussians <= 0) return null;
+
+  return (
+    <points
+      geometry={geometry}
+      material={material}
+      visible={visible}
+      frustumCulled={false}
+    />
+  );
+}
+
 /**
  * Renders a LIVE/incrementally-growing trained Gaussian splat cloud bound to
  * externally-owned `@sense-sight/stream-buffers` `SplatBuffers` (e.g. a

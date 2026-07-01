@@ -2,6 +2,11 @@ import { RunPodClient } from "@sense-sight/runpod-orchestrator";
 import type { APIRoute } from "astro";
 import { env } from "cloudflare:workers";
 import { COOKIE_NAME, verifySession } from "../../../lib/demo-session";
+import {
+  configuredGpusPerSession,
+  configuredWarmGpuPool,
+  summarizeRunPodCapacity,
+} from "../../../lib/runpod-capacity";
 
 export const prerender = false;
 
@@ -40,10 +45,20 @@ export const GET: APIRoute = async ({ cookies }) => {
   try {
     const client = new RunPodClient({ apiKey: env.RUNPOD_API_KEY });
     const health = await client.endpointHealth(env.RUNPOD_ENDPOINT_ID);
+    const targetWarmGpuCount = configuredWarmGpuPool(env.RUNPOD_WARM_GPU_POOL);
+    const gpusPerSession = configuredGpusPerSession(
+      env.RUNPOD_GPUS_PER_SESSION,
+      targetWarmGpuCount
+    );
     return json({
       ok: true,
       endpointId: env.RUNPOD_ENDPOINT_ID,
       health,
+      capacity: summarizeRunPodCapacity(
+        health,
+        targetWarmGpuCount,
+        gpusPerSession
+      ),
     });
   } catch (error) {
     return json(

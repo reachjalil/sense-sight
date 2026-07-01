@@ -44,6 +44,8 @@ interface Env {
   RUNPOD_TRAIN_STEPS?: string;
   RUNPOD_QUALITY_PRESET?: "preview" | "balanced" | "research";
   RUNPOD_PARALLEL_SHARDS?: string;
+  RUNPOD_WARM_GPU_POOL?: string;
+  RUNPOD_GPUS_PER_SESSION?: string;
   RUNPOD_WORKER_IMAGE_TAG?: string;
 }
 

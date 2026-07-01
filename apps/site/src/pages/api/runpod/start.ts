@@ -7,6 +7,12 @@ import {
 import type { APIRoute } from "astro";
 import { env } from "cloudflare:workers";
 import { COOKIE_NAME, verifySession } from "../../../lib/demo-session";
+import {
+  configuredGpusPerSession,
+  configuredWarmGpuPool,
+  parsePositiveInt,
+  summarizeRunPodCapacity,
+} from "../../../lib/runpod-capacity";
 
 export const prerender = false;
 
@@ -18,16 +24,6 @@ function json(body: unknown, init?: ResponseInit): Response {
       ...init?.headers,
     },
   });
-}
-
-function parsePositiveInt(
-  value: number | string | undefined,
-  fallback: number
-): number {
-  if (!value) return fallback;
-  const parsed =
-    typeof value === "number" ? Math.floor(value) : Number.parseInt(value, 10);
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
 }
 
 function configuredQualityPreset(value: string | undefined): QualityPreset {
@@ -113,16 +109,21 @@ export const POST: APIRoute = async ({ cookies, request }) => {
         ? 160_000
         : 240_000
   );
+  const targetWarmGpuCount = configuredWarmGpuPool(env.RUNPOD_WARM_GPU_POOL);
+  const gpusPerSession = configuredGpusPerSession(
+    env.RUNPOD_GPUS_PER_SESSION,
+    targetWarmGpuCount
+  );
   const shardCount = clamp(
     Math.floor(
       body.shardCount ??
         parsePositiveInt(
           env.RUNPOD_PARALLEL_SHARDS,
-          qualityPreset === "preview" ? 3 : 2
+          Math.min(gpusPerSession, 3)
         )
     ),
     1,
-    4
+    gpusPerSession
   );
   const overlapKeyframes = clamp(Math.floor(body.overlapKeyframes ?? 4), 0, 12);
   const plannedShards = planShards(keyframeCount, shardCount, overlapKeyframes);
@@ -193,11 +194,15 @@ export const POST: APIRoute = async ({ cookies, request }) => {
         };
       })
     );
+    const health = await client.endpointHealth(endpointId).catch(() => null);
     return json({
       ok: true,
       endpointId,
       job: jobs[0],
       jobs,
+      capacity: health
+        ? summarizeRunPodCapacity(health, targetWarmGpuCount, gpusPerSession)
+        : null,
       input: {
         worldId: sequence,
         sequence,
@@ -205,6 +210,8 @@ export const POST: APIRoute = async ({ cookies, request }) => {
         qualityPreset,
         steps: trainSteps,
         seedPointLimit,
+        targetWarmGpuCount,
+        gpusPerSession,
         outputMode: env.RUNPOD_OUTPUT_PREFIX_URI ? "r2" : "return",
       },
     });

@@ -4,6 +4,10 @@
   "compatibility_date": "2026-06-30",
   "compatibility_flags": ["nodejs_compat"],
   "workers_dev": true,
+  "vars": {
+    "RUNPOD_WARM_GPU_POOL": "1",
+    "RUNPOD_GPUS_PER_SESSION": "1"
+  },
   "routes": [
     {
       "pattern": "sensesight.live",
@@ -16,6 +20,13 @@
       "database_name": "sense-sight-auth",
       "database_id": "4442cc50-fa53-42b3-b20c-f47206a3fe7b",
       "migrations_dir": "./migrations"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "SESSION",
+      "id": "afcf80688c4e4b46a54977903f23012f",
+      "preview_id": "c133ec64a8d6485687471072e0a7a247"
     }
   ],
   "r2_buckets": [

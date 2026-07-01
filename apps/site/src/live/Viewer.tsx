@@ -5,6 +5,7 @@ import {
   type CoordinateFrame,
   type InferredSceneShape,
   type RenderLayers,
+  type TrainedPreviewMode,
   type TrainedRenderProfile,
 } from "@sense-sight/render-contracts";
 import {
@@ -14,8 +15,10 @@ import {
   SceneShapeOverlays,
   SparkTrainedSplatCloud,
   SplatPointCloud,
+  StreamedSplatPointCloud,
   StreamedTrainedSplatCloud,
   TrajectoryLine,
+  TrainedSplatPointCloud,
   TrainedSplatCloud,
 } from "@sense-sight/viewer";
 import type { Bounds, Vec3 } from "@sense-sight/world-schema";
@@ -48,6 +51,7 @@ export const CAMERA_VIEW_LABELS: Record<CameraViewId, string> = {
 export type ViewerRenderMode =
   | "seed"
   | "spark"
+  | "points"
   | "fallback"
   | "stream"
   | "empty";
@@ -233,8 +237,7 @@ function trainedSplatEnvironmentPose(bounds: Bounds): CameraPose {
   const size = sizeOf(bounds);
   const longAxis = size[2] >= size[0] ? "z" : "x";
   const longSpan = longAxis === "z" ? size[2] : size[0];
-  const entryMargin = Math.min(0.85, Math.max(0.28, longSpan * 0.025));
-  const lookDepth = Math.min(4.6, Math.max(2.4, longSpan * 0.18));
+  const entryMargin = Math.min(3.2, Math.max(1.4, longSpan * 0.18));
   const eyeY = Math.min(
     bounds.max.y - 0.28,
     Math.max(bounds.min.y + 1.12, boundsCenter[1])
@@ -246,14 +249,14 @@ function trainedSplatEnvironmentPose(bounds: Bounds): CameraPose {
 
   if (longAxis === "x") {
     return {
-      fov: 68,
+      fov: 54,
       position: new THREE.Vector3(
         bounds.max.x + entryMargin,
         eyeY,
         boundsCenter[2]
       ),
       target: new THREE.Vector3(
-        bounds.max.x - lookDepth,
+        bounds.min.x + longSpan * 0.35,
         targetY,
         boundsCenter[2]
       ),
@@ -261,7 +264,7 @@ function trainedSplatEnvironmentPose(bounds: Bounds): CameraPose {
   }
 
   return {
-    fov: 68,
+    fov: 54,
     position: new THREE.Vector3(
       boundsCenter[0],
       eyeY,
@@ -270,7 +273,7 @@ function trainedSplatEnvironmentPose(bounds: Bounds): CameraPose {
     target: new THREE.Vector3(
       boundsCenter[0],
       targetY,
-      bounds.max.z - lookDepth
+      bounds.min.z + longSpan * 0.35
     ),
   };
 }
@@ -789,6 +792,7 @@ export interface ViewerProps {
   autoOrbit: boolean;
   cameraView: CameraViewRequest;
   layers: RenderLayers;
+  trainedPreviewMode?: TrainedPreviewMode;
   trainedRenderProfile?: TrainedRenderProfile;
   worldBounds: Bounds | null;
   seedPositions: Float32Array | null;
@@ -812,6 +816,7 @@ export function Viewer({
   autoOrbit,
   cameraView,
   layers,
+  trainedPreviewMode = "splat",
   trainedRenderProfile = DEFAULT_TRAINED_RENDER_PROFILE,
   worldBounds,
   seedPositions,
@@ -925,14 +930,17 @@ export function Viewer({
   const cameraFar = Math.max(200, Math.max(span, focusSpan) * 18);
   const cloudBuffers = isStreamingLive ? getCloudBuffers() : null;
   const splatBuffers = isStreamingLive ? getSplatBuffers() : null;
+  const useTrainedPointPreview = trainedPreviewMode === "points";
 
   useEffect(() => {
     if (hasTrainedSplats && layers.splat) {
-      onRenderModeChange?.(sparkFailed ? "fallback" : "spark");
+      onRenderModeChange?.(
+        useTrainedPointPreview ? "points" : sparkFailed ? "fallback" : "spark"
+      );
       return;
     }
     if (isStreamingLive && layers.splat) {
-      onRenderModeChange?.("stream");
+      onRenderModeChange?.(useTrainedPointPreview ? "points" : "stream");
       return;
     }
     onRenderModeChange?.(seedPositions ? "seed" : "empty");
@@ -943,6 +951,7 @@ export function Viewer({
     seedPositions,
     sparkFailed,
     hasTrainedSplats,
+    useTrainedPointPreview,
   ]);
 
   return (
@@ -1006,6 +1015,26 @@ export function Viewer({
       )}
 
       {layers.splat &&
+        useTrainedPointPreview &&
+        trainedLayerItems.map(({ asset, key, transform }) => (
+          <TrainedSplatPointCloud
+            key={key}
+            url={asset.url}
+            fileBytes={asset.fileBytes}
+            visible
+            position={transform.position}
+            rotation={transform.rotation}
+            scale={transform.scale}
+            size={0.032}
+            maxScreenSize={7}
+            minAlpha={trainedRenderProfile.minAlpha * 255}
+            colorGain={trainedRenderProfile.fallbackColorGain}
+            opacity={Math.min(trainedRenderProfile.opacity, 0.92)}
+          />
+        ))}
+
+      {layers.splat &&
+        !useTrainedPointPreview &&
         !sparkFailed &&
         trainedLayerItems.map(({ asset, key, transform }) => (
           <SparkTrainedSplatCloud
@@ -1037,6 +1066,7 @@ export function Viewer({
         ))}
 
       {layers.splat &&
+        !useTrainedPointPreview &&
         sparkFailed &&
         trainedLayerItems.map(({ asset, key, transform }) => (
           <TrainedSplatCloud
@@ -1055,19 +1085,38 @@ export function Viewer({
           />
         ))}
 
-      {isStreamingLive && layers.splat && !hasTrainedSplats && (
-        <StreamedTrainedSplatCloud
-          buffers={splatBuffers}
-          visible={layers.splat}
-          revealedGaussians={getRevealedGaussians()}
-          gaussianVersion={getSplatVersion()}
-          size={trainedRenderProfile.fallbackMinScale}
-          maxScreenSize={trainedRenderProfile.fallbackMaxScreenSize}
-          alphaPower={trainedRenderProfile.fallbackAlphaPower}
-          colorGain={trainedRenderProfile.fallbackColorGain}
-          opacity={trainedRenderProfile.fallbackOpacity}
-        />
-      )}
+      {isStreamingLive &&
+        layers.splat &&
+        !hasTrainedSplats &&
+        useTrainedPointPreview && (
+          <StreamedSplatPointCloud
+            buffers={splatBuffers}
+            visible={layers.splat}
+            revealedGaussians={getRevealedGaussians()}
+            gaussianVersion={getSplatVersion()}
+            size={0.032}
+            maxScreenSize={7}
+            colorGain={trainedRenderProfile.fallbackColorGain}
+            opacity={Math.min(trainedRenderProfile.fallbackOpacity, 0.92)}
+          />
+        )}
+
+      {isStreamingLive &&
+        layers.splat &&
+        !hasTrainedSplats &&
+        !useTrainedPointPreview && (
+          <StreamedTrainedSplatCloud
+            buffers={splatBuffers}
+            visible={layers.splat}
+            revealedGaussians={getRevealedGaussians()}
+            gaussianVersion={getSplatVersion()}
+            size={trainedRenderProfile.fallbackMinScale}
+            maxScreenSize={trainedRenderProfile.fallbackMaxScreenSize}
+            alphaPower={trainedRenderProfile.fallbackAlphaPower}
+            colorGain={trainedRenderProfile.fallbackColorGain}
+            opacity={trainedRenderProfile.fallbackOpacity}
+          />
+        )}
 
       {(trajectorySegments ?? [trajectoryPoints]).map((points, index) => (
         <TrajectoryLine

@@ -43,11 +43,14 @@ describe("trained render profiles", () => {
     expect(PHOTOREAL_TRAINED_RENDER_PROFILE.maxPixelRadius).toBeGreaterThan(
       DEFAULT_TRAINED_RENDER_PROFILE.maxPixelRadius
     );
+    expect(PHOTOREAL_TRAINED_RENDER_PROFILE.radiusDefault).toBeLessThan(
+      DEFAULT_TRAINED_RENDER_PROFILE.radiusDefault
+    );
+    expect(PHOTOREAL_TRAINED_RENDER_PROFILE.maxPixelRadius).toBeGreaterThan(
+      HOLOGRAPHIC_TRAINED_RENDER_PROFILE.maxPixelRadius
+    );
     expect(HOLOGRAPHIC_TRAINED_RENDER_PROFILE.opacity).toBeLessThan(
       PHOTOREAL_TRAINED_RENDER_PROFILE.opacity
-    );
-    expect(HOLOGRAPHIC_TRAINED_RENDER_PROFILE.radiusDefault).toBeLessThan(
-      PHOTOREAL_TRAINED_RENDER_PROFILE.radiusDefault
     );
   });
 });
@@ -68,7 +71,10 @@ describe("applyInteriorVisibilityProfile", () => {
   it("reduces opacity and splat footprint for interior inspection", () => {
     const tuned = applyInteriorVisibilityProfile(
       DEFAULT_TRAINED_RENDER_PROFILE,
-      DEFAULT_INTERIOR_VISIBILITY_TUNING
+      {
+        ...DEFAULT_INTERIOR_VISIBILITY_TUNING,
+        enabled: true,
+      }
     );
 
     expect(tuned.opacity).toBeCloseTo(

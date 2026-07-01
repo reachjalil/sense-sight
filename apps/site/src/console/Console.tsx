@@ -10,10 +10,15 @@ import {
   type RenderLayers,
   type RenderPreset,
   type SceneShapeAnalysis,
+  type TrainedPreviewMode,
   type TrainedRenderProfile,
   type TrainedRenderProfileId,
 } from "@sense-sight/render-contracts";
-import { SPLAT_RECORD_BYTES } from "@sense-sight/splat-codec";
+import {
+  decodeSplat,
+  SPLAT_RECORD_BYTES,
+  type DecodedSplat,
+} from "@sense-sight/splat-codec";
 import {
   SOURCE_REGISTRY,
   type FrameStreamSource,
@@ -22,6 +27,7 @@ import {
 } from "@sense-sight/replay-protocol";
 import type { Bounds, Vec3 } from "@sense-sight/world-schema";
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { RunPodCapacitySummary } from "../lib/runpod-capacity";
 import { fetchPresetAssets } from "../live/asset-loader";
 import {
   ControlPanel,
@@ -30,10 +36,14 @@ import {
   type SensorEvidenceSummary,
 } from "../live/ControlPanel";
 import {
+  appendGaussians,
   appendPoints,
+  getRevealedGaussians,
   getRevealedPoints,
   initCloud,
+  initSplat,
   resetCloud,
+  resetSplat,
 } from "../live/live-cloud";
 import { createReplaySource } from "../live/replay-source";
 import {
@@ -74,17 +84,27 @@ const DEMO_PRESET: RenderPreset = {
 
 const TRAINED_ITERATIONS = 30000;
 const DEFAULT_RENDER_PROFILE_ID: TrainedRenderProfileId = "photoreal";
+const DEFAULT_TRAINED_PREVIEW_MODE: TrainedPreviewMode = "splat";
 const DEFAULT_LIVE_QUALITY: LiveGenerationQuality = "research";
+const RUNPOD_POLL_INTERVAL_MS = 2000;
+const RUNPOD_REQUEST_TIMEOUT_MS = 15_000;
+const RUNPOD_ARTIFACT_TIMEOUT_MS = 60_000;
+const RUNPOD_QUEUE_TIMEOUT_MS = 10 * 60_000;
+const RUNPOD_TOTAL_TIMEOUT_MS = 25 * 60_000;
+const RUNPOD_INACTIVE_CANCEL_GRACE_MS = 30_000;
+const RUNPOD_GPUS_PER_SESSION = 1;
 
 const RENDER_MODE_LABEL: Record<ViewerRenderMode, string> = {
   empty: "No scene",
   fallback: "Point fallback",
+  points: "Dot preview",
   seed: "Seed cloud",
   spark: "Spark 3DGS",
   stream: "Live stream",
 };
 
 type ConsolePhase = "picker" | "selected" | "live";
+type LiveStartMode = "gpu" | "pretrained";
 
 type RunPodJobStatus =
   | "IN_QUEUE"
@@ -107,6 +127,11 @@ interface RunPodWorkerOutput {
     readonly primitiveCount?: number;
     readonly trainSeconds?: number;
   };
+  readonly stage?: {
+    readonly current: string;
+    readonly fraction: number;
+    readonly message?: string;
+  };
   readonly error: string | null;
 }
 
@@ -115,6 +140,11 @@ interface RunPodStatusResponse {
   readonly status: RunPodJobStatus;
   readonly output?: RunPodWorkerOutput;
   readonly error?: string;
+}
+
+interface RunPodHealthResponse {
+  readonly ok?: boolean;
+  readonly capacity?: RunPodCapacitySummary | null;
 }
 
 interface RunPodSubmittedJob {
@@ -127,6 +157,12 @@ interface RunPodSubmittedJob {
     readonly keyframeEnd: number;
   };
   readonly submapId?: string;
+}
+
+interface ActiveRunPodJob {
+  readonly id: string;
+  readonly shardIndex: number;
+  readonly shardCount: number;
 }
 
 function base64ToArrayBuffer(value: string): ArrayBuffer {
@@ -155,6 +191,79 @@ function runPodStatusLabel(status: RunPodJobStatus): string {
     default:
       return "RunPod status pending";
   }
+}
+
+function formatRunPodElapsed(ms: number): string {
+  const totalSeconds = Math.max(1, Math.floor(ms / 1000));
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  if (minutes === 0) return `${seconds}s`;
+  return `${minutes}m ${seconds}s`;
+}
+
+function waitForRunPodPoll(signal: AbortSignal): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (signal.aborted) {
+      resolve(false);
+      return;
+    }
+    const timer = setTimeout(() => {
+      signal.removeEventListener("abort", onAbort);
+      resolve(true);
+    }, RUNPOD_POLL_INTERVAL_MS);
+    const onAbort = () => {
+      clearTimeout(timer);
+      resolve(false);
+    };
+    signal.addEventListener("abort", onAbort, { once: true });
+  });
+}
+
+async function fetchWithTimeout(
+  input: RequestInfo | URL,
+  init: RequestInit,
+  timeoutMs: number
+): Promise<Response> {
+  const controller = new AbortController();
+  const outerSignal = init.signal;
+  const abortForOuterSignal = () => controller.abort(outerSignal?.reason);
+  if (outerSignal?.aborted) {
+    abortForOuterSignal();
+  } else {
+    outerSignal?.addEventListener("abort", abortForOuterSignal, {
+      once: true,
+    });
+  }
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await fetch(input, {
+      ...init,
+      signal: controller.signal,
+    });
+  } catch (error) {
+    if (controller.signal.aborted && !outerSignal?.aborted) {
+      throw new Error(
+        `RunPod request timed out after ${formatRunPodElapsed(timeoutMs)}.`
+      );
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+    outerSignal?.removeEventListener("abort", abortForOuterSignal);
+  }
+}
+
+function runPodQueueLabel(capacity: RunPodCapacitySummary): string {
+  if (capacity.queuedSessionCount > 0) {
+    return `${capacity.queuedSessionCount} waiting`;
+  }
+  if (capacity.availableSessionSlots > 0) {
+    return `${capacity.availableSessionSlots} slot${
+      capacity.availableSessionSlots === 1 ? "" : "s"
+    } open`;
+  }
+  return "Warming";
 }
 
 function applyRenderProfileOverrides(
@@ -256,6 +365,27 @@ interface SensorTimelineDoc {
     readonly window?: { readonly rateHz?: number };
     readonly full?: { readonly rateHz?: number };
   }>;
+}
+
+interface FusionManifestItem {
+  readonly id: string;
+  readonly base: string;
+  readonly splatFile: string;
+  readonly gaussianCount?: number;
+  readonly sourceBounds: Bounds;
+  readonly targetBounds?: Bounds;
+}
+
+interface FusionManifest {
+  readonly coordinateFrame?: TrainedSplatAsset["coordinateFrame"];
+  readonly items: readonly FusionManifestItem[];
+}
+
+interface TrainedSplatManifest {
+  readonly splatFile: string;
+  readonly coordinateFrame?: TrainedSplatAsset["coordinateFrame"];
+  readonly gaussianCount?: number;
+  readonly bounds: Bounds;
 }
 
 function boundsFromHello(hello: ReplayHello): Bounds {
@@ -385,6 +515,8 @@ export function Console() {
     useState<InteriorVisibilityTuning>(DEFAULT_INTERIOR_VISIBILITY_TUNING);
   const [renderProfileId, setRenderProfileId] =
     useState<TrainedRenderProfileId>(DEFAULT_RENDER_PROFILE_ID);
+  const [trainedPreviewMode, setTrainedPreviewMode] =
+    useState<TrainedPreviewMode>(DEFAULT_TRAINED_PREVIEW_MODE);
   const [renderProfileOverrides, setRenderProfileOverrides] = useState<
     Partial<TrainedRenderProfile>
   >({});
@@ -405,6 +537,9 @@ export function Console() {
   // --- Live streaming state ---
   const [isLive, setIsLive] = useState(false);
   const [isPreloadingLive, setIsPreloadingLive] = useState(false);
+  const [liveStartMode, setLiveStartMode] = useState<LiveStartMode | null>(
+    null
+  );
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);
   const [loop, setLoop] = useState(false);
@@ -412,6 +547,8 @@ export function Console() {
   const [cameraImageUrl, setCameraImageUrl] = useState<string | null>(null);
   const [liveError, setLiveError] = useState<string | null>(null);
   const [runPodStatus, setRunPodStatus] = useState<string | null>(null);
+  const [runPodCapacity, setRunPodCapacity] =
+    useState<RunPodCapacitySummary | null>(null);
   const [liveQualityPreset, setLiveQualityPreset] =
     useState<LiveGenerationQuality>(DEFAULT_LIVE_QUALITY);
 
@@ -420,7 +557,11 @@ export function Console() {
   const helloRef = useRef<ReplayHello | null>(null);
   const fusionKeyframesRef = useRef<readonly FusionKeyframeDoc[]>([]);
   const runPodAbortRef = useRef<AbortController | null>(null);
+  const activeRunPodJobsRef = useRef<Map<string, ActiveRunPodJob>>(new Map());
   const runPodGaussianCountRef = useRef(0);
+  const splatRef = useRef<DecodedSplat | null>(null);
+  const splatCursorRef = useRef(0);
+  const useStreamedSplatRef = useRef(false);
   // Photoreal (OpenSplat-trained) splat for the live view, rendered via Spark.
   // When present it replaces the dotty point-init streamed splat.
   const [liveTrainedSplats, setLiveTrainedSplats] = useState<
@@ -505,15 +646,90 @@ export function Console() {
     };
   }, [seedPositions, worldBounds]);
 
+  const cancelActiveRunPodJobs = useCallback(
+    async (
+      reason: string,
+      options: { keepalive?: boolean; silent?: boolean } = {}
+    ) => {
+      const jobs = Array.from(activeRunPodJobsRef.current.values());
+      if (jobs.length === 0) return;
+      activeRunPodJobsRef.current.clear();
+      if (!options.silent) {
+        setRunPodStatus(
+          `Cancelling ${jobs.length} unfinished RunPod GPU shard${
+            jobs.length === 1 ? "" : "s"
+          }`
+        );
+      }
+
+      await Promise.allSettled(
+        jobs.map(async (job) => {
+          const url = `/api/runpod/cancel/${job.id}`;
+          const body = JSON.stringify({ reason });
+          if (options.keepalive && navigator.sendBeacon) {
+            const accepted = navigator.sendBeacon(
+              url,
+              new Blob([body], { type: "application/json" })
+            );
+            if (accepted) return;
+          }
+          await fetchWithTimeout(
+            url,
+            {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body,
+              keepalive: options.keepalive,
+            },
+            RUNPOD_REQUEST_TIMEOUT_MS
+          );
+        })
+      );
+    },
+    []
+  );
+
+  const refreshRunPodCapacity = useCallback(
+    async (signal?: AbortSignal): Promise<RunPodCapacitySummary | null> => {
+      try {
+        const res = await fetchWithTimeout(
+          "/api/runpod/health",
+          {
+            cache: "no-store",
+            signal,
+          },
+          RUNPOD_REQUEST_TIMEOUT_MS
+        );
+        const payload = (await res
+          .json()
+          .catch(() => null)) as RunPodHealthResponse | null;
+        if (!res.ok || !payload?.ok || !payload.capacity) return null;
+        setRunPodCapacity(payload.capacity);
+        return payload.capacity;
+      } catch {
+        if (!signal?.aborted) setRunPodCapacity(null);
+        return null;
+      }
+    },
+    []
+  );
+
   const teardownSource = useCallback(() => {
     runPodAbortRef.current?.abort();
     runPodAbortRef.current = null;
+    void cancelActiveRunPodJobs("Live reconstruction stopped", {
+      silent: true,
+    });
     sourceRef.current?.dispose();
     sourceRef.current = null;
     helloRef.current = null;
     fusionKeyframesRef.current = [];
     runPodGaussianCountRef.current = 0;
+    splatRef.current = null;
+    splatCursorRef.current = 0;
+    useStreamedSplatRef.current = false;
     resetCloud();
+    resetSplat();
     for (const url of liveTrainedUrlsRef.current) {
       URL.revokeObjectURL(url);
     }
@@ -521,7 +737,8 @@ export function Console() {
     setLiveTrainedSplats(null);
     setTrajectorySegments(null);
     setRunPodStatus(null);
-  }, []);
+    setLiveStartMode(null);
+  }, [cancelActiveRunPodJobs]);
 
   // Dispose the live source on unmount.
   useEffect(() => teardownSource, [teardownSource]);
@@ -532,6 +749,89 @@ export function Console() {
     },
     []
   );
+
+  useEffect(() => {
+    if (phase === "picker") {
+      setRunPodCapacity(null);
+      return;
+    }
+
+    const controller = new AbortController();
+    const poll = () => {
+      void refreshRunPodCapacity(controller.signal);
+    };
+    poll();
+    const interval = window.setInterval(poll, isPreloadingLive ? 3000 : 10_000);
+
+    return () => {
+      controller.abort();
+      window.clearInterval(interval);
+    };
+  }, [phase, isPreloadingLive, refreshRunPodCapacity]);
+
+  useEffect(() => {
+    let inactiveTimer: number | undefined;
+    const clearInactiveTimer = () => {
+      if (inactiveTimer === undefined) return;
+      window.clearTimeout(inactiveTimer);
+      inactiveTimer = undefined;
+    };
+    const cancelForInactiveBrowser = (
+      reason: string,
+      options: { keepalive?: boolean; updateUi?: boolean } = {}
+    ) => {
+      if (activeRunPodJobsRef.current.size === 0) return;
+      runPodAbortRef.current?.abort();
+      void cancelActiveRunPodJobs(reason, {
+        keepalive: options.keepalive,
+        silent: options.keepalive,
+      });
+      if (options.updateUi) {
+        setLiveError(
+          "Live reconstruction preload was cancelled because the browser became inactive."
+        );
+        setIsPreloadingLive(false);
+        setLiveStartMode(null);
+        setLoadStatus(seedPositions && seedColors ? "ready" : "failed");
+      }
+    };
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        if (activeRunPodJobsRef.current.size === 0) return;
+        setRunPodStatus(
+          `Browser inactive; cancelling RunPod preload in ${formatRunPodElapsed(
+            RUNPOD_INACTIVE_CANCEL_GRACE_MS
+          )}`
+        );
+        clearInactiveTimer();
+        inactiveTimer = window.setTimeout(() => {
+          cancelForInactiveBrowser("Browser inactive during live preload", {
+            keepalive: true,
+            updateUi: true,
+          });
+        }, RUNPOD_INACTIVE_CANCEL_GRACE_MS);
+        return;
+      }
+      clearInactiveTimer();
+    };
+    const onPageExit = () => {
+      clearInactiveTimer();
+      cancelForInactiveBrowser("Browser closed during live preload", {
+        keepalive: true,
+      });
+    };
+
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    window.addEventListener("pagehide", onPageExit);
+    window.addEventListener("beforeunload", onPageExit);
+
+    return () => {
+      clearInactiveTimer();
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      window.removeEventListener("pagehide", onPageExit);
+      window.removeEventListener("beforeunload", onPageExit);
+    };
+  }, [cancelActiveRunPodJobs, seedColors, seedPositions]);
 
   const loadSourcePreview = useCallback(async (entry: ReplaySourceEntry) => {
     previewControllerRef.current?.abort();
@@ -620,6 +920,36 @@ export function Console() {
     setSelected(null);
   };
 
+  const revealSplatTo = useCallback((target: number) => {
+    const splat = splatRef.current;
+    if (!splat) return;
+    const cursor = splatCursorRef.current;
+    const clampedTarget = Math.min(target, splat.count);
+    if (clampedTarget <= cursor) return;
+    const n = clampedTarget - cursor;
+    const positions = Array.from(
+      splat.positions.subarray(cursor * 3, clampedTarget * 3)
+    );
+    const scales = Array.from(
+      splat.scales.subarray(cursor * 3, clampedTarget * 3)
+    );
+    const rotations: number[] = new Array(n * 4);
+    const colorsRGBA = Array.from(
+      splat.colors.subarray(cursor * 4, clampedTarget * 4)
+    );
+    const opacities: number[] = new Array(n);
+    for (let i = 0; i < n; i += 1) {
+      const src = (cursor + i) * 4;
+      rotations[i * 4] = (splat.rotations[src] - 128) / 128;
+      rotations[i * 4 + 1] = (splat.rotations[src + 1] - 128) / 128;
+      rotations[i * 4 + 2] = (splat.rotations[src + 2] - 128) / 128;
+      rotations[i * 4 + 3] = (splat.rotations[src + 3] - 128) / 128;
+      opacities[i] = splat.colors[src + 3] / 255;
+    }
+    appendGaussians(positions, scales, rotations, colorsRGBA, opacities);
+    splatCursorRef.current = clampedTarget;
+  }, []);
+
   const trainLiveSplatOnRunPod = useCallback(
     async (
       entry: ReplaySourceEntry,
@@ -627,24 +957,29 @@ export function Console() {
       signal: AbortSignal
     ): Promise<boolean> => {
       setRunPodStatus("Submitting parallel RunPod GPU shards");
-      const startRes = await fetch("/api/runpod/start", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          sourceId: entry.id,
-          sequence: entry.id,
-          keyframeCount: hello.keyframeCount,
-          shardCount: liveQualityPreset === "research" ? 2 : 3,
-          overlapKeyframes: 4,
-          qualityPreset: liveQualityPreset,
-        }),
-        signal,
-      });
+      const startRes = await fetchWithTimeout(
+        "/api/runpod/start",
+        {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            sourceId: entry.id,
+            sequence: entry.id,
+            keyframeCount: hello.keyframeCount,
+            shardCount: RUNPOD_GPUS_PER_SESSION,
+            overlapKeyframes: 4,
+            qualityPreset: liveQualityPreset,
+          }),
+          signal,
+        },
+        RUNPOD_REQUEST_TIMEOUT_MS
+      );
       const startPayload = (await startRes.json().catch(() => null)) as {
         ok?: boolean;
         message?: string;
         job?: RunPodSubmittedJob;
         jobs?: RunPodSubmittedJob[];
+        capacity?: RunPodCapacitySummary | null;
       } | null;
       const submittedJobs =
         startPayload?.jobs ?? (startPayload?.job ? [startPayload.job] : []);
@@ -654,22 +989,58 @@ export function Console() {
             `RunPod submission failed (${startRes.status})`
         );
       }
+      if (startPayload.capacity) setRunPodCapacity(startPayload.capacity);
+      for (const job of submittedJobs) {
+        activeRunPodJobsRef.current.set(job.id, {
+          id: job.id,
+          shardIndex: job.shard?.index ?? 0,
+          shardCount: job.shard?.count ?? submittedJobs.length,
+        });
+      }
 
       let completed = 0;
-      let failed = 0;
+      const startedAt = Date.now();
+      const settledJobIds = new Set<string>();
+      const capacityLabel = startPayload.capacity
+        ? ` · warm ${startPayload.capacity.warmedGpuCount}/${startPayload.capacity.targetWarmGpuCount} GPUs · queue ${runPodQueueLabel(
+            startPayload.capacity
+          )}`
+        : "";
       setRunPodStatus(
-        `RunPod GPU swarm active: ${submittedJobs.length} shards queued`
+        `Queued for ${submittedJobs.length} RunPod GPUs${capacityLabel}`
       );
 
-      const pollJob = async (job: RunPodSubmittedJob): Promise<boolean> => {
-        for (;;) {
-          await new Promise((resolve) => setTimeout(resolve, 2000));
-          if (signal.aborted) return false;
+      const cancelIncompleteRunPodJobs = async (reason: string) => {
+        const incompleteJobs = submittedJobs.filter(
+          (job) => !settledJobIds.has(job.id)
+        );
+        if (incompleteJobs.length === 0) return;
+        await cancelActiveRunPodJobs(reason);
+      };
 
-          const statusRes = await fetch(`/api/runpod/status/${job.id}`, {
-            cache: "no-store",
-            signal,
-          });
+      const pollJob = async (job: RunPodSubmittedJob): Promise<boolean> => {
+        const jobStartedAt = Date.now();
+        const shardLabel = `shard ${(job.shard?.index ?? 0) + 1}/${
+          job.shard?.count ?? submittedJobs.length
+        }`;
+        for (;;) {
+          const shouldPoll = await waitForRunPodPoll(signal);
+          if (!shouldPoll || signal.aborted) return false;
+
+          let statusRes: Response;
+          try {
+            statusRes = await fetchWithTimeout(
+              `/api/runpod/status/${job.id}`,
+              {
+                cache: "no-store",
+                signal,
+              },
+              RUNPOD_REQUEST_TIMEOUT_MS
+            );
+          } catch (error) {
+            if (signal.aborted) return false;
+            throw error;
+          }
           const statusPayload = (await statusRes.json().catch(() => null)) as {
             ok?: boolean;
             message?: string;
@@ -683,10 +1054,42 @@ export function Console() {
           }
 
           const status = statusPayload.status;
+          const elapsedMs = Date.now() - startedAt;
+          const jobElapsedMs = Date.now() - jobStartedAt;
+          if (
+            status.status === "IN_QUEUE" &&
+            jobElapsedMs > RUNPOD_QUEUE_TIMEOUT_MS
+          ) {
+            throw new Error(
+              `RunPod ${shardLabel} stayed queued for ${formatRunPodElapsed(
+                jobElapsedMs
+              )}; stopping the preload instead of waiting forever.`
+            );
+          }
+          if (jobElapsedMs > RUNPOD_TOTAL_TIMEOUT_MS) {
+            throw new Error(
+              `RunPod ${shardLabel} exceeded the ${formatRunPodElapsed(
+                RUNPOD_TOTAL_TIMEOUT_MS
+              )} preload limit.`
+            );
+          }
+          const stage = status.output?.stage;
+          const stageMessage = stage?.message ?? stage?.current;
+          const stageSuffix = stageMessage ? ` · ${stageMessage}` : "";
+          const capacity = await refreshRunPodCapacity(signal);
+          const queueSuffix = capacity
+            ? ` · warm ${capacity.warmedGpuCount}/${capacity.targetWarmGpuCount} GPUs · queue ${runPodQueueLabel(
+                capacity
+              )}`
+            : "";
           setRunPodStatus(
-            `RunPod GPU swarm: ${completed}/${submittedJobs.length} ready · ${runPodStatusLabel(
+            `RunPod GPU swarm: ${completed}/${
+              submittedJobs.length
+            } ready · ${runPodStatusLabel(
               status.status
-            )}`
+            )} · ${formatRunPodElapsed(
+              elapsedMs
+            )} elapsed${stageSuffix}${queueSuffix}`
           );
 
           if (status.status === "COMPLETED") {
@@ -702,10 +1105,14 @@ export function Console() {
             if (output.artifact.splatBase64) {
               buf = base64ToArrayBuffer(output.artifact.splatBase64);
             } else if (output.artifact.splatUri) {
-              const splatRes = await fetch(output.artifact.splatUri, {
-                cache: "no-store",
-                signal,
-              });
+              const splatRes = await fetchWithTimeout(
+                output.artifact.splatUri,
+                {
+                  cache: "no-store",
+                  signal,
+                },
+                RUNPOD_ARTIFACT_TIMEOUT_MS
+              );
               if (!splatRes.ok) {
                 throw new Error(
                   `RunPod artifact fetch failed (${splatRes.status})`
@@ -728,20 +1135,19 @@ export function Console() {
               fileBytes: buf,
               fileName,
               sourceBounds: boundsFromHello(hello),
-              coordinateFrame: "normalized",
+              coordinateFrame: "training-frame",
             };
             const shardGaussianCount =
               output.metrics?.primitiveCount ??
               Math.floor(buf.byteLength / SPLAT_RECORD_BYTES);
             runPodGaussianCountRef.current += shardGaussianCount;
             setLiveTrainedSplats((current) => {
-              const currentRunPod = (current ?? []).filter((asset) =>
-                asset.id?.startsWith("runpod")
-              );
-              return [...currentRunPod, nextAsset];
+              return [...(current ?? []), nextAsset];
             });
             setGaussianCount(runPodGaussianCountRef.current);
             completed += 1;
+            settledJobIds.add(job.id);
+            activeRunPodJobsRef.current.delete(job.id);
             setRunPodStatus(
               `RunPod GPU swarm: ${completed}/${submittedJobs.length} shards rendered`
             );
@@ -753,34 +1159,141 @@ export function Console() {
             status.status === "CANCELLED" ||
             status.status === "TIMED_OUT"
           ) {
+            settledJobIds.add(job.id);
+            activeRunPodJobsRef.current.delete(job.id);
             throw new Error(status.error || runPodStatusLabel(status.status));
           }
         }
       };
 
       const results = await Promise.allSettled(submittedJobs.map(pollJob));
-      failed = results.filter((result) => result.status === "rejected").length;
+      const failed = results.filter(
+        (result) => result.status === "rejected"
+      ).length;
+      const firstError = results.find(
+        (result): result is PromiseRejectedResult =>
+          result.status === "rejected"
+      )?.reason;
+      if (signal.aborted) {
+        await cancelIncompleteRunPodJobs("Live reconstruction preload aborted");
+        return false;
+      }
       if (completed > 0) {
+        await cancelIncompleteRunPodJobs(
+          "Live reconstruction finished enough shards"
+        );
         setRunPodStatus(
           `RunPod GPU swarm complete: ${completed}/${submittedJobs.length} shards rendered`
         );
         return true;
       }
+      await cancelIncompleteRunPodJobs("Live reconstruction preload failed");
       throw new Error(
-        failed > 0
-          ? "All RunPod GPU shards failed."
-          : "RunPod GPU swarm produced no splats."
+        firstError instanceof Error
+          ? firstError.message
+          : failed > 0
+            ? "All RunPod GPU shards failed."
+            : "RunPod GPU swarm produced no splats."
       );
     },
-    [liveQualityPreset]
+    [cancelActiveRunPodJobs, liveQualityPreset, refreshRunPodCapacity]
   );
 
-  const goLive = async () => {
+  const loadPublishedTrainedSplats = useCallback(
+    async (
+      src: FrameStreamSource,
+      presetBase: string,
+      signal: AbortSignal
+    ): Promise<boolean> => {
+      setRunPodStatus("Loading pre-trained OpenSplat demo");
+
+      try {
+        const fusionRes = await fetch(`${presetBase}/fusion_manifest.json`, {
+          cache: "no-store",
+          signal,
+        });
+        if (fusionRes.ok) {
+          const fusion = (await fusionRes.json()) as FusionManifest;
+          if (signal.aborted || sourceRef.current !== src) return false;
+          const items: TrainedSplatAsset[] = fusion.items.map((item) => ({
+            id: item.id,
+            url: `${presetBase}/${item.base}/${item.splatFile}`,
+            fileName: item.splatFile,
+            sourceBounds: item.sourceBounds,
+            targetBounds: item.targetBounds,
+            coordinateFrame: fusion.coordinateFrame ?? "normalized",
+          }));
+          if (items.length > 0) {
+            setLiveTrainedSplats(items);
+            setGaussianCount(
+              fusion.items.reduce(
+                (sum, item) => sum + (item.gaussianCount ?? 0),
+                0
+              )
+            );
+            setRunPodStatus("Pre-trained OpenSplat fusion loaded");
+            return true;
+          }
+        }
+      } catch (err: unknown) {
+        if (signal.aborted) return false;
+        console.warn("[console] fusion splat load failed:", err);
+      }
+
+      try {
+        const metaRes = await fetch(`${presetBase}/trained.json`, {
+          cache: "no-store",
+          signal,
+        });
+        if (!metaRes.ok) return false;
+        const meta = (await metaRes.json()) as TrainedSplatManifest;
+        const splatRes = await fetch(`${presetBase}/${meta.splatFile}`, {
+          cache: "no-store",
+          signal,
+        });
+        if (!splatRes.ok) return false;
+        const buf = await splatRes.arrayBuffer();
+        if (signal.aborted || sourceRef.current !== src) return false;
+
+        const blobUrl = URL.createObjectURL(
+          new Blob([buf], { type: "application/octet-stream" })
+        );
+        liveTrainedUrlsRef.current.push(blobUrl);
+        setLiveTrainedSplats([
+          {
+            id: "trained",
+            url: blobUrl,
+            fileBytes: buf,
+            fileName: meta.splatFile,
+            sourceBounds: meta.bounds,
+            coordinateFrame: meta.coordinateFrame ?? "normalized",
+          },
+        ]);
+        setGaussianCount(
+          meta.gaussianCount ?? Math.floor(buf.byteLength / SPLAT_RECORD_BYTES)
+        );
+        setRunPodStatus("Pre-trained OpenSplat demo loaded");
+        return true;
+      } catch (err: unknown) {
+        if (signal.aborted) return false;
+        console.warn("[console] trained splat load failed:", err);
+      }
+
+      return false;
+    },
+    []
+  );
+
+  const goLive = async (mode: LiveStartMode = "pretrained") => {
     if (!selected || isPreloadingLive) return;
     setLiveError(null);
     setIsPreloadingLive(true);
     setLoadStatus("loading");
     teardownSource();
+    setLiveStartMode(mode);
+    setRunPodStatus(
+      mode === "pretrained" ? "Loading pre-trained demo reconstruction" : null
+    );
 
     const src = createReplaySource(selected);
     sourceRef.current = src;
@@ -794,11 +1307,13 @@ export function Console() {
       );
       teardownSource();
       setIsPreloadingLive(false);
+      setLiveStartMode(null);
       setLoadStatus(hasScene ? "ready" : "failed");
       return;
     }
     if (sourceRef.current !== src) {
       setIsPreloadingLive(false);
+      setLiveStartMode(null);
       return;
     } // superseded
     helloRef.current = hello;
@@ -810,46 +1325,106 @@ export function Console() {
     initCloud(hello.pointTotal);
     setPointCount(0);
 
-    // Every live session must go through RunPod so demos exercise the GPU
-    // endpoint and render fresh splats for that request.
+    useStreamedSplatRef.current = false;
     for (const url of liveTrainedUrlsRef.current) {
       URL.revokeObjectURL(url);
     }
     liveTrainedUrlsRef.current = [];
     setLiveTrainedSplats(null);
     const presetBase = selected.presetPath ?? `/presets/${selected.id}`;
+    let usedTrained = false;
 
-    try {
-      const rendered = await trainLiveSplatOnRunPod(
-        selected,
-        hello,
+    if (mode === "pretrained") {
+      usedTrained = await loadPublishedTrainedSplats(
+        src,
+        presetBase,
         runPodController.signal
       );
-      if (!rendered || sourceRef.current !== src) {
+      if (!usedTrained) {
+        if (runPodController.signal.aborted || sourceRef.current !== src) {
+          setIsPreloadingLive(false);
+          setLiveStartMode(null);
+          return;
+        }
+        setLiveError(
+          "Pre-trained demo assets are unavailable for this source."
+        );
+        teardownSource();
         setIsPreloadingLive(false);
+        setLiveStartMode(null);
+        setLoadStatus(hasScene ? "ready" : "failed");
         return;
       }
-    } catch (err: unknown) {
-      if (runPodController.signal.aborted) return;
-      console.warn("[console] RunPod live splat failed:", err);
-      setLiveError(
-        err instanceof Error
-          ? err.message
-          : "RunPod GPU rendering failed before live mode could start."
-      );
-      setRunPodStatus("RunPod GPU render failed");
-      teardownSource();
-      setIsPreloadingLive(false);
-      setLoadStatus(hasScene ? "ready" : "failed");
-      return;
+    } else {
+      try {
+        const rendered = await trainLiveSplatOnRunPod(
+          selected,
+          hello,
+          runPodController.signal
+        );
+        usedTrained = rendered && sourceRef.current === src;
+        if (!usedTrained) {
+          setIsPreloadingLive(false);
+          setLiveStartMode(null);
+          return;
+        }
+      } catch (err: unknown) {
+        if (runPodController.signal.aborted) return;
+        console.warn("[console] RunPod live splat failed:", err);
+        setRunPodStatus("RunPod unavailable; loading pre-trained demo");
+        usedTrained = await loadPublishedTrainedSplats(
+          src,
+          presetBase,
+          runPodController.signal
+        );
+        if (!usedTrained) {
+          if (runPodController.signal.aborted || sourceRef.current !== src) {
+            setIsPreloadingLive(false);
+            setLiveStartMode(null);
+            return;
+          }
+          const message =
+            err instanceof Error ? err.message : "RunPod GPU rendering failed.";
+          setLiveError(`${message} Pre-trained demo assets were unavailable.`);
+          teardownSource();
+          setIsPreloadingLive(false);
+          setLiveStartMode(null);
+          setLoadStatus(hasScene ? "ready" : "failed");
+          return;
+        }
+      }
     }
 
-    setLayers(PHOTOREAL_LAYERS);
-    setAutoOrbit(false);
-    setCameraView((current) => ({
-      id: "orbit",
-      version: current.version + 1,
-    }));
+    if (!usedTrained && hello.splatUrl && hello.splatCount !== undefined) {
+      try {
+        const res = await fetch(hello.splatUrl);
+        if (!res.ok) throw new Error(`scene.splat ${res.status}`);
+        const buf = await res.arrayBuffer();
+        if (sourceRef.current !== src) {
+          setIsPreloadingLive(false);
+          return;
+        }
+        splatRef.current = decodeSplat(buf);
+        splatCursorRef.current = 0;
+        resetSplat();
+        initSplat(hello.splatCount);
+        setGaussianCount(hello.splatCount);
+        useStreamedSplatRef.current = true;
+        revealSplatTo(hello.splatCount);
+      } catch (err: unknown) {
+        console.warn("[console] splat decode failed:", err);
+        splatRef.current = null;
+      }
+    }
+
+    if (usedTrained) {
+      setLayers(PHOTOREAL_LAYERS);
+      setAutoOrbit(false);
+      setCameraView((current) => ({
+        id: "orbit",
+        version: current.version + 1,
+      }));
+    }
 
     try {
       const fusionKeyframesRes = await fetch(
@@ -894,6 +1469,9 @@ export function Console() {
             }
           );
           if (msg.frame.imageUrl) setCameraImageUrl(msg.frame.imageUrl);
+          if (useStreamedSplatRef.current && helloRef.current?.splatCount) {
+            revealSplatTo(helloRef.current.splatCount);
+          }
           break;
         }
         case "reset": {
@@ -901,6 +1479,11 @@ export function Console() {
           if (!h) break;
           resetCloud();
           initCloud(h.pointTotal);
+          if (useStreamedSplatRef.current) {
+            resetSplat();
+            if (h.splatCount !== undefined) initSplat(h.splatCount);
+            splatCursorRef.current = 0;
+          }
           setPointCount(0);
           break;
         }
@@ -932,6 +1515,7 @@ export function Console() {
 
     setIsLive(true);
     setIsPreloadingLive(false);
+    setLiveStartMode(null);
     setLoadStatus("ready");
     setPhase("live");
     setProgress(0);
@@ -1016,7 +1600,7 @@ export function Console() {
 
   const hasScene = seedPositions !== null && seedColors !== null;
   const liveGaussianLabel = new Intl.NumberFormat("en-US").format(
-    gaussianCount
+    isLive && !liveTrainedSplats ? getRevealedGaussians() : gaussianCount
   );
   const livePointLabel = new Intl.NumberFormat("en-US").format(pointCount);
   const sequenceLabel = selected?.label ?? DEMO_PRESET.label;
@@ -1168,6 +1752,7 @@ export function Console() {
                 autoOrbit={autoOrbit}
                 cameraView={cameraView}
                 layers={layers}
+                trainedPreviewMode={trainedPreviewMode}
                 trainedRenderProfile={activeTrainedRenderProfile}
                 worldBounds={worldBounds}
                 seedPositions={seedPositions}
@@ -1245,20 +1830,51 @@ export function Console() {
                             {runPodStatus ??
                               "Loading the replay source, camera frames, and trained splat before the live screen opens."}
                           </span>
+                          {runPodCapacity && (
+                            <div className="cn-preload-queue">
+                              <span>
+                                Warm pool {runPodCapacity.warmedGpuCount}/
+                                {runPodCapacity.targetWarmGpuCount} GPUs
+                              </span>
+                              <span>
+                                {runPodCapacity.gpusPerSession} GPUs per user
+                              </span>
+                              <span>
+                                Queue {runPodQueueLabel(runPodCapacity)}
+                              </span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     ) : (
                       selected?.description && <p>{selected.description}</p>
                     )}
                     {liveError && <p className="cn-error mono">{liveError}</p>}
-                    <button
-                      type="button"
-                      className="cn-btn cn-btn--primary cn-golive-btn"
-                      disabled={isPreloadingLive}
-                      onClick={goLive}
-                    >
-                      {isPreloadingLive ? "Preloading…" : "● Go Live"}
-                    </button>
+                    <div className="cn-golive-actions">
+                      <button
+                        type="button"
+                        className="cn-btn cn-btn--primary cn-golive-btn"
+                        disabled={isPreloadingLive}
+                        onClick={() => void goLive("pretrained")}
+                      >
+                        {isPreloadingLive
+                          ? liveStartMode === "pretrained"
+                            ? "Demo loading…"
+                            : "Preloading…"
+                          : "● Go Live"}
+                      </button>
+                      <button
+                        type="button"
+                        className="cn-btn cn-golive-fallback-btn"
+                        disabled={isPreloadingLive}
+                        title="Rebuild the reconstruction on RunPod GPU"
+                        onClick={() => void goLive("gpu")}
+                      >
+                        {liveStartMode === "gpu"
+                          ? "Preloading GPU…"
+                          : "GPU rebuild"}
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -1290,6 +1906,8 @@ export function Console() {
           renderProfileOptions={TRAINED_RENDER_PROFILE_OPTIONS}
           renderProfileId={renderProfileId}
           onRenderProfileIdChange={handleRenderProfileIdChange}
+          trainedPreviewMode={trainedPreviewMode}
+          onTrainedPreviewModeChange={setTrainedPreviewMode}
           onTrainedRenderProfileChange={handleRenderProfileChange}
           onResetTrainedRenderProfile={() => setRenderProfileOverrides({})}
           interiorVisibility={interiorVisibility}
@@ -1310,6 +1928,7 @@ export function Console() {
           onLiveQualityPresetChange={setLiveQualityPreset}
           sensorEvidence={sensorEvidence}
           runPodStatus={runPodStatus}
+          runPodCapacity={runPodCapacity}
         />
       </div>
     </div>

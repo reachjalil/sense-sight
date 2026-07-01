@@ -3,9 +3,11 @@ import type {
   RenderLayers,
   RenderPreset,
   SceneShapeAnalysis,
+  TrainedPreviewMode,
   TrainedRenderProfileId,
   TrainedRenderProfile,
 } from "@sense-sight/render-contracts";
+import type { RunPodCapacitySummary } from "../lib/runpod-capacity";
 
 export type LoadStatus = "idle" | "loading" | "ready" | "failed";
 
@@ -56,6 +58,14 @@ const LIVE_QUALITY_OPTIONS = [
 
 export type LiveGenerationQuality = (typeof LIVE_QUALITY_OPTIONS)[number]["id"];
 
+const TRAINED_PREVIEW_MODE_OPTIONS = [
+  { id: "splat", label: "Splat" },
+  { id: "points", label: "Dots" },
+] as const satisfies readonly {
+  readonly id: TrainedPreviewMode;
+  readonly label: string;
+}[];
+
 export interface RenderProfileControlOption {
   readonly id: TrainedRenderProfileId;
   readonly label: string;
@@ -72,6 +82,8 @@ export interface ControlPanelProps {
   renderProfileOptions?: readonly RenderProfileControlOption[];
   renderProfileId?: TrainedRenderProfileId;
   onRenderProfileIdChange?: (id: TrainedRenderProfileId) => void;
+  trainedPreviewMode?: TrainedPreviewMode;
+  onTrainedPreviewModeChange?: (mode: TrainedPreviewMode) => void;
   onTrainedRenderProfileChange?: (patch: Partial<TrainedRenderProfile>) => void;
   onResetTrainedRenderProfile?: () => void;
   interiorVisibility: InteriorVisibilityTuning;
@@ -95,6 +107,7 @@ export interface ControlPanelProps {
   onLiveQualityPresetChange?: (quality: LiveGenerationQuality) => void;
   sensorEvidence?: SensorEvidenceSummary | null;
   runPodStatus?: string | null;
+  runPodCapacity?: RunPodCapacitySummary | null;
 }
 
 export function ControlPanel({
@@ -107,6 +120,8 @@ export function ControlPanel({
   renderProfileOptions = [],
   renderProfileId,
   onRenderProfileIdChange,
+  trainedPreviewMode = "splat",
+  onTrainedPreviewModeChange,
   onTrainedRenderProfileChange,
   onResetTrainedRenderProfile,
   interiorVisibility,
@@ -127,6 +142,7 @@ export function ControlPanel({
   onLiveQualityPresetChange,
   sensorEvidence,
   runPodStatus,
+  runPodCapacity,
 }: ControlPanelProps) {
   const dominantShape = sceneShapeAnalysis?.shapes[0];
   const shapeCount = sceneShapeAnalysis?.shapes.length ?? 0;
@@ -232,6 +248,42 @@ export function ControlPanel({
               <span className="k">RunPod GPU</span>
               <span className="v">{runPodStatus}</span>
             </div>
+          )}
+          {runPodCapacity && (
+            <fieldset className="cn-gpu-capacity">
+              <legend className="sr-only">RunPod GPU queue</legend>
+              <div className="cn-gpu-meter">
+                <span
+                  style={{
+                    width: `${Math.min(
+                      100,
+                      (runPodCapacity.warmedGpuCount /
+                        runPodCapacity.targetWarmGpuCount) *
+                        100
+                    )}%`,
+                  }}
+                />
+              </div>
+              <div className="metric">
+                <span className="k">Warm pool</span>
+                <span className="v">
+                  {runPodCapacity.warmedGpuCount}/
+                  {runPodCapacity.targetWarmGpuCount} GPUs
+                </span>
+              </div>
+              <div className="metric">
+                <span className="k">Per user</span>
+                <span className="v">{runPodCapacity.gpusPerSession} GPUs</span>
+              </div>
+              <div className="metric">
+                <span className="k">Queue</span>
+                <span className="v">
+                  {runPodCapacity.queuedSessionCount > 0
+                    ? `${runPodCapacity.queuedSessionCount} waiting`
+                    : "No wait"}
+                </span>
+              </div>
+            </fieldset>
           )}
           <fieldset className="cn-segmented" aria-label="Live splat quality">
             <legend className="sr-only">Live splat quality</legend>
@@ -362,6 +414,23 @@ export function ControlPanel({
           Render style
         </div>
         <div className="panel-section-body">
+          <fieldset
+            className="cn-segmented cn-segmented--two"
+            aria-label="Trained splat preview mode"
+          >
+            <legend className="sr-only">Trained splat preview mode</legend>
+            {TRAINED_PREVIEW_MODE_OPTIONS.map((option) => (
+              <button
+                key={option.id}
+                type="button"
+                className={trainedPreviewMode === option.id ? "active" : ""}
+                aria-pressed={trainedPreviewMode === option.id}
+                onClick={() => onTrainedPreviewModeChange?.(option.id)}
+              >
+                {option.label}
+              </button>
+            ))}
+          </fieldset>
           {renderProfileOptions.length > 0 && (
             <fieldset className="cn-render-presets">
               <legend className="sr-only">Render style</legend>

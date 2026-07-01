@@ -57,6 +57,9 @@ export interface TrainedRenderProfileOption {
   readonly profile: TrainedRenderProfile;
 }
 
+/** Runtime renderer choice for trained splat inspection. */
+export type TrainedPreviewMode = "splat" | "points";
+
 /** Operator-controlled x-ray style tuning for seeing into dense splats. */
 export interface InteriorVisibilityTuning {
   /** Enables shape overlays and applies the tuned splat render profile. */
@@ -191,25 +194,25 @@ export const DEFAULT_TRAINED_RENDER_PROFILE: TrainedRenderProfile = {
 
 export const PHOTOREAL_TRAINED_RENDER_PROFILE: TrainedRenderProfile = {
   ...DEFAULT_TRAINED_RENDER_PROFILE,
-  label: "Photo real Spark",
-  radiusDefault: 1.18,
-  radiusMin: 0.18,
-  radiusMax: 5,
-  radiusStep: 0.04,
-  minAlpha: 3 / 255,
-  maxPixelRadius: 360,
+  label: "Photo real fusion Spark",
+  radiusDefault: 0.38,
+  radiusMin: 0.12,
+  radiusMax: 0.9,
+  radiusStep: 0.025,
+  minAlpha: 4 / 255,
+  maxPixelRadius: 96,
   maxStdDev: Math.sqrt(8),
-  focalAdjustment: 1.32,
-  falloff: 1,
+  focalAdjustment: 1,
+  falloff: 0.96,
   sortRadial: true,
-  opacity: 1,
-  fallbackMinAlpha: 4 / 255,
-  fallbackMinScale: 0.00015,
-  fallbackMaxScale: 0.052,
-  fallbackMaxScreenSize: 92,
-  fallbackAlphaPower: 0.92,
-  fallbackColorGain: 1.08,
-  fallbackOpacity: 1,
+  opacity: 0.95,
+  fallbackMinAlpha: 8 / 255,
+  fallbackMinScale: 0.0002,
+  fallbackMaxScale: 0.012,
+  fallbackMaxScreenSize: 10,
+  fallbackAlphaPower: 1.32,
+  fallbackColorGain: 1.1,
+  fallbackOpacity: 0.9,
 };
 
 export const HOLOGRAPHIC_TRAINED_RENDER_PROFILE: TrainedRenderProfile = {
@@ -250,7 +253,7 @@ export const TRAINED_RENDER_PROFILE_OPTIONS: readonly TrainedRenderProfileOption
       id: "photoreal",
       label: "Photo real",
       description:
-        "High-fidelity Spark 3DGS with full opacity and large splats.",
+        "Viewer-pruned OpenSplat fusion with Spark footprint clamping.",
       profile: PHOTOREAL_TRAINED_RENDER_PROFILE,
     },
     {
@@ -268,7 +271,7 @@ export const TRAINED_RENDER_PROFILE_OPTIONS: readonly TrainedRenderProfileOption
   ];
 
 export const DEFAULT_INTERIOR_VISIBILITY_TUNING: InteriorVisibilityTuning = {
-  enabled: true,
+  enabled: false,
   opacity: 0.58,
   spacing: 0.55,
   intensity: 0.72,
